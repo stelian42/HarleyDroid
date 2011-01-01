@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="1"
+    >
+<TableRow>
+<TextView  
+	android:id="@+id/rpm_label" 
+    android:text="@string/rpm_label"
+    android:textSize="25sp"
+    android:padding="3dip"
+    />
+<TextView  
+	android:id="@+id/rpm_field"
+	android:textSize="25sp"
+	android:padding="3dip" 
+    />
+</TableRow>
+<TableRow>
+<TextView  
+	android:id="@+id/speed_label" 
+    android:text="@string/speed_label"
+    android:textSize="25sp"
+    android:padding="3dip"
+    />
+<TextView
+	android:id="@+id/speed_field"
+	android:textSize="25sp"
+	android:padding="3dip"  
+    />
+</TableRow>
+<TableRow>
+<TextView  
+	android:id="@+id/enginetemp_label" 
+    android:text="@string/enginetemp_label"
+    android:textSize="25sp"
+    android:padding="3dip"
+    />
+<TextView
+	android:id="@+id/enginetemp_field"
+	android:textSize="25sp"
+	android:padding="3dip"  
+    />
+</TableRow>
+<TableRow>
+<TextView  
+	android:id="@+id/turnsignals_label" 
+    android:text="@string/turnsignals_label"
+    android:textSize="25sp"
+    android:padding="3dip"
+    />
+<TextView
+	android:id="@+id/turnsignals_field"
+	android:textSize="25sp"
+	android:padding="3dip"  
+    />
+</TableRow>
+<TableRow>
+<TextView  
+	android:id="@+id/clutch_label" 
+    android:text="@string/clutch_label"
+    android:textSize="25sp"
+    android:padding="3dip"
+    />
+<TextView
+	android:id="@+id/clutch_field"
+	android:textSize="25sp"
+	android:padding="3dip"  
+    />
+</TableRow>
+</TableLayout>

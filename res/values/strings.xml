@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">Harley Droid</string>
+<string name="nobluetooth">Sorry, your device doesn\'t support bluetooth</string>
+<string name="noenablebluetooth">Unable to enable Bluetooth</string>
+<string name="connectingelm327">Connecting to ELM327...</string>
+
+<string name="choosebluetooth">Choose the bluetooth device</string><string name="rpm_label">RPM:</string>
+<string name="speed_label">Speed:</string>
+<string name="enginetemp_label">Engine temp:</string>
+<string name="turnsignals_label">Turn Signals:</string>
+<string name="clutch_label">Clutch/Gear:</string>
+
+<string name="startcapture_label">Start capture</string>
+<string name="stopcapture_label">Stop capture</string>
+<string name="choosedev_label">Choose device</string>
+<string name="quit_label">Quit</string>
+
+
+<string name="errorconnecting">Error connecting to ELM327</string>
+
+<string name="errornodata">No data from ELM327</string>
+
+<string name="errortoomany">Too many communication errors, aborting...</string>
+<string name="nologging">Unable to write logs to external storage</string>
+<string name="logging_labelon">Turn on logging</string>
+<string name="logging_labeloff">Turn off logging</string>
+<string name="errorat">Error configuring ELM327</string>
+<string name="notification_label">HarleyDroidService</string>
+<string name="notification_start">Receiving data</string>
+
+</resources>
