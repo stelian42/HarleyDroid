@@ -1,73 +1,207 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:stretchColumns="1"
     >
-<TableRow>
-<TextView  
-	android:id="@+id/rpm_label" 
-    android:text="@string/rpm_label"
-    android:textSize="25sp"
-    android:padding="3dip"
-    />
-<TextView  
-	android:id="@+id/rpm_field"
-	android:textSize="25sp"
-	android:padding="3dip" 
-    />
-</TableRow>
-<TableRow>
-<TextView  
-	android:id="@+id/speed_label" 
-    android:text="@string/speed_label"
-    android:textSize="25sp"
-    android:padding="3dip"
-    />
-<TextView
-	android:id="@+id/speed_field"
-	android:textSize="25sp"
-	android:padding="3dip"  
-    />
-</TableRow>
-<TableRow>
-<TextView  
-	android:id="@+id/enginetemp_label" 
-    android:text="@string/enginetemp_label"
-    android:textSize="25sp"
-    android:padding="3dip"
-    />
-<TextView
-	android:id="@+id/enginetemp_field"
-	android:textSize="25sp"
-	android:padding="3dip"  
-    />
-</TableRow>
-<TableRow>
-<TextView  
-	android:id="@+id/turnsignals_label" 
-    android:text="@string/turnsignals_label"
-    android:textSize="25sp"
-    android:padding="3dip"
-    />
-<TextView
-	android:id="@+id/turnsignals_field"
-	android:textSize="25sp"
-	android:padding="3dip"  
-    />
-</TableRow>
-<TableRow>
-<TextView  
-	android:id="@+id/clutch_label" 
-    android:text="@string/clutch_label"
-    android:textSize="25sp"
-    android:padding="3dip"
-    />
-<TextView
-	android:id="@+id/clutch_field"
-	android:textSize="25sp"
-	android:padding="3dip"  
-    />
-</TableRow>
-</TableLayout>
+	<LinearLayout
+		android:id="@+id/gr_layout"
+		android:orientation="vertical"
+		android:layout_width="fill_parent" 
+    	android:layout_height="fill_parent"
+    	android:layout_gravity="center"
+    	android:weightSum="2.0">
+		>
+		<org.harleydroid.Gauge
+			xmlns:atswidget="http://schemas.android.com/apk/res/org.harleydroid"
+			android:id="@+id/speed_meter"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:layout_weight="1.0"
+			android:layout_margin="2px"
+			atswidget:totalNotches="300"
+			atswidget:incrementPerLargeNotch="10"
+			atswidget:incrementPerSmallNotch="1"
+			atswidget:scaleCenterValue="110"
+			atswidget:scaleColor="0x9f004d0f"
+			atswidget:scaleMinValue="0"
+    		atswidget:scaleMaxValue="220"
+    		atswidget:rangeOkColor="0x9f00ff00"
+    		atswidget:rangeOkMinValue="0" 
+    		atswidget:rangeOkMaxValue="200"
+    		atswidget:rangeWarningColor="0x9fff8800"
+    		atswidget:rangeWarningMinValue="200"
+    		atswidget:rangeWarningMaxValue="210"
+    		atswidget:rangeErrorColor="0x9fff0000"
+    		atswidget:rangeErrorMinValue="210"
+    		atswidget:rangeErrorMaxValue="220" 
+    		atswidget:unitTitle="km/h"
+    		atswidget:lowerTitle="HarleyDroid" 
+    		atswidget:upperTitle="" 
+    		atswidget:showGauge = "false"
+    		atswidget:showHand="true"
+    		atswidget:showRange="false"
+			/>
+		<org.harleydroid.Gauge
+			xmlns:atswidget="http://schemas.android.com/apk/res/org.harleydroid"
+			android:id="@+id/rpm_meter"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:layout_margin="2px"
+			android:layout_weight="1.0"
+			atswidget:totalNotches="120"
+			atswidget:incrementPerLargeNotch="10"
+			atswidget:incrementPerSmallNotch="1"
+			atswidget:scaleCenterValue="40"
+			atswidget:scaleColor="0x9f004d0f"
+			atswidget:scaleMinValue="0"
+    		atswidget:scaleMaxValue="80"
+    		atswidget:rangeOkColor="0x9f00ff00"
+    		atswidget:rangeOkMinValue="0" 
+    		atswidget:rangeOkMaxValue="55"
+    		atswidget:rangeWarningColor="0x9fff8800"
+    		atswidget:rangeWarningMinValue="55"
+    		atswidget:rangeWarningMaxValue="55"
+    		atswidget:rangeErrorColor="0x9fff0000"
+    		atswidget:rangeErrorMinValue="55"
+    		atswidget:rangeErrorMaxValue="80" 
+    		atswidget:unitTitle="RPM x 100"
+    		atswidget:lowerTitle="HarleyDroid" 
+    		atswidget:upperTitle="" 
+    		atswidget:showGauge = "false"
+    		atswidget:showHand="true"
+    		atswidget:showRange="true"
+			/>
+	</LinearLayout>
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/raw_layout"
+    	android:orientation="vertical"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:stretchColumns="1"
+    	android:visibility="gone"
+    	>
+		<TableRow>
+		<TextView  
+			android:id="@+id/rpm_label" 
+    		android:text="@string/rpm_label"
+    		android:padding="3dip"
+    		/>
+		<TextView  
+			android:id="@+id/rpm_field"
+			android:padding="3dip" 
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView  
+			android:id="@+id/speed_label" 
+    		android:text="@string/speed_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/speed_field"
+			android:padding="3dip"  
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView  
+			android:id="@+id/enginetemp_label" 
+    		android:text="@string/enginetemp_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/enginetemp_field"
+			android:padding="3dip"  
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView  
+			android:id="@+id/full_label" 
+    		android:text="@string/full_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/full_field"
+			android:padding="3dip"  
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView  
+			android:id="@+id/turnsignals_label" 
+    		android:text="@string/turnsignals_label"
+		    android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/turnsignals_field"
+			android:padding="3dip"  
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView  
+			android:id="@+id/neutral_label" 
+    		android:text="@string/neutral_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/neutral_field"
+			android:padding="3dip"  
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView  
+			android:id="@+id/clutch_label" 
+    		android:text="@string/clutch_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/clutch_field"
+			android:padding="3dip"  
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView  
+			android:id="@+id/gear_label" 
+		    android:text="@string/gear_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/gear_field"
+			android:padding="3dip"  
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView  
+			android:id="@+id/checkengine_label" 
+    		android:text="@string/checkengine_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/checkengine_field"
+			android:padding="3dip"  
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView  
+			android:id="@+id/odometer_label" 
+    		android:text="@string/odometer_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/odometer_field"
+			android:padding="3dip"  
+		    />
+		</TableRow>
+		<TableRow>
+		<TextView  
+			android:id="@+id/fuel_label" 
+    		android:text="@string/fuel_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/fuel_field"
+			android:padding="3dip"  
+    		/>
+		</TableRow>
+	</TableLayout>
+</FrameLayout>

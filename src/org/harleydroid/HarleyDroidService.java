@@ -27,8 +27,8 @@ import android.util.Log;
 public class HarleyDroidService extends Service
 {
 	private static final boolean D = true;
-	private static final String TAG = "HarleyDroidService";
-	private static final boolean EMULATOR = false;
+	private static final String TAG = HarleyDroidService.class.getSimpleName();
+	private static final boolean EMULATOR = true;
 	
 	private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 	

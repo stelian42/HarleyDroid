@@ -4,14 +4,14 @@ import android.os.Handler;
 
 public class HarleyData {
 	private int rpm;			// RPM in 1000*rotation/minute */
-	private int speed;			// speed in meters/hour */
-	private int engineTemp;		// engine temperature in degrees */
+	private int speed;			// XXX speed in ??? */
+	private int engineTemp;		// XXX engine temperature in degrees */
 	private int full;			// XXX gas ??? */
 	private int turnSignals;	// turn signals bitmap: 0x1=right, 0x2=left     */
-	private boolean neutral;	// boolean: in neutral */
-	private boolean clutch;		// boolean: clutch engaged */
-	private int gear;			// current gear: 1 to 6 */
-	private boolean checkEngine;// boolean: check engine */
+	private boolean neutral;	// XXX boolean: in neutral */
+	private boolean clutch;		// XXX boolean: clutch engaged */
+	private int gear;			// XXX current gear: 1 to 6 */
+	private boolean checkEngine;// XXX boolean: check engine */
 	private int odometer;		// XXX odometer tick = 4 mm */
 	private int fuel;			// XXX fuel tick = 0.05 mm */
 
@@ -77,7 +77,11 @@ public class HarleyData {
 	}
 
 	public void setFull(int full) {
-		this.full = full;
+		if (this.full != full) {
+			this.full = full;
+			if (handler != null)
+				handler.obtainMessage(HarleyDroid.UPDATE_FULL, full, -1).sendToTarget();
+		}
 	}
 
 	public int getTurnSignals() {
@@ -97,7 +101,11 @@ public class HarleyData {
 	}
 
 	public void setNeutral(boolean neutral) {
-		this.neutral = neutral;
+		if (this.neutral != neutral) {
+			this.neutral = neutral;
+			if (handler != null)
+				handler.obtainMessage(HarleyDroid.UPDATE_NEUTRAL, neutral ? 1 : 0, -1).sendToTarget();
+		}
 	}
 
 	public boolean getClutch() {
@@ -117,7 +125,11 @@ public class HarleyData {
 	}
 
 	public void setGear(int gear) {
-		this.gear = gear;
+		if (this.gear != gear) {
+			this.gear = gear;
+			if (handler != null)
+				handler.obtainMessage(HarleyDroid.UPDATE_GEAR, gear, -1).sendToTarget();
+		}
 	}
 
 	public boolean getCheckEngine() {
@@ -125,7 +137,11 @@ public class HarleyData {
 	}
 
 	public void setCheckEngine(boolean checkEngine) {
-		this.checkEngine = checkEngine;
+		if (this.checkEngine != checkEngine) {
+			this.checkEngine = checkEngine;
+			if (handler != null)
+				handler.obtainMessage(HarleyDroid.UPDATE_CHECKENGINE, checkEngine ? 1 : 0, -1).sendToTarget();
+		}
 	}
 
 	public int getOdometer() {
@@ -133,7 +149,11 @@ public class HarleyData {
 	}
 
 	public void setOdometer(int odometer) {
-		this.odometer = odometer;
+		if (this.odometer != odometer) {
+			this.odometer = odometer;
+			if (handler != null)
+				handler.obtainMessage(HarleyDroid.UPDATE_ODOMETER, odometer, -1).sendToTarget();
+		}
 	}
 
 	public int getFuel() {
@@ -141,7 +161,11 @@ public class HarleyData {
 	}
 
 	public void setFuel(int fuel) {
-		this.fuel = fuel;
+		if (this.fuel != fuel) {
+			this.fuel = fuel;
+			if (handler != null)
+				handler.obtainMessage(HarleyDroid.UPDATE_FUEL, fuel, -1).sendToTarget();
+		}
 	}
 
 	public String toString() {

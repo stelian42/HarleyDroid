@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<declare-styleable name="Dial">
+		<attr name="totalNotches" format="integer"/>
+
+		<attr name="incrementPerLargeNotch" format="integer"/>
+		<attr name="incrementPerSmallNotch" format="integer"/>
+
+		<attr name="scaleColor" format="integer"/>
+		<attr name="scaleCenterValue" format="integer"/>
+		<attr name="scaleMinValue" format="integer"/>
+		<attr name="scaleMaxValue" format="integer"/>
+
+		<attr name="rangeOkColor" format="integer"/>
+		<attr name="rangeOkMinValue" format="integer"/>
+		<attr name="rangeOkMaxValue" format="integer"/>
+
+		<attr name="rangeWarningColor" format="integer"/>
+		<attr name="rangeWarningMinValue" format="integer"/>
+		<attr name="rangeWarningMaxValue" format="integer"/>
+
+		<attr name="rangeErrorColor" format="integer"/>
+		<attr name="rangeErrorMinValue" format="integer"/>
+		<attr name="rangeErrorMaxValue" format="integer"/>
+
+		<attr name="upperTitle" format="string"/>
+		<attr name="lowerTitle" format="string"/>
+		<attr name="unitTitle" format="string"/>
+
+		<attr name="showRange" format="boolean"/>
+		<attr name="showHand" format="boolean"/>
+		<attr name="showGauge" format="boolean"/>
+
+	</declare-styleable>
+</resources>

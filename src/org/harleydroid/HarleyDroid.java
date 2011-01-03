@@ -25,14 +25,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class HarleyDroid extends Activity implements ServiceConnection
 {
 	private static final boolean D = true;
-	private static final String TAG = "HarleyDroid";
-	private static final boolean EMULATOR = false;
+	private static final String TAG = HarleyDroid.class.getSimpleName();
+	private static final boolean EMULATOR = true;
 	
     static final int CHOOSE_BLUETOOTH_DEV = 1;
     static final int CONNECTING_TO_ELM327 = 2;
@@ -46,8 +47,14 @@ public class HarleyDroid extends Activity implements ServiceConnection
     public static final int UPDATE_RPM = 6;
     public static final int UPDATE_SPEED = 7;
     public static final int UPDATE_ENGINETEMP = 8;
-    public static final int UPDATE_TURNSIGNALS = 9;
-    public static final int UPDATE_CLUTCH = 10;
+    public static final int UPDATE_FULL = 9;
+    public static final int UPDATE_TURNSIGNALS = 10;
+    public static final int UPDATE_NEUTRAL = 11;
+    public static final int UPDATE_CLUTCH = 12;
+    public static final int UPDATE_GEAR = 13;
+    public static final int UPDATE_CHECKENGINE = 14;
+    public static final int UPDATE_ODOMETER = 15;
+    public static final int UPDATE_FUEL = 16;
 
     private static final int REQUEST_ENABLE_BT = 2;
     
@@ -58,6 +65,24 @@ public class HarleyDroid extends Activity implements ServiceConnection
     private SharedPreferences mPrefs = null;
     private File mLogFile = null;
     private HarleyDroidService mService = null;
+    private boolean mModeRaw = false;
+    
+    // Views references cached for performance
+    private View mViewRaw;
+    private View mViewGr;
+    private TextView mViewRpm;
+    private Gauge mGaugeRpm;
+    private TextView mViewSpeed;
+    private Gauge mGaugeSpeed;
+    private TextView mViewEngTemp;
+    private TextView mViewFull;
+    private TextView mViewTurnSignals;
+    private TextView mViewNeutral;
+    private TextView mViewClutch;
+    private TextView mViewGear;
+    private TextView mViewCheckEngine;
+    private TextView mViewOdometer;
+    private TextView mViewFuel;
     
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -78,6 +103,40 @@ public class HarleyDroid extends Activity implements ServiceConnection
         		return;
         	}
         }
+        
+        mViewGr = findViewById(R.id.gr_layout);
+		mViewRaw = findViewById(R.id.raw_layout);
+        mViewRpm = (TextView) findViewById(R.id.rpm_field);
+        mGaugeRpm = (Gauge) findViewById(R.id.rpm_meter);
+        mViewSpeed = (TextView) findViewById(R.id.speed_field);
+        mGaugeSpeed = (Gauge) findViewById(R.id.speed_meter);
+        mViewEngTemp = (TextView) findViewById(R.id.enginetemp_field);
+        mViewFull = (TextView) findViewById(R.id.full_field);
+        mViewTurnSignals = (TextView) findViewById(R.id.turnsignals_field);
+        mViewNeutral = (TextView) findViewById(R.id.neutral_field);
+        mViewClutch = (TextView) findViewById(R.id.clutch_field);
+        mViewGear = (TextView) findViewById(R.id.gear_field);
+        mViewCheckEngine = (TextView) findViewById(R.id.checkengine_field);
+        mViewOdometer = (TextView) findViewById(R.id.odometer_field);
+        mViewFuel = (TextView) findViewById(R.id.fuel_field);
+            
+        if (savedInstanceState != null) {
+        	mModeRaw = savedInstanceState.getBoolean("moderaw");
+        	if (D) Log.d(TAG, "savedInstanceState: mModeRaw = " + mModeRaw);
+        	drawLayout();
+        }
+        
+        drawRPM(0);
+        drawSpeed(0);
+        drawEngineTemp(0);
+        drawFull(0);
+        drawTurnSignals(0);
+        drawNeutral(0);
+        drawClutch(0);
+        drawGear(0);
+        drawCheckEngine(0);
+        drawOdometer(0);
+        drawFuel(0);
     }
     
     @Override
@@ -112,6 +171,13 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	mService = null;
     }
   
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+    	if (D) Log.d(TAG, "onSaveInstanceState(mModeRaw= " + mModeRaw + ")");
+    	
+    	outState.putBoolean("moderaw", mModeRaw);
+    }
+    
     @Override
     protected Dialog onCreateDialog(int id) {
     	if (D) Log.d(TAG, "onCreateDialog()");
@@ -168,6 +234,11 @@ public class HarleyDroid extends Activity implements ServiceConnection
             mOptionsMenu.findItem(R.id.choosedev_menu).setEnabled(true);
             mOptionsMenu.findItem(R.id.logging_menu).setEnabled(true);
     	}
+    	if (mModeRaw)
+    		mOptionsMenu.findItem(R.id.mode_menu).setTitle(R.string.mode_labelgr);
+    	else
+    		mOptionsMenu.findItem(R.id.mode_menu).setTitle(R.string.mode_labelraw);
+    		
     	if (mLogFile != null)
         	mOptionsMenu.findItem(R.id.logging_menu).setTitle(R.string.logging_labeloff);
         else
@@ -202,6 +273,10 @@ public class HarleyDroid extends Activity implements ServiceConnection
             return true;
         case R.id.stopcapture_menu:
         	stopCapture();
+        	return true;
+        case R.id.mode_menu:
+        	mModeRaw = !mModeRaw;
+        	drawLayout();
         	return true;
         case R.id.choosedev_menu:
         	showDialog(CHOOSE_BLUETOOTH_DEV);
@@ -347,45 +422,95 @@ public class HarleyDroid extends Activity implements ServiceConnection
     			case UPDATE_ENGINETEMP:
     				drawEngineTemp(msg.arg1);
     				break;
+    			case UPDATE_FULL:
+    				drawFull(msg.arg1);
+    				break;
     			case UPDATE_TURNSIGNALS:
     				drawTurnSignals(msg.arg1);
+    				break;
+    			case UPDATE_NEUTRAL:
+    				drawNeutral(msg.arg1);
     				break;
     			case UPDATE_CLUTCH:
     				drawClutch(msg.arg1);
     				break;
-    		}
+    			case UPDATE_GEAR:
+    				drawGear(msg.arg1);
+    				break;
+    			case UPDATE_CHECKENGINE:
+    				drawCheckEngine(msg.arg1);
+    				break;
+    			case UPDATE_ODOMETER:
+    				drawOdometer(msg.arg1);
+    				break;
+    			case UPDATE_FUEL:
+    				drawFuel(msg.arg1);
+    				break;
+       		}
     	}
     };
-    		
+   
+    private void drawLayout() {
+    	if (mModeRaw) {
+    		mViewGr.setVisibility(View.GONE);
+        	mViewRaw.setVisibility(View.VISIBLE);
+    	}
+    	else {
+    		mViewRaw.setVisibility(View.GONE);
+        	mViewGr.setVisibility(View.VISIBLE);
+    	}
+    }
+    
     public void drawRPM(int value) {
-    	TextView rpm = (TextView) findViewById(R.id.rpm_field);
-    	rpm.setText(Integer.toString(value));
+    	mViewRpm.setText(Integer.toString(value));
+        mGaugeRpm.setValue(value / 100);
     }
     
     public void drawSpeed(int value) {
-    	TextView speed = (TextView) findViewById(R.id.speed_field);
-    	speed.setText(Integer.toString(value));
+    	mViewSpeed.setText(Integer.toString(value));
+        mGaugeSpeed.setValue(value);
     }
     
     public void drawEngineTemp(int value) {
-    	TextView engtemp = (TextView) findViewById(R.id.enginetemp_field);
-    	engtemp.setText(Integer.toString(value));
+    	mViewEngTemp.setText(Integer.toString(value));
+    }
+   
+    public void drawFull(int value) {
+    	mViewFull.setText(Integer.toString(value));
+    }
+   
+    public void drawTurnSignals(int value) {
+    	if ((value & 0x03) == 0x03)
+    		mViewTurnSignals.setText("W");
+    	else if ((value & 0x01) == 0x01)
+    		mViewTurnSignals.setText("R");
+    	else if ((value & 0x02) == 0x02)
+    		mViewTurnSignals.setText("L");
+    	else
+    		mViewTurnSignals.setText("");
     }
     
-    public void drawTurnSignals(int value) {
-    	TextView turnsignals = (TextView) findViewById(R.id.turnsignals_field);
-    	if ((value & 0x03) == 0x03)
-    		turnsignals.setText("W");
-    	else if ((value & 0x01) == 0x01)
-    		turnsignals.setText("R");
-    	else if ((value & 0x02) == 0x02)
-    		turnsignals.setText("L");
-    	else
-    		turnsignals.setText("");
+    public void drawNeutral(int value) {
+    	mViewNeutral.setText(Integer.toString(value));
     }
     
     public void drawClutch(int value) {
-    	TextView clutch = (TextView) findViewById(R.id.clutch_field);
-    	clutch.setText(Integer.toString(value));
+    	mViewClutch.setText(Integer.toString(value));
+    }
+    
+    public void drawGear(int value) {
+    	mViewGear.setText(Integer.toString(value));
+    }
+    
+    public void drawCheckEngine(int value) {
+    	mViewCheckEngine.setText(Integer.toString(value));
+    }
+    
+    public void drawOdometer(int value) {
+    	mViewOdometer.setText(Integer.toString(value));
+    }
+    
+    public void drawFuel(int value) {
+    	mViewFuel.setText(Integer.toString(value));
     }
 }
