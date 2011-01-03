@@ -51,6 +51,7 @@ import android.view.View;
 import android.content.res.TypedArray;
 
 public final class Gauge extends View {
+
 	private static final boolean D = false;
 	private static final String TAG = Gauge.class.getSimpleName();
 	
@@ -253,7 +254,6 @@ public final class Gauge extends View {
 		degreeWarningMaxValue = valueToAngle(rangeWarningMaxValue) + centerDegrees;
 		degreeErrorMinValue   = valueToAngle(rangeErrorMinValue)   + centerDegrees;
 		degreeErrorMaxValue   = valueToAngle(rangeErrorMaxValue)   + centerDegrees;
-		
 		
 		initDrawingTools();
 	}
@@ -604,7 +604,7 @@ public final class Gauge extends View {
 	
 	private float valueToAngle(float value) {
 		// scaleCenterValue represents an angle of -90 degrees.
-		return (value - scaleCenterValue) * degreesPerNotch;
+		return (value - scaleCenterValue) / incrementPerSmallNotch * degreesPerNotch;
 	}
 	
 	@Override
