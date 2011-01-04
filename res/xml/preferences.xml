@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<ListPreference
+        android:title="@string/pref_bluetoothdev"
+        android:persistent="true"
+        android:key="bluetoothid" />
+    <CheckBoxPreference
+        android:title="@string/pref_logging"
+        android:persistent="true"
+        android:defaultValue="false"
+        android:key="logging" />
+	<CheckBoxPreference
+        android:title="@string/pref_screenon"
+        android:persistent="true"
+        android:defaultValue="false"
+        android:key="screenon" />
+    <ListPreference
+        android:title="@string/pref_speedounit"
+        android:persistent="true"
+        android:entries="@array/pref_speedounit_names"
+        android:entryValues="@array/pref_speedounit_names"
+        android:defaultValue="km/h"
+        android:key="speedounit" />
+</PreferenceScreen>

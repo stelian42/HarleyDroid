@@ -13,6 +13,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".HarleyDroidSettings"
+                  android:label="@string/settings_name">
+        </activity>
         <service android:name=".HarleyDroidService"/>
     </application>
     <uses-sdk android:minSdkVersion="8" />

@@ -1,41 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <string name="app_name">Harley Droid</string>
+<string name="app_name">Harley Droid</string>
+<string name="settings_name">Harley Droid Settings</string>
+
 <string name="nobluetooth">Sorry, your device doesn\'t support bluetooth</string>
 <string name="noenablebluetooth">Unable to enable Bluetooth</string>
+<string name="errorconnecting">Error connecting to ELM327</string>
+<string name="errornodata">No data from ELM327</string>
+<string name="errortoomany">Too many communication errors, aborting...</string>
+<string name="nologging">Unable to write logs to external storage</string>
+<string name="errorat">Error configuring ELM327</string>
+
 <string name="connectingelm327">Connecting to ELM327...</string>
 
-<string name="choosebluetooth">Choose the bluetooth device</string><string name="rpm_label">RPM:</string>
+<string name="rpm_label">RPM:</string>
 <string name="speed_label">Speed:</string>
-<string name="enginetemp_label">Engine temp:</string><string name="full_label">Full:</string>
-<string name="turnsignals_label">Turn Signals:</string><string name="neutral_label">Neutral:</string>
-<string name="clutch_label">Clutch/Gear:</string><string name="gear_label">Gear:</string><string name="checkengine_label">Check Engine:</string><string name="odometer_label">Odometer:</string><string name="fuel_label">Fuel:</string>
+<string name="enginetemp_label">Engine temp:</string>
+<string name="full_label">Full:</string>
+<string name="turnsignals_label">Turn Signals:</string>
+<string name="neutral_label">Neutral:</string>
+<string name="clutch_label">Clutch/Gear:</string>
+<string name="gear_label">Gear:</string>
+<string name="checkengine_label">Check Engine:</string>
+<string name="odometer_label">Odometer:</string>
+<string name="fuel_label">Fuel:</string>
 
 <string name="startcapture_label">Start capture</string>
 <string name="stopcapture_label">Stop capture</string>
-<string name="choosedev_label">Choose device</string>
+<string name="preferences_label">Preferences</string>
+<string name="mode_labelraw">Text mode</string>
+<string name="mode_labelgr">Graphic mode</string>
 <string name="quit_label">Quit</string>
 
-
-<string name="errorconnecting">Error connecting to ELM327</string>
-
-<string name="errornodata">No data from ELM327</string>
-
-<string name="errortoomany">Too many communication errors, aborting...</string>
-<string name="nologging">Unable to write logs to external storage</string>
-<string name="logging_labelon">Turn on logging</string>
-<string name="logging_labeloff">Turn off logging</string>
-<string name="errorat">Error configuring ELM327</string>
 <string name="notification_label">HarleyDroidService</string>
 <string name="notification_start">Receiving data</string>
 
-
-
-
-
-
-
-<string name="mode_labelraw">Text mode</string>
-<string name="mode_labelgr">Graphic mode</string>
+<string name="pref_bluetoothdev">Bluetooth device</string>
+<string name="pref_logging">Log to external media</string>
+<string name="pref_screenon">Keep the screen on</string>
+<string name="pref_speedounit">Speedometer unit</string>
+<string-array name="pref_speedounit_names">
+	<item>"km/h"</item>
+	<item>"mph"</item>
+</string-array>
+<string-array name="pref_speedounit_values">
+	<item>"km/h"</item>
+	<item>"mph"</item>
+</string-array>
 </resources>

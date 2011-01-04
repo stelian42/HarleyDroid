@@ -1,31 +1,27 @@
 package org.harleydroid;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Set;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,8 +31,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
 	private static final String TAG = HarleyDroid.class.getSimpleName();
 	private static final boolean EMULATOR = true;
 	
-    static final int CHOOSE_BLUETOOTH_DEV = 1;
-    static final int CONNECTING_TO_ELM327 = 2;
+    static final int CONNECTING_TO_ELM327 = 1;
 
     // Message types sent from HarleyDroidService
     public static final int STATUS_ERROR = 1;
@@ -59,10 +54,8 @@ public class HarleyDroid extends Activity implements ServiceConnection
     private static final int REQUEST_ENABLE_BT = 2;
     
     private BluetoothAdapter mBluetoothAdapter = null;
-    private ArrayList<CharSequence> mBluetoothDevices = null;
     private Menu mOptionsMenu = null;
     private String mBluetoothID = null;
-    private SharedPreferences mPrefs = null;
     private File mLogFile = null;
     private HarleyDroidService mService = null;
     private boolean mModeRaw = false;
@@ -91,18 +84,6 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
-        mPrefs = this.getPreferences(MODE_PRIVATE);
-        setLogging(mPrefs.getBoolean("logging", false));
-        	
-        if (!EMULATOR) {
-        	mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        	if (mBluetoothAdapter == null) {
-        		Toast.makeText(this, R.string.nobluetooth, Toast.LENGTH_LONG).show();
-        		finish();
-        		return;
-        	}
-        }
         
         mViewGr = findViewById(R.id.gr_layout);
 		mViewRaw = findViewById(R.id.raw_layout);
@@ -137,6 +118,20 @@ public class HarleyDroid extends Activity implements ServiceConnection
         drawCheckEngine(0);
         drawOdometer(0);
         drawFuel(0);
+
+        // enable Bluetooth if necessary
+        if (!EMULATOR) {
+        	mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        	if (mBluetoothAdapter == null) {
+        		Toast.makeText(this, R.string.nobluetooth, Toast.LENGTH_LONG).show();
+        		finish();
+        		return;
+        	}
+        	if (!mBluetoothAdapter.isEnabled()) {
+        		Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        		startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        	}
+        }
     }
     
     @Override
@@ -146,20 +141,34 @@ public class HarleyDroid extends Activity implements ServiceConnection
     }
     
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+    	if (D) Log.d(TAG, "onSaveInstanceState(mModeRaw= " + mModeRaw + ")");
+    	
+    	outState.putBoolean("moderaw", mModeRaw);
+    }
+    
+    @Override
     public void onStart() {
     	if (D) Log.d(TAG, "onStart()");
     	super.onStart();
 
+    	// get preferences which may have been changed
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+    	mBluetoothID = prefs.getString("bluetoothid", null);
+    	mLogFile = null;
+    	if (prefs.getBoolean("logging", false)) {
+        	if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()))
+        		Toast.makeText(this, R.string.nologging, Toast.LENGTH_LONG).show();
+        	else	
+           		mLogFile = new File(getExternalFilesDir(null), "harley.log");
+        }
+    	if (prefs.getBoolean("screenon", false)) 
+    		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    	// XXX 
+    	mGaugeSpeed.setUnitTitle(prefs.getString("speedounit", ""));
+        
     	// bind to the service
-    	bindService(new Intent(this, HarleyDroidService.class), this, 0);
-
-    	if ((!EMULATOR) && (!mBluetoothAdapter.isEnabled())) {
-    		Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-    		startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-    	}
-    	else
-    		onBluetoothEnabled();
-    	
+    	bindService(new Intent(this, HarleyDroidService.class), this, 0);	
     }
  
     @Override
@@ -170,35 +179,12 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	unbindService(this);
     	mService = null;
     }
-  
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-    	if (D) Log.d(TAG, "onSaveInstanceState(mModeRaw= " + mModeRaw + ")");
-    	
-    	outState.putBoolean("moderaw", mModeRaw);
-    }
     
     @Override
     protected Dialog onCreateDialog(int id) {
     	if (D) Log.d(TAG, "onCreateDialog()");
     	
     	switch (id) {
-    	case CHOOSE_BLUETOOTH_DEV:
-    		AlertDialog.Builder build = new AlertDialog.Builder(this);
-    		int current = -1;
-    		build.setTitle(R.string.choosebluetooth);
-    		if (mBluetoothID != null) {
-    			for (int i = 0; i < mBluetoothDevices.size(); i++)
-    				if (mBluetoothDevices.get(i).equals(mBluetoothID))
-    					current = i;
-    		}
-    		build.setSingleChoiceItems((CharSequence[])mBluetoothDevices.toArray(new CharSequence[0]), current, new DialogInterface.OnClickListener() {
-    			public void onClick(DialogInterface dialog, int item) {
-    				dismissDialog(CHOOSE_BLUETOOTH_DEV);
-    				onBluetoothDeviceChosen((String)mBluetoothDevices.get(item));
-    		    }
-    		});
-    		return build.create();
     	case CONNECTING_TO_ELM327:
     		ProgressDialog pd = new ProgressDialog(this);
     		pd.setMessage(getText(R.string.connectingelm327));
@@ -225,44 +211,21 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	if (mService != null && mService.isRunning()) {
     		mOptionsMenu.findItem(R.id.startcapture_menu).setEnabled(false);
             mOptionsMenu.findItem(R.id.stopcapture_menu).setEnabled(true);
-            mOptionsMenu.findItem(R.id.choosedev_menu).setEnabled(false);
-            mOptionsMenu.findItem(R.id.logging_menu).setEnabled(false);
+            mOptionsMenu.findItem(R.id.preferences_menu).setEnabled(false);
     	}
     	else {
     		mOptionsMenu.findItem(R.id.startcapture_menu).setEnabled(true);
             mOptionsMenu.findItem(R.id.stopcapture_menu).setEnabled(false);
-            mOptionsMenu.findItem(R.id.choosedev_menu).setEnabled(true);
-            mOptionsMenu.findItem(R.id.logging_menu).setEnabled(true);
+            mOptionsMenu.findItem(R.id.preferences_menu).setEnabled(true);
     	}
     	if (mModeRaw)
     		mOptionsMenu.findItem(R.id.mode_menu).setTitle(R.string.mode_labelgr);
     	else
     		mOptionsMenu.findItem(R.id.mode_menu).setTitle(R.string.mode_labelraw);
     		
-    	if (mLogFile != null)
-        	mOptionsMenu.findItem(R.id.logging_menu).setTitle(R.string.logging_labeloff);
-        else
-        	mOptionsMenu.findItem(R.id.logging_menu).setTitle(R.string.logging_labelon);
 		return true;
     }
     
-    private void setLogging(boolean log) {
-    	if (D) Log.d(TAG, "setLogging(" + log + ")");
-    	
-    	mLogFile = null;
-    	if (log) {
-        	if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-        		Toast.makeText(this, R.string.nologging, Toast.LENGTH_LONG).show();
-        		log = false;
-        	}
-        	else	
-           		mLogFile = new File(getExternalFilesDir(null), "harley.log");
-        }
-    	Editor editor = mPrefs.edit();
-    	editor.putBoolean("logging", log);
-    	editor.commit();
-    }
-  
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	if (D) Log.d(TAG, "onOptionsItemSelected");
@@ -278,11 +241,9 @@ public class HarleyDroid extends Activity implements ServiceConnection
         	mModeRaw = !mModeRaw;
         	drawLayout();
         	return true;
-        case R.id.choosedev_menu:
-        	showDialog(CHOOSE_BLUETOOTH_DEV);
-        	return true;
-        case R.id.logging_menu:
-        	setLogging(!mPrefs.getBoolean("logging", false));
+        case R.id.preferences_menu:
+        	Intent settingsActivity = new Intent(getBaseContext(), HarleyDroidSettings.class);
+        	startActivity(settingsActivity);
         	return true;
         case R.id.quit_menu:
         	stopCapture();
@@ -298,50 +259,13 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	
         switch (requestCode) {
         case REQUEST_ENABLE_BT:
-            if (resultCode == Activity.RESULT_OK)
-            	onBluetoothEnabled();
-            else {
+            if (resultCode != Activity.RESULT_OK) {
             	Toast.makeText(this, R.string.noenablebluetooth, Toast.LENGTH_LONG).show();
             	finish();
             }
         }
     }
 
-    private void onBluetoothEnabled() {
-    	if (D) Log.d(TAG, "onBluetoothEnabled()");
-    	
-    	mBluetoothDevices = new ArrayList<CharSequence>();
-    
-    	if (!EMULATOR) {
-    		Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-    		for (BluetoothDevice dev : pairedDevices)
-    			mBluetoothDevices.add(dev.getAddress());
-    	}
-    	else {
-    		mBluetoothDevices.add("0:0:0:0");
-    		mBluetoothDevices.add("1:1:1:1");
-    		mBluetoothDevices.add("2:2:2:2");
-    		mBluetoothDevices.add("3:3:3:3");
-    		mBluetoothDevices.add("4:4:4:4");
-    	}
-  
-    	mBluetoothID = mPrefs.getString("bluetoothid", null);
-    	
-    	if (mBluetoothID == null) {
-    		showDialog(CHOOSE_BLUETOOTH_DEV);
-    	}
-    }
-    
-    private void onBluetoothDeviceChosen(String item) {
-    	if (D) Log.d(TAG, "onBluetoothDeviceChosen()");
-    	
-    	mBluetoothID = item;
-    	
-    	Editor editor = mPrefs.edit();
-    	editor.putString("bluetoothid", mBluetoothID);
-    	editor.commit();
-    }
-    
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
     	if (D) Log.d(TAG, "onServiceConnected()");
@@ -467,6 +391,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
     }
     
     public void drawSpeed(int value) {
+    	// XXX need to convert using speedounit
     	mViewSpeed.setText(Integer.toString(value));
         mGaugeSpeed.setValue(value);
     }

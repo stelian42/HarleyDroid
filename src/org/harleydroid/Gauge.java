@@ -706,4 +706,11 @@ public final class Gauge extends View {
 		return targetValue;
 	}
 
+	public void setUnitTitle(String unitTitle) {
+		this.unitTitle = unitTitle;
+		if (background != null) {
+			regenerateBackground();
+			invalidate();
+		}
+	}
 }
