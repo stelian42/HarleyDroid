@@ -47,7 +47,6 @@ public class HarleyDroidService extends Service
 {
 	private static final boolean D = true;
 	private static final String TAG = HarleyDroidService.class.getSimpleName();
-	private static final boolean EMULATOR = true;
 	
 	private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 	
@@ -214,7 +213,7 @@ public class HarleyDroidService extends Service
 			int errors = 0;
     		int cnt = 0;
     	
-    		if (!EMULATOR) {
+    		if (!HarleyDroid.EMULATOR) {
     			try {
     				if (D) Log.d(TAG, "started");
     				mSock = mDevice.createRfcommSocketToServiceRecord(MY_UUID);
@@ -256,7 +255,7 @@ public class HarleyDroidService extends Service
     		while (!stop) {
     			String line;
     				
-    			if (EMULATOR) {
+    			if (HarleyDroid.EMULATOR) {
     	   			try {
         				Thread.sleep(1000);
         			} catch (InterruptedException e1) {
@@ -287,7 +286,7 @@ public class HarleyDroidService extends Service
     			}
     			mHandler.obtainMessage(HarleyDroid.UPDATE_CLUTCH, cnt++, -1).sendToTarget();
     		}
-    		if (!EMULATOR) {
+    		if (!HarleyDroid.EMULATOR) {
     			try {
     				writeLine("");
     			} catch (IOException e1) {

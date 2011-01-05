@@ -48,7 +48,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
 {
 	private static final boolean D = true;
 	private static final String TAG = HarleyDroid.class.getSimpleName();
-	private static final boolean EMULATOR = true;
+	public static final boolean EMULATOR = false;
 	
     static final int CONNECTING_TO_ELM327 = 1;
 

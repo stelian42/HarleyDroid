@@ -29,7 +29,6 @@ import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 
 public class HarleyDroidSettings extends PreferenceActivity {
-	private static final boolean EMULATOR = true;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +38,7 @@ public class HarleyDroidSettings extends PreferenceActivity {
         BluetoothAdapter bluetoothAdapter = null;
         ArrayList<CharSequence> bluetoothDevices = new ArrayList<CharSequence>();
         
-    	if (!EMULATOR) {
+    	if (!HarleyDroid.EMULATOR) {
     		bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     		Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
     		for (BluetoothDevice dev : pairedDevices)
