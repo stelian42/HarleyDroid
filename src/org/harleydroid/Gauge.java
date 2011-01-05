@@ -705,12 +705,4 @@ public final class Gauge extends View {
 	public float getValue() {
 		return targetValue;
 	}
-
-	public void setUnitTitle(String unitTitle) {
-		this.unitTitle = unitTitle;
-		if (background != null) {
-			regenerateBackground();
-			invalidate();
-		}
-	}
 }

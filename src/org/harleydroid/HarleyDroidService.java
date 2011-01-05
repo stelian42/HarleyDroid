@@ -260,7 +260,12 @@ public class HarleyDroidService extends Service
         				Thread.sleep(1000);
         			} catch (InterruptedException e1) {
         			}
+        			
+        			// RPM at 1053
     				line = "28 1B 10 02 10 74 4C";
+    				// Speed at 100 km/h
+    				line = "48 29 10 02 4E 20 D4";
+    				
     			}
     			else {
     				try {

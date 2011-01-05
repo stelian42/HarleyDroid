@@ -48,7 +48,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
 {
 	private static final boolean D = true;
 	private static final String TAG = HarleyDroid.class.getSimpleName();
-	public static final boolean EMULATOR = false;
+	public static final boolean EMULATOR = true;
 	
     static final int CONNECTING_TO_ELM327 = 1;
 
@@ -85,7 +85,8 @@ public class HarleyDroid extends Activity implements ServiceConnection
     private TextView mViewRpm;
     private Gauge mGaugeRpm;
     private TextView mViewSpeed;
-    private Gauge mGaugeSpeed;
+    private Gauge mGaugeSpeedKMH;
+    private Gauge mGaugeSpeedMPH;
     private TextView mViewEngTemp;
     private TextView mViewFull;
     private TextView mViewTurnSignals;
@@ -109,7 +110,8 @@ public class HarleyDroid extends Activity implements ServiceConnection
         mViewRpm = (TextView) findViewById(R.id.rpm_field);
         mGaugeRpm = (Gauge) findViewById(R.id.rpm_meter);
         mViewSpeed = (TextView) findViewById(R.id.speed_field);
-        mGaugeSpeed = (Gauge) findViewById(R.id.speed_meter);
+        mGaugeSpeedKMH = (Gauge) findViewById(R.id.speedkmh_meter);
+        mGaugeSpeedMPH = (Gauge) findViewById(R.id.speedmph_meter);
         mViewEngTemp = (TextView) findViewById(R.id.enginetemp_field);
         mViewFull = (TextView) findViewById(R.id.full_field);
         mViewTurnSignals = (TextView) findViewById(R.id.turnsignals_field);
@@ -183,9 +185,16 @@ public class HarleyDroid extends Activity implements ServiceConnection
         }
     	if (prefs.getBoolean("screenon", false)) 
     		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    	// XXX 
-    	mGaugeSpeed.setUnitTitle(prefs.getString("speedounit", ""));
-        
+    	if (prefs.getString("speedounit", "").equals("km/h")) {
+    		mGaugeSpeedMPH.setVisibility(View.GONE);
+    		mGaugeSpeedKMH.setVisibility(View.VISIBLE);
+    		((TextView)findViewById(R.id.speed_label)).setText(getText(R.string.speed_label) + " (km/h)");
+    	} else {
+    		mGaugeSpeedKMH.setVisibility(View.GONE);
+    		mGaugeSpeedMPH.setVisibility(View.VISIBLE);
+    		((TextView)findViewById(R.id.speed_label)).setText(getText(R.string.speed_label) + " (mph)");
+    	}
+    	
     	// bind to the service
     	bindService(new Intent(this, HarleyDroidService.class), this, 0);	
     }
@@ -410,9 +419,9 @@ public class HarleyDroid extends Activity implements ServiceConnection
     }
     
     public void drawSpeed(int value) {
-    	// XXX need to convert using speedounit
     	mViewSpeed.setText(Integer.toString(value));
-        mGaugeSpeed.setValue(value);
+        mGaugeSpeedKMH.setValue(value);
+        mGaugeSpeedMPH.setValue(0.621371192f * value);
     }
     
     public void drawEngineTemp(int value) {
