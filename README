@@ -1,0 +1,25 @@
+HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
+
+This Android application captures, decodes and analysed the J1850
+stream coming from the data bus of a Harley Davidson bike.
+
+Some of the decoded information (RPM, speed, odometer etc) is
+shown on the screen and can be saved on the external storage (SDcard)
+for later usage.
+
+To use this application you will need:
+- a Bluetooth ELM327 module (you can choose between the real one or
+  a cheap Chinese clone - you can buy them at $25 on ebay)
+- a custom cable interfacing the ELM327 module to the 3 pin
+  data/diagnostic port on your bike (the port uses a 4 pin Deutsch
+  connector and is placed near the battery on my Sportster):
+
+  	Harley data port	  16 pin J1979 connector (ELM327)
+	---------------------------------------------------------
+	(x)	1
+	(brown)	2 -------------	ground	-------	 4 and 5 (ground)
+	(green)	3 -------------	data ----------  2 	 (J1850+)
+	(white)	4 -------------	+12V ---------- 16	 (+12V)
+
+-- 
+Stelian Pop <stelian@popies.net>
