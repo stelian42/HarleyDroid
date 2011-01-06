@@ -84,18 +84,30 @@ public class HarleyDroid extends Activity implements ServiceConnection
     private View mViewGr;
     private TextView mViewRpm;
     private Gauge mGaugeRpm;
-    private TextView mViewSpeed;
-    private Gauge mGaugeSpeedKMH;
-    private Gauge mGaugeSpeedMPH;
-    private TextView mViewEngTemp;
+    private TextView mLabelSpeedMetric;
+    private TextView mLabelSpeedImperial;
+    private TextView mViewSpeedMetric;
+    private TextView mViewSpeedImperial;
+    private Gauge mGaugeSpeedMetric;
+    private Gauge mGaugeSpeedImperial;
+    private TextView mLabelEngTempMetric;
+    private TextView mLabelEngTempImperial;
+    private TextView mViewEngTempMetric;
+    private TextView mViewEngTempImperial;
     private TextView mViewFull;
     private TextView mViewTurnSignals;
     private TextView mViewNeutral;
     private TextView mViewClutch;
     private TextView mViewGear;
     private TextView mViewCheckEngine;
-    private TextView mViewOdometer;
-    private TextView mViewFuel;
+    private TextView mLabelOdometerMetric;
+    private TextView mLabelOdometerImperial;
+    private TextView mViewOdometerMetric;
+    private TextView mViewOdometerImperial;
+    private TextView mLabelFuelMetric;
+    private TextView mLabelFuelImperial;
+    private TextView mViewFuelMetric;
+    private TextView mViewFuelImperial;
     
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -109,18 +121,30 @@ public class HarleyDroid extends Activity implements ServiceConnection
 		mViewRaw = findViewById(R.id.raw_layout);
         mViewRpm = (TextView) findViewById(R.id.rpm_field);
         mGaugeRpm = (Gauge) findViewById(R.id.rpm_meter);
-        mViewSpeed = (TextView) findViewById(R.id.speed_field);
-        mGaugeSpeedKMH = (Gauge) findViewById(R.id.speedkmh_meter);
-        mGaugeSpeedMPH = (Gauge) findViewById(R.id.speedmph_meter);
-        mViewEngTemp = (TextView) findViewById(R.id.enginetemp_field);
+        mLabelSpeedMetric = (TextView) findViewById(R.id.speed_metric_label);
+        mLabelSpeedImperial = (TextView) findViewById(R.id.speed_imperial_label);
+        mViewSpeedMetric = (TextView) findViewById(R.id.speed_metric_field);
+        mViewSpeedImperial = (TextView) findViewById(R.id.speed_imperial_field);
+        mGaugeSpeedMetric = (Gauge) findViewById(R.id.speed_metric_meter);
+        mGaugeSpeedImperial = (Gauge) findViewById(R.id.speed_imperial_meter);
+        mLabelEngTempMetric = (TextView) findViewById(R.id.enginetemp_metric_label);
+        mLabelEngTempImperial = (TextView) findViewById(R.id.enginetemp_imperial_label);
+        mViewEngTempMetric = (TextView) findViewById(R.id.enginetemp_metric_field);
+        mViewEngTempImperial = (TextView) findViewById(R.id.enginetemp_imperial_field);
         mViewFull = (TextView) findViewById(R.id.full_field);
         mViewTurnSignals = (TextView) findViewById(R.id.turnsignals_field);
         mViewNeutral = (TextView) findViewById(R.id.neutral_field);
         mViewClutch = (TextView) findViewById(R.id.clutch_field);
         mViewGear = (TextView) findViewById(R.id.gear_field);
         mViewCheckEngine = (TextView) findViewById(R.id.checkengine_field);
-        mViewOdometer = (TextView) findViewById(R.id.odometer_field);
-        mViewFuel = (TextView) findViewById(R.id.fuel_field);
+        mLabelOdometerMetric = (TextView) findViewById(R.id.odometer_metric_label);
+        mLabelOdometerImperial = (TextView) findViewById(R.id.odometer_imperial_label);
+        mViewOdometerMetric = (TextView) findViewById(R.id.odometer_metric_field);
+        mViewOdometerImperial = (TextView) findViewById(R.id.odometer_imperial_field);
+        mLabelFuelMetric = (TextView) findViewById(R.id.fuel_metric_label);
+        mLabelFuelImperial = (TextView) findViewById(R.id.fuel_imperial_label);
+        mViewFuelMetric = (TextView) findViewById(R.id.fuel_metric_field);
+        mViewFuelImperial = (TextView) findViewById(R.id.fuel_imperial_field);
             
         if (savedInstanceState != null) {
         	mModeRaw = savedInstanceState.getBoolean("moderaw");
@@ -185,14 +209,44 @@ public class HarleyDroid extends Activity implements ServiceConnection
         }
     	if (prefs.getBoolean("screenon", false)) 
     		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    	if (prefs.getString("speedounit", "").equals("km/h")) {
-    		mGaugeSpeedMPH.setVisibility(View.GONE);
-    		mGaugeSpeedKMH.setVisibility(View.VISIBLE);
-    		((TextView)findViewById(R.id.speed_label)).setText(getText(R.string.speed_label) + " (km/h)");
+    	if (prefs.getString("unit", "metric").equals("metric")) {
+    		mGaugeSpeedImperial.setVisibility(View.GONE);
+    		mGaugeSpeedMetric.setVisibility(View.VISIBLE);
+    		mLabelSpeedImperial.setVisibility(View.GONE);
+    		mLabelSpeedMetric.setVisibility(View.VISIBLE);
+    		mViewSpeedImperial.setVisibility(View.GONE);
+    		mViewSpeedMetric.setVisibility(View.VISIBLE);
+    		mLabelEngTempImperial.setVisibility(View.GONE);
+    		mLabelEngTempMetric.setVisibility(View.VISIBLE);
+    		mViewEngTempImperial.setVisibility(View.GONE);
+    		mViewEngTempMetric.setVisibility(View.VISIBLE);
+    		mLabelOdometerImperial.setVisibility(View.GONE);
+    		mLabelOdometerMetric.setVisibility(View.VISIBLE);
+    		mViewOdometerImperial.setVisibility(View.GONE);
+    		mViewOdometerMetric.setVisibility(View.VISIBLE);
+    		mLabelFuelImperial.setVisibility(View.GONE);
+    		mLabelFuelMetric.setVisibility(View.VISIBLE);
+    		mViewFuelImperial.setVisibility(View.GONE);
+    		mViewFuelMetric.setVisibility(View.VISIBLE);
     	} else {
-    		mGaugeSpeedKMH.setVisibility(View.GONE);
-    		mGaugeSpeedMPH.setVisibility(View.VISIBLE);
-    		((TextView)findViewById(R.id.speed_label)).setText(getText(R.string.speed_label) + " (mph)");
+    		mGaugeSpeedMetric.setVisibility(View.GONE);
+    		mGaugeSpeedImperial.setVisibility(View.VISIBLE);
+    		mLabelSpeedMetric.setVisibility(View.GONE);
+    		mLabelSpeedImperial.setVisibility(View.VISIBLE);
+    		mViewSpeedMetric.setVisibility(View.GONE);
+    		mViewSpeedImperial.setVisibility(View.VISIBLE);
+    		mLabelEngTempMetric.setVisibility(View.GONE);
+    		mLabelEngTempImperial.setVisibility(View.VISIBLE);
+    		mViewEngTempMetric.setVisibility(View.GONE);
+    		mViewEngTempImperial.setVisibility(View.VISIBLE);
+    		mLabelOdometerMetric.setVisibility(View.GONE);
+    		mLabelOdometerImperial.setVisibility(View.VISIBLE);
+    		mViewOdometerMetric.setVisibility(View.GONE);
+    		mViewOdometerImperial.setVisibility(View.VISIBLE);
+    		mLabelFuelMetric.setVisibility(View.GONE);
+    		mLabelFuelImperial.setVisibility(View.VISIBLE);
+    		mViewFuelMetric.setVisibility(View.GONE);
+    		mViewFuelImperial.setVisibility(View.VISIBLE);
     	}
     	
     	// bind to the service
@@ -419,13 +473,15 @@ public class HarleyDroid extends Activity implements ServiceConnection
     }
     
     public void drawSpeed(int value) {
-    	mViewSpeed.setText(Integer.toString(value));
-        mGaugeSpeedKMH.setValue(value);
-        mGaugeSpeedMPH.setValue(0.621371192f * value);
+    	mViewSpeedMetric.setText(Integer.toString(value));
+        mGaugeSpeedMetric.setValue(value);
+        mViewSpeedImperial.setText(Integer.toString((int)(0.621371192f * value)));
+        mGaugeSpeedImperial.setValue(0.621371192f * value);
     }
     
     public void drawEngineTemp(int value) {
-    	mViewEngTemp.setText(Integer.toString(value));
+    	mViewEngTempMetric.setText(Integer.toString(value));
+    	mViewEngTempImperial.setText(Integer.toString(value * 9 / 5 + 32));
     }
    
     public void drawFull(int value) {
@@ -460,10 +516,16 @@ public class HarleyDroid extends Activity implements ServiceConnection
     }
     
     public void drawOdometer(int value) {
-    	mViewOdometer.setText(Integer.toString(value));
+    	float valueMiles;
+    	mViewOdometerMetric.setText(String.format("%d.%d", value / 1000, value % 1000));
+    	valueMiles = value * 0.000621371192f;
+    	mViewOdometerImperial.setText(Float.toString(valueMiles));
     }
     
     public void drawFuel(int value) {
-    	mViewFuel.setText(Integer.toString(value));
+    	float valueFlOz;
+    	mViewFuelMetric.setText(Integer.toString(value));
+    	valueFlOz = value * 0.0338140227f;
+    	mViewFuelImperial.setText(Float.toString(valueFlOz));
     }
 }

@@ -25,6 +25,14 @@ package org.harleydroid;
 public class J1850 {
 
 	public static final int MAXBUF = 1024;
+	// last reading of odometer ticks
+	private static int odolast = 0;
+	// accumulated odometer ticks (deals with overflow at 0xffff)
+	private static int odoaccum = 0;
+	// last reading of fuel ticks
+	private static int fuellast = 0;
+	// accumulated fuel ticks (deals with overflow at 0xffff)
+	private static int fuelaccum = 0;
 
 	static byte[] bytes_to_hex(byte[] in) {
 		byte out[] = new byte[MAXBUF];
@@ -115,15 +123,29 @@ public class J1850 {
 		} else if ((x == 0x48da4039) && ((in[4] & 0xfc) == 0))
 			hd.setTurnSignals(in[4] & 0x03);
 		else if ((x & 0xffffff7f) == 0xa8691006) {
-			if ((x & 0x80) == 0)
-				hd.setOdometer(y);
-			else
-				hd.setOdometer(0);
+			if ((x & 0x80) == 0) {
+				odolast = y - odolast;
+				if (odolast < 0)
+					odolast += 65536;
+				odoaccum += odolast;
+				odolast = y;
+			} else {
+				odoaccum = 0;
+				odolast = 0;
+			}
+			hd.setOdometer(odoaccum);
 		} else if ((x & 0xffffff7f) == 0xa883100a) {
-			if ((x & 0x80) == 0)
-				hd.setFuel(y);
-			else
-				hd.setFuel(0);
+			if ((x & 0x80) == 0) {
+				fuellast = y - fuellast;
+				if (fuellast < 0)
+					fuellast += 65536;
+				fuelaccum += fuellast;
+				fuellast = y;
+			} else {
+				fuelaccum = 0;
+				fuellast = 0;
+			}
+			hd.setFuel(fuelaccum);
 		} else if ((x == 0xa8836112) && ((in[4] & 0xd0) == 0xd0))
 			hd.setFull(in[4] & 0x0f);
 		else if ((x & 0xffffff5d) == 0x483b4000) {

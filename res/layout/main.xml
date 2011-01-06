@@ -38,7 +38,7 @@
 			>
 			<org.harleydroid.Gauge
 				xmlns:atswidget="http://schemas.android.com/apk/res/org.harleydroid"
-				android:id="@+id/speedkmh_meter"
+				android:id="@+id/speed_metric_meter"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"
@@ -68,7 +68,7 @@
 				/>
 			<org.harleydroid.Gauge
 				xmlns:atswidget="http://schemas.android.com/apk/res/org.harleydroid"
-				android:id="@+id/speedmph_meter"
+				android:id="@+id/speed_imperial_meter"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"
@@ -150,26 +150,84 @@
     		/>
 		</TableRow>
 		<TableRow>
-		<TextView  
-			android:id="@+id/speed_label" 
-    		android:text="@string/speed_label"
-    		android:padding="3dip"
-    		/>
-		<TextView
-			android:id="@+id/speed_field"
-			android:padding="3dip"  
-    		/>
+		<FrameLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			>
+			<TextView  
+				android:id="@+id/speed_metric_label" 
+    			android:text="@string/speed_metric_label"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:padding="3dip"
+    			/>
+    		<TextView  
+				android:id="@+id/speed_imperial_label" 
+    			android:text="@string/speed_imperial_label"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:padding="3dip"
+    			android:visibility="gone"
+    			/>
+    	</FrameLayout>
+    	<FrameLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			>
+			<TextView
+				android:id="@+id/speed_metric_field"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="3dip"  
+    			/>
+    		<TextView
+				android:id="@+id/speed_imperial_field"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="3dip"
+				android:visibility="gone"  
+    			/>
+    	</FrameLayout>	
 		</TableRow>
 		<TableRow>
-		<TextView  
-			android:id="@+id/enginetemp_label" 
-    		android:text="@string/enginetemp_label"
-    		android:padding="3dip"
-    		/>
-		<TextView
-			android:id="@+id/enginetemp_field"
-			android:padding="3dip"  
-    		/>
+		<FrameLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			>
+			<TextView  
+				android:id="@+id/enginetemp_metric_label" 
+    			android:text="@string/enginetemp_metric_label"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:padding="3dip"
+    			/>
+    		<TextView  
+				android:id="@+id/enginetemp_imperial_label" 
+    			android:text="@string/enginetemp_imperial_label"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:padding="3dip"
+    			android:visibility="gone"
+    			/>
+    	</FrameLayout>
+    	<FrameLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			>
+			<TextView
+				android:id="@+id/enginetemp_metric_field"
+				android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+				android:padding="3dip"  
+    			/>
+    		<TextView
+				android:id="@+id/enginetemp_imperial_field"
+				android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+				android:padding="3dip"
+				android:visibility="gone"  
+    			/>
+    	</FrameLayout>
 		</TableRow>
 		<TableRow>
 		<TextView  
@@ -238,26 +296,84 @@
     		/>
 		</TableRow>
 		<TableRow>
-		<TextView  
-			android:id="@+id/odometer_label" 
-    		android:text="@string/odometer_label"
-    		android:padding="3dip"
-    		/>
-		<TextView
-			android:id="@+id/odometer_field"
-			android:padding="3dip"  
-		    />
+		<FrameLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			>
+			<TextView  
+				android:id="@+id/odometer_metric_label" 
+    			android:text="@string/odometer_metric_label"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+	    		android:padding="3dip"
+    			/>
+    		<TextView  
+				android:id="@+id/odometer_imperial_label" 
+    			android:text="@string/odometer_imperial_label"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+	    		android:padding="3dip"
+	    		android:visibility="gone"
+    			/>
+    	</FrameLayout>
+    	<FrameLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			>
+			<TextView
+				android:id="@+id/odometer_metric_field"
+				android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+				android:padding="3dip"  
+		    	/>
+		    <TextView
+				android:id="@+id/odometer_imperial_field"
+				android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+				android:padding="3dip"
+				android:visibility="gone"  
+		    	/>
+		</FrameLayout>
 		</TableRow>
 		<TableRow>
-		<TextView  
-			android:id="@+id/fuel_label" 
-    		android:text="@string/fuel_label"
-    		android:padding="3dip"
-    		/>
-		<TextView
-			android:id="@+id/fuel_field"
-			android:padding="3dip"  
-    		/>
+		<FrameLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			>
+			<TextView  
+				android:id="@+id/fuel_metric_label" 
+    			android:text="@string/fuel_metric_label"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:padding="3dip"
+    			/>
+    		<TextView  
+				android:id="@+id/fuel_imperial_label" 
+    			android:text="@string/fuel_imperial_label"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:padding="3dip"
+    			android:visibility="gone"
+    			/>
+    	</FrameLayout>
+    	<FrameLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			>
+			<TextView
+				android:id="@+id/fuel_metric_field"
+				android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+				android:padding="3dip"  
+    			/>
+    		<TextView
+				android:id="@+id/fuel_imperial_field"
+				android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+				android:padding="3dip"
+				android:visibility="gone"  
+    			/>
+    	</FrameLayout>
 		</TableRow>
 	</TableLayout>
 </FrameLayout>

@@ -34,16 +34,20 @@
 <string name="connectingelm327">Connecting to ELM327...</string>
 
 <string name="rpm_label">RPM:</string>
-<string name="speed_label">Speed:</string>
-<string name="enginetemp_label">Engine temp:</string>
-<string name="full_label">Full:</string>
-<string name="turnsignals_label">Turn Signals:</string>
+<string name="speed_imperial_label">Speed (mph):</string>
+<string name="speed_metric_label">Speed (km/h):</string>
+<string name="enginetemp_imperial_label">Engine temperature (F):</string>
+<string name="enginetemp_metric_label">Engine temperature (C):</string>
+<string name="full_label">Fuel tank level:</string>
+<string name="turnsignals_label">Turn signals:</string>
 <string name="neutral_label">Neutral:</string>
-<string name="clutch_label">Clutch/Gear:</string>
+<string name="clutch_label">Clutch:</string>
 <string name="gear_label">Gear:</string>
 <string name="checkengine_label">Check Engine:</string>
-<string name="odometer_label">Odometer:</string>
-<string name="fuel_label">Fuel:</string>
+<string name="odometer_imperial_label">Distance (miles):</string>
+<string name="odometer_metric_label">Distance (km):</string>
+<string name="fuel_imperial_label">Fuel (fl oz):</string>
+<string name="fuel_metric_label">Fuel (ml):</string>
 
 <string name="startcapture_label">Start capture</string>
 <string name="stopcapture_label">Stop capture</string>
@@ -58,13 +62,13 @@
 <string name="pref_bluetoothdev">Bluetooth device</string>
 <string name="pref_logging">Log to external media</string>
 <string name="pref_screenon">Keep the screen on</string>
-<string name="pref_speedounit">Speedometer unit</string>
-<string-array name="pref_speedounit_names">
-	<item>"km/h"</item>
-	<item>"mph"</item>
+<string name="pref_unit">Unit system</string>
+<string-array name="pref_unit_names">
+	<item>"Metric"</item>
+	<item>"Imperial"</item>
 </string-array>
-<string-array name="pref_speedounit_values">
-	<item>"km/h"</item>
-	<item>"mph"</item>
+<string-array name="pref_unit_values">
+	<item>"metric"</item>
+	<item>"imperial"</item>
 </string-array>
 </resources>

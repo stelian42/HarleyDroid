@@ -34,16 +34,20 @@
 <string name="connectingelm327">Connexion au ELM327...</string>
 
 <string name="rpm_label">RPM:</string>
-<string name="speed_label">Vitesse:</string>
-<string name="enginetemp_label">Temperature moteur:</string>
-<string name="full_label">Plein:</string>
+<string name="speed_imperial_label">Vitesse (mph):</string>
+<string name="speed_metric_label">Vitesse (km/h):</string>
+<string name="enginetemp_imperial_label">Temperature moteur (F):</string>
+<string name="enginetemp_metric_label">Temperature moteur (C):</string>
+<string name="full_label">Niveau réservoir d\'essence:</string>
 <string name="turnsignals_label">Clignotants:</string>
 <string name="neutral_label">Point mort:</string>
 <string name="clutch_label">Embrayage:</string>
 <string name="gear_label">Vitesse:</string>
 <string name="checkengine_label">Erreur moteur:</string>
-<string name="odometer_label">Odometre:</string>
-<string name="fuel_label">Essence:</string>
+<string name="odometer_imperial_label">Distance (miles):</string>
+<string name="odometer_metric_label">Distance (km):</string>
+<string name="fuel_imperial_label">Essence (fl oz):</string>
+<string name="fuel_metric_label">Essence (ml):</string>
 
 <string name="startcapture_label">Démarrer</string>
 <string name="stopcapture_label">Arrêter</string>
@@ -58,13 +62,9 @@
 <string name="pref_bluetoothdev">Périphérique Bluetooth</string>
 <string name="pref_logging">Sauver les données sur le stockage externe</string>
 <string name="pref_screenon">Garder l\'écran activé</string>
-<string name="pref_speedounit">Unité du compteur</string>
-<string-array name="pref_speedounit_names">
-	<item>"km/h"</item>
-	<item>"mph"</item>
-</string-array>
-<string-array name="pref_speedounit_values">
-	<item>"km/h"</item>
-	<item>"mph"</item>
+<string name="pref_unit">Système d\'unités</string>
+<string-array name="pref_unit_names">
+	<item>"Metrique"</item>
+	<item>"Impérial"</item>
 </string-array>
 </resources>

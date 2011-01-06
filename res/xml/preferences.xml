@@ -34,10 +34,10 @@
         android:defaultValue="false"
         android:key="screenon" />
     <ListPreference
-        android:title="@string/pref_speedounit"
+        android:title="@string/pref_unit"
         android:persistent="true"
-        android:entries="@array/pref_speedounit_names"
-        android:entryValues="@array/pref_speedounit_names"
-        android:defaultValue="km/h"
-        android:key="speedounit" />
+        android:entries="@array/pref_unit_names"
+        android:entryValues="@array/pref_unit_values"
+        android:defaultValue="metric"
+        android:key="unit" />
 </PreferenceScreen>
