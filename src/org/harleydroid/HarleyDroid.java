@@ -204,8 +204,12 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	if (prefs.getBoolean("logging", false)) {
         	if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()))
         		Toast.makeText(this, R.string.nologging, Toast.LENGTH_LONG).show();
-        	else	
-           		mLogFile = new File(getExternalFilesDir(null), "harley.log");
+        	else {
+        		File path = new File(Environment.getExternalStorageDirectory(), "/Android/data/org.harleydroid/files/");
+        		path.mkdirs();
+           		mLogFile = new File(path, "harley.log");
+        	}
+        	
         }
     	if (prefs.getBoolean("screenon", false)) 
     		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

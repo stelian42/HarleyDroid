@@ -18,5 +18,5 @@
         </activity>
         <service android:name=".HarleyDroidService"/>
     </application>
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk android:minSdkVersion="5" />
 </manifest> 
