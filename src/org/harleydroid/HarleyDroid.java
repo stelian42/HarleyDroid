@@ -209,7 +209,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
         	else {
         		File path = new File(Environment.getExternalStorageDirectory(), "/Android/data/org.harleydroid/files/");
         		path.mkdirs();
-           		mLogFile = new File(path, "harley.log");
+           		mLogFile = new File(path, "harley.log.gz");
         	}
         	
         }

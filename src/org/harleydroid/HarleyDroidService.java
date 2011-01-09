@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.zip.GZIPOutputStream;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -111,7 +112,7 @@ public class HarleyDroidService extends Service
 		// open logfile if possible
 		if (logFile != null) {
 			try {
-				mLog = new FileOutputStream(logFile, true);
+				mLog = new GZIPOutputStream(new FileOutputStream(logFile, true));
 				String header = "Starting at " + 
 				   new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) +
 				   "\n"; 
