@@ -129,7 +129,11 @@ public class HarleyDroidService extends Service
 		if (D) Log.d(TAG, "stopService()");
 		
 		if (mLog != null) {
+			String header = "Stopping at " + 
+			   new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) +
+			   "\n"; 
 			try {
+				mLog.write(header.getBytes());
 				mLog.close();
 			} catch (IOException e) {
 			}
@@ -265,7 +269,8 @@ public class HarleyDroidService extends Service
     				line = "28 1B 10 02 10 74 4C";
     				// Speed at 100 km/h
     				line = "48 29 10 02 4E 20 D4";
-    				
+    				// Odometer
+    				//line = "a8 69 10 06 00 00 FF 61";	
     			}
     			else {
     				try {
@@ -289,7 +294,8 @@ public class HarleyDroidService extends Service
     					break;	
     				}
     			}
-    			mHandler.obtainMessage(HarleyDroid.UPDATE_CLUTCH, cnt++, -1).sendToTarget();
+    			mHandler.obtainMessage(HarleyDroid.UPDATE_ODOMETER, cnt, -1).sendToTarget();
+    			cnt += 5;
     		}
     		if (!HarleyDroid.EMULATOR) {
     			try {

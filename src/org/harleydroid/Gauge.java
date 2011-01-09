@@ -45,6 +45,7 @@ import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -71,6 +72,8 @@ public final class Gauge extends View {
 	private RectF valueRect;
 	private RectF rangeRect;
 
+	private RectF odoRect;
+	
 	private Paint rangeOkPaint;
 	private Paint rangeWarningPaint;
 	private Paint rangeErrorPaint;
@@ -96,7 +99,11 @@ public final class Gauge extends View {
 
 	private Paint handScrewPaint;
 	
-	private Paint backgroundPaint; 
+	private Paint backgroundPaint;
+	
+	private Paint odoPaint;
+	private Paint odoBackgroundPaint;
+	
 	// end drawing tools
 	
 	private Bitmap background; // holds the cached static part
@@ -106,6 +113,7 @@ public final class Gauge extends View {
 	private boolean showHand                 = false;
 	private boolean showGauge                = false;
 	private boolean showRange                = false;
+	private boolean showOdo                  = false;
 	
 	private int totalNotches                 = 120; // Total number of notches on the scale. 
 	private int incrementPerLargeNotch       = 10;
@@ -136,6 +144,9 @@ public final class Gauge extends View {
 	private float degreeErrorMinValue        = 0;
 	private float degreeErrorMaxValue        = 0;
 	
+	private int odoColor                     = 0xff00ff00;
+	private int odoBackgroundColor           = 0xff000000;
+	
 	private String lowerTitle                = "www.ats-global.com";
 	private String upperTitle                = "Visit http://atstechlab.wordpress.com";
 	private String unitTitle                 = "\u2103";
@@ -155,6 +166,7 @@ public final class Gauge extends View {
 	private boolean dialInitialized         = false;
 	private float currentValue              = scaleCenterValue;
 	private float targetValue               = scaleCenterValue;
+	private float targetOdoValue            = 0.0f;
 	private float dialVelocity              = 0.0f;
 	private float dialAcceleration          = 0.0f;
 	private long lastDialMoveTime           = -1L;
@@ -221,6 +233,7 @@ public final class Gauge extends View {
 			showRange              = a.getBoolean(R.styleable.Dial_showRange,          showRange);
 			showGauge              = a.getBoolean(R.styleable.Dial_showGauge,          showGauge);
 			showHand               = a.getBoolean(R.styleable.Dial_showHand,           showHand);
+			showOdo                = a.getBoolean(R.styleable.Dial_showOdo,            showOdo);
 
 			totalNotches           = a.getInt(R.styleable.Dial_totalNotches,           totalNotches);
 			incrementPerLargeNotch = a.getInt(R.styleable.Dial_incrementPerLargeNotch, incrementPerLargeNotch);
@@ -238,6 +251,8 @@ public final class Gauge extends View {
 			rangeErrorColor        = a.getInt(R.styleable.Dial_rangeErrorColor,        rangeErrorColor);
 			rangeErrorMinValue     = a.getInt(R.styleable.Dial_rangeErrorMinValue,     rangeErrorMinValue);
 			rangeErrorMaxValue     = a.getInt(R.styleable.Dial_rangeErrorMaxValue,     rangeErrorMaxValue);
+			odoColor               = a.getInt(R.styleable.Dial_odoColor,               odoColor);
+			odoBackgroundColor     = a.getInt(R.styleable.Dial_odoBackgroundColor,     odoBackgroundColor);
 			String unitTitle       = a.getString(R.styleable.Dial_unitTitle);
 			String lowerTitle      = a.getString(R.styleable.Dial_lowerTitle);
 			String upperTitle      = a.getString(R.styleable.Dial_upperTitle);
@@ -255,10 +270,10 @@ public final class Gauge extends View {
 		degreeErrorMinValue   = valueToAngle(rangeErrorMinValue)   + centerDegrees;
 		degreeErrorMaxValue   = valueToAngle(rangeErrorMaxValue)   + centerDegrees;
 		
-		initDrawingTools();
+		initDrawingTools(context);
 	}
 
-	private void initDrawingTools() {
+	private void initDrawingTools(Context context) {
 		rimRect = new RectF(0.0f, 0.0f, 1.0f, 1.0f);
 
 		faceRect = new RectF();
@@ -284,7 +299,9 @@ public final class Gauge extends View {
 		unitRect = new RectF();
 		unitRect.set(faceRect.left  + unitPosition, faceRect.top    + unitPosition,
 					 faceRect.right - unitPosition, faceRect.bottom - unitPosition);
-		
+	
+		odoRect = new RectF(0.345f, 0.72f, 0.655f, 0.62f);
+
 		faceTexture = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.plastic);
 		BitmapShader paperShader = new BitmapShader(faceTexture, 
 												    Shader.TileMode.MIRROR, 
@@ -440,6 +457,17 @@ public final class Gauge extends View {
 		handPath.lineTo(0.5f + 0.010f, 0.5f + 0.2f - 0.007f);               // 0.510, 0.630
 		handPath.lineTo(0.5f, 0.5f + 0.2f);                                 // 0.500, 0.700
 		handPath.addCircle(0.5f, 0.5f, 0.025f, Path.Direction.CW);
+		
+		odoPaint = new Paint();
+		Typeface lcd = Typeface.createFromAsset(context.getAssets(), "fonts/digital-7-mono.ttf");
+		odoPaint.setColor(odoColor);
+		odoPaint.setAntiAlias(true);
+		odoPaint.setTextSize(0.08f);
+		odoPaint.setTypeface(lcd);
+		odoPaint.setTextAlign(Paint.Align.RIGHT);
+		
+		odoBackgroundPaint = new Paint();
+		odoBackgroundPaint.setColor(odoBackgroundColor);
 	}
 	
 	@Override
@@ -591,6 +619,14 @@ public final class Gauge extends View {
 		canvas.restore();		
 	}
 
+	private void drawOdo(Canvas canvas) {
+		canvas.drawRect(odoRect, odoBackgroundPaint);
+		canvas.drawText(String.format("%4d.%02d",
+				(int)(targetOdoValue / 1000),
+				(int)((targetOdoValue % 1000) / 10)),
+				0.635f, 0.697f, odoPaint);
+	}
+	
 	/* Translate a notch to a value for the scale.
 	 * The notches are evenly spread across the scale, half of the notches on the left hand side
 	 * and the other half on the right hand side.
@@ -618,7 +654,11 @@ public final class Gauge extends View {
 		if (showGauge){
 			drawGauge(canvas);
 		}
-
+		
+		if (showOdo){
+			drawOdo(canvas);
+		}
+		
 		// Draw the needle using the updated value
 		if (showHand){
 			drawHand(canvas);
@@ -704,5 +744,10 @@ public final class Gauge extends View {
 
 	public float getValue() {
 		return targetValue;
+	}
+	
+	public void setOdoValue(float value) {
+		targetOdoValue = value;
+		invalidate();
 	}
 }

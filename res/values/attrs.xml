@@ -42,6 +42,9 @@
 		<attr name="rangeErrorMinValue" format="integer"/>
 		<attr name="rangeErrorMaxValue" format="integer"/>
 
+		<attr name="odoColor" format="integer"/>
+		<attr name="odoBackgroundColor" format="integer"/>
+		
 		<attr name="upperTitle" format="string"/>
 		<attr name="lowerTitle" format="string"/>
 		<attr name="unitTitle" format="string"/>
@@ -49,6 +52,7 @@
 		<attr name="showRange" format="boolean"/>
 		<attr name="showHand" format="boolean"/>
 		<attr name="showGauge" format="boolean"/>
+		<attr name="showOdo" format="boolean"/>
 
 	</declare-styleable>
 </resources>

@@ -78,6 +78,8 @@ public class HarleyDroid extends Activity implements ServiceConnection
     private File mLogFile = null;
     private HarleyDroidService mService = null;
     private boolean mModeRaw = false;
+    private int mCurrentOdoValue = 0;
+    private int mResetOdoValue = 0;
     
     // Views references cached for performance
     private View mViewRaw;
@@ -331,6 +333,10 @@ public class HarleyDroid extends Activity implements ServiceConnection
         	Intent settingsActivity = new Intent(getBaseContext(), HarleyDroidSettings.class);
         	startActivity(settingsActivity);
         	return true;
+        case R.id.resetodo_menu:
+        	mResetOdoValue = mCurrentOdoValue;
+        	drawOdometer(mCurrentOdoValue);
+        	return true;
         case R.id.quit_menu:
         	stopCapture();
         	finish();
@@ -373,6 +379,8 @@ public class HarleyDroid extends Activity implements ServiceConnection
     private void startCapture() {
     	if (D) Log.d(TAG, "startCapture()");
     	
+    	mCurrentOdoValue = 0;
+    	mResetOdoValue = 0;
     	startService(new Intent(this, HarleyDroidService.class));
     	bindService(new Intent(this, HarleyDroidService.class), this, 0);
     }
@@ -520,10 +528,14 @@ public class HarleyDroid extends Activity implements ServiceConnection
     }
     
     public void drawOdometer(int value) {
+    	mCurrentOdoValue = value;
+    	value -= mResetOdoValue;
     	float valueMiles;
     	mViewOdometerMetric.setText(String.format("%d.%d", value / 1000, value % 1000));
+    	mGaugeSpeedMetric.setOdoValue(value);
     	valueMiles = value * 0.000621371192f;
     	mViewOdometerImperial.setText(Float.toString(valueMiles));
+    	mGaugeSpeedImperial.setOdoValue(valueMiles);
     }
     
     public void drawFuel(int value) {

@@ -66,6 +66,9 @@
     			atswidget:showGauge = "false"
     			atswidget:showHand="true"
     			atswidget:showRange="false"
+    			atswidget:showOdo="true"
+    			atswidget:odoColor="0xff00ff00"
+    			atswidget:odoBackgroundColor="0xff000000"
 				/>
 			<org.harleydroid.Gauge
 				xmlns:atswidget="http://schemas.android.com/apk/res/org.harleydroid"
@@ -97,6 +100,9 @@
     			atswidget:showGauge = "false"
     			atswidget:showHand="true"
     			atswidget:showRange="false"
+    			atswidget:showOdo="true"
+    			atswidget:odoColor="0xff00ff00"
+    			atswidget:odoBackgroundColor="0xff000000"
 				/>
 		</FrameLayout>
 		<org.harleydroid.Gauge
@@ -129,6 +135,7 @@
     		atswidget:showGauge = "false"
     		atswidget:showHand="true"
     		atswidget:showRange="true"
+    		atswidget:showOdo="false"
 			/>
 	</LinearLayout>
 	<LinearLayout
