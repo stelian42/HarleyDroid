@@ -45,7 +45,6 @@ import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -621,10 +620,7 @@ public final class Gauge extends View {
 
 	private void drawOdo(Canvas canvas) {
 		canvas.drawRect(odoRect, odoBackgroundPaint);
-		canvas.drawText(String.format("%4d.%02d",
-				(int)(targetOdoValue / 1000),
-				(int)((targetOdoValue % 1000) / 10)),
-				0.635f, 0.697f, odoPaint);
+		canvas.drawText(String.format("%4.2f", targetOdoValue), 0.635f, 0.697f, odoPaint);
 	}
 	
 	/* Translate a notch to a value for the scale.

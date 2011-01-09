@@ -26,15 +26,15 @@ import android.os.Handler;
 
 public class HarleyData {
 	private int rpm;				// RPM in 1000*rotation/minute */
-	private int speed;				// XXX speed in 1000*mph ??? */
-	private int engineTemp;			// XXX engine temperature in degrees */
+	private int speed;				// speed in 1000*mph */
+	private int engineTemp;			// XXX engine temperature in farenheit */
 	private int full;				// fuel gauge: 0 (empty) to 6 (full) */
 	private int turnSignals;		// turn signals bitmap: 0x1=right, 0x2=left */
 	private boolean neutral;		// XXX boolean: in neutral */
 	private boolean clutch;			// XXX boolean: clutch engaged */
 	private int gear;				// XXX current gear: 1 to 6 */
 	private boolean checkEngine;	// XXX boolean: check engine */
-	private int odometer;			// odometer tick (1 tick = 0.4 meters) */
+	private int odometer;			// odometer tick (1 tick = 0.00025 miles) */
 	private int fuel;				// fuel consumption tick (1 tick = 0.000040 liters) */
 
 	private Handler handler;
@@ -174,7 +174,7 @@ public class HarleyData {
 		if (this.odometer != odometer) {
 			this.odometer = odometer;
 			if (handler != null)
-				handler.obtainMessage(HarleyDroid.UPDATE_ODOMETER, (int)(odometer / 2.5f), -1).sendToTarget();
+				handler.obtainMessage(HarleyDroid.UPDATE_ODOMETER, odometer, -1).sendToTarget();
 		}
 	}
 

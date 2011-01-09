@@ -215,7 +215,7 @@ public class HarleyDroidService extends Service
 		
 		public void run() {
 			int errors = 0;
-    		int cnt = 0;
+    		//int cnt = 0;
     	
     		if (!HarleyDroid.EMULATOR) {
     			try {
@@ -267,7 +267,7 @@ public class HarleyDroidService extends Service
         			
         			// RPM at 1053
     				line = "28 1B 10 02 10 74 4C";
-    				// Speed at 100 km/h
+    				// Speed at 100 mph
     				line = "48 29 10 02 4E 20 D4";
     				// Odometer
     				//line = "a8 69 10 06 00 00 FF 61";	
@@ -294,8 +294,8 @@ public class HarleyDroidService extends Service
     					break;	
     				}
     			}
-    			mHandler.obtainMessage(HarleyDroid.UPDATE_ODOMETER, cnt, -1).sendToTarget();
-    			cnt += 5;
+    			//mHandler.obtainMessage(HarleyDroid.UPDATE_ODOMETER, cnt, -1).sendToTarget();
+    			//cnt += 5;
     		}
     		if (!HarleyDroid.EMULATOR) {
     			try {

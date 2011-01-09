@@ -48,7 +48,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
 {
 	private static final boolean D = true;
 	private static final String TAG = HarleyDroid.class.getSimpleName();
-	public static final boolean EMULATOR = true;
+	public static final boolean EMULATOR = false;
 	
     static final int CONNECTING_TO_ELM327 = 1;
 
@@ -485,15 +485,17 @@ public class HarleyDroid extends Activity implements ServiceConnection
     }
     
     public void drawSpeed(int value) {
-    	mViewSpeedMetric.setText(Integer.toString(value));
-        mGaugeSpeedMetric.setValue(value);
-        mViewSpeedImperial.setText(Integer.toString((int)(0.621371192f * value)));
-        mGaugeSpeedImperial.setValue(0.621371192f * value);
+    	// value is in mph
+    	mViewSpeedMetric.setText(Integer.toString((int)(value * 1.609f)));
+        mGaugeSpeedMetric.setValue((int)(value * 1.609f));
+        mViewSpeedImperial.setText(Integer.toString(value));
+        mGaugeSpeedImperial.setValue(value);
     }
     
     public void drawEngineTemp(int value) {
-    	mViewEngTempMetric.setText(Integer.toString(value));
-    	mViewEngTempImperial.setText(Integer.toString(value * 9 / 5 + 32));
+    	// value is in F
+    	mViewEngTempMetric.setText(Integer.toString((value - 32) * 5 / 9));
+    	mViewEngTempImperial.setText(Integer.toString(value));
     }
    
     public void drawFull(int value) {
@@ -528,17 +530,19 @@ public class HarleyDroid extends Activity implements ServiceConnection
     }
     
     public void drawOdometer(int value) {
+    	// value is in ticks, at 1 tick = 0.00025 miles
     	mCurrentOdoValue = value;
     	value -= mResetOdoValue;
-    	float valueMiles;
-    	mViewOdometerMetric.setText(String.format("%d.%d", value / 1000, value % 1000));
-    	mGaugeSpeedMetric.setOdoValue(value);
-    	valueMiles = value * 0.000621371192f;
-    	mViewOdometerImperial.setText(Float.toString(valueMiles));
-    	mGaugeSpeedImperial.setOdoValue(valueMiles);
+    	float miles = value * 0.00025f;
+    	float km = miles * 1.609344f; 
+    	mViewOdometerMetric.setText(String.format("%4.2f", km));
+    	mGaugeSpeedMetric.setOdoValue(km);
+    	mViewOdometerImperial.setText(String.format("%.2f", miles));
+    	mGaugeSpeedImperial.setOdoValue(miles);
     }
     
     public void drawFuel(int value) {
+    	// value is in milliliters
     	float valueFlOz;
     	mViewFuelMetric.setText(Integer.toString(value));
     	valueFlOz = value * 0.0338140227f;
