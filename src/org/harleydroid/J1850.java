@@ -141,8 +141,7 @@ public class J1850 {
 		else if ((x & 0xffffff5d) == 0x483b4000) {
 			hd.setNeutral((in[3] & 0x20) != 0);
 			hd.setClutch((in[3] & 0x80) != 0);
-		} else if (x == 0x68881003 ||
-			   x == 0x68ff1003 ||
+		} else if (x == 0x68ff1003 ||
 			   x == 0x68ff4003 ||
 			   x == 0x68ff6103 ||
 			   x == 0xc888100e ||
@@ -152,8 +151,11 @@ public class J1850 {
 		} else if ((x & 0xffffff7f) == 0x4892402a ||
 			   (x & 0xffffff7f) == 0x6893612a) {
 			/* shutdown - lock */
-		} else if (x == 0x68881083) {
-			hd.setCheckEngine(true);
+		} else if ((x & 0xffffff7f) == 0x68881003) {
+			if ((in[3] & 0x80) != 0)
+				hd.setCheckEngine(true);
+			else
+				hd.setCheckEngine(false);
 		} else
 			throw new Exception("unknown");
 	}
