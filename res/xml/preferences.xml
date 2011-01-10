@@ -40,4 +40,11 @@
         android:entryValues="@array/pref_unit_values"
         android:defaultValue="metric"
         android:key="unit" />
+    <ListPreference
+        android:title="@string/pref_orientation"
+        android:persistent="true"
+        android:entries="@array/pref_orientation_names"
+        android:entryValues="@array/pref_orientation_values"
+        android:defaultValue="auto"
+        android:key="orientation" />
 </PreferenceScreen>

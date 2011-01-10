@@ -27,6 +27,8 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -76,6 +78,8 @@ public class HarleyDroid extends Activity implements ServiceConnection
     private boolean mLogging = false;
     private HarleyDroidService mService = null;
     private boolean mModeRaw = false;
+    private boolean mUnitMetric = false;
+    private int mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     private int mCurrentOdoValue = 0;
     private int mResetOdoValue = 0;
     
@@ -115,55 +119,17 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	if (D) Log.d(TAG, "onCreate()");
     	
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        
-        mViewGr = findViewById(R.id.gr_layout);
-		mViewRaw = findViewById(R.id.raw_layout);
-        mViewRpm = (TextView) findViewById(R.id.rpm_field);
-        mGaugeRpm = (Gauge) findViewById(R.id.rpm_meter);
-        mLabelSpeedMetric = (TextView) findViewById(R.id.speed_metric_label);
-        mLabelSpeedImperial = (TextView) findViewById(R.id.speed_imperial_label);
-        mViewSpeedMetric = (TextView) findViewById(R.id.speed_metric_field);
-        mViewSpeedImperial = (TextView) findViewById(R.id.speed_imperial_field);
-        mGaugeSpeedMetric = (Gauge) findViewById(R.id.speed_metric_meter);
-        mGaugeSpeedImperial = (Gauge) findViewById(R.id.speed_imperial_meter);
-        mLabelEngTempMetric = (TextView) findViewById(R.id.enginetemp_metric_label);
-        mLabelEngTempImperial = (TextView) findViewById(R.id.enginetemp_imperial_label);
-        mViewEngTempMetric = (TextView) findViewById(R.id.enginetemp_metric_field);
-        mViewEngTempImperial = (TextView) findViewById(R.id.enginetemp_imperial_field);
-        mViewFull = (TextView) findViewById(R.id.full_field);
-        mViewTurnSignals = (TextView) findViewById(R.id.turnsignals_field);
-        mViewNeutral = (TextView) findViewById(R.id.neutral_field);
-        mViewClutch = (TextView) findViewById(R.id.clutch_field);
-        mViewGear = (TextView) findViewById(R.id.gear_field);
-        mViewCheckEngine = (TextView) findViewById(R.id.checkengine_field);
-        mLabelOdometerMetric = (TextView) findViewById(R.id.odometer_metric_label);
-        mLabelOdometerImperial = (TextView) findViewById(R.id.odometer_imperial_label);
-        mViewOdometerMetric = (TextView) findViewById(R.id.odometer_metric_field);
-        mViewOdometerImperial = (TextView) findViewById(R.id.odometer_imperial_field);
-        mLabelFuelMetric = (TextView) findViewById(R.id.fuel_metric_label);
-        mLabelFuelImperial = (TextView) findViewById(R.id.fuel_imperial_label);
-        mViewFuelMetric = (TextView) findViewById(R.id.fuel_metric_field);
-        mViewFuelImperial = (TextView) findViewById(R.id.fuel_imperial_field);
-            
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+			setContentView(R.layout.portrait);
+		else
+			setContentView(R.layout.landscape);
+                
         if (savedInstanceState != null) {
         	mModeRaw = savedInstanceState.getBoolean("moderaw");
         	if (D) Log.d(TAG, "savedInstanceState: mModeRaw = " + mModeRaw);
-        	drawLayout();
+        	
         }
-        
-        drawRPM(0);
-        drawSpeed(0);
-        drawEngineTemp(0);
-        drawFull(0);
-        drawTurnSignals(0);
-        drawNeutral(0);
-        drawClutch(0);
-        drawGear(0);
-        drawCheckEngine(0);
-        drawOdometer(0);
-        drawFuel(0);
-
+            
         // enable Bluetooth if necessary
         if (!EMULATOR) {
         	mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -200,6 +166,18 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	// get preferences which may have been changed
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	mBluetoothID = prefs.getString("bluetoothid", null);
+    	if (prefs.getString("orientation", "auto").equals("auto"))
+    		mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+    	else if (prefs.getString("orientation", "auto").equals("portrait")) {
+    		mOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+    		setContentView(R.layout.portrait);
+    	}
+    	else if (prefs.getString("orientation", "auto").equals("landscape")) {
+    		mOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+    		setContentView(R.layout.landscape);
+    	}
+    	this.setRequestedOrientation(mOrientation);
+    	
     	mLogging = false;
     	if (prefs.getBoolean("logging", false)) {
         	if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()))
@@ -209,46 +187,13 @@ public class HarleyDroid extends Activity implements ServiceConnection
         }
     	if (prefs.getBoolean("screenon", false)) 
     		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    	if (prefs.getString("unit", "metric").equals("metric")) {
-    		mGaugeSpeedImperial.setVisibility(View.GONE);
-    		mGaugeSpeedMetric.setVisibility(View.VISIBLE);
-    		mLabelSpeedImperial.setVisibility(View.GONE);
-    		mLabelSpeedMetric.setVisibility(View.VISIBLE);
-    		mViewSpeedImperial.setVisibility(View.GONE);
-    		mViewSpeedMetric.setVisibility(View.VISIBLE);
-    		mLabelEngTempImperial.setVisibility(View.GONE);
-    		mLabelEngTempMetric.setVisibility(View.VISIBLE);
-    		mViewEngTempImperial.setVisibility(View.GONE);
-    		mViewEngTempMetric.setVisibility(View.VISIBLE);
-    		mLabelOdometerImperial.setVisibility(View.GONE);
-    		mLabelOdometerMetric.setVisibility(View.VISIBLE);
-    		mViewOdometerImperial.setVisibility(View.GONE);
-    		mViewOdometerMetric.setVisibility(View.VISIBLE);
-    		mLabelFuelImperial.setVisibility(View.GONE);
-    		mLabelFuelMetric.setVisibility(View.VISIBLE);
-    		mViewFuelImperial.setVisibility(View.GONE);
-    		mViewFuelMetric.setVisibility(View.VISIBLE);
-    	} else {
-    		mGaugeSpeedMetric.setVisibility(View.GONE);
-    		mGaugeSpeedImperial.setVisibility(View.VISIBLE);
-    		mLabelSpeedMetric.setVisibility(View.GONE);
-    		mLabelSpeedImperial.setVisibility(View.VISIBLE);
-    		mViewSpeedMetric.setVisibility(View.GONE);
-    		mViewSpeedImperial.setVisibility(View.VISIBLE);
-    		mLabelEngTempMetric.setVisibility(View.GONE);
-    		mLabelEngTempImperial.setVisibility(View.VISIBLE);
-    		mViewEngTempMetric.setVisibility(View.GONE);
-    		mViewEngTempImperial.setVisibility(View.VISIBLE);
-    		mLabelOdometerMetric.setVisibility(View.GONE);
-    		mLabelOdometerImperial.setVisibility(View.VISIBLE);
-    		mViewOdometerMetric.setVisibility(View.GONE);
-    		mViewOdometerImperial.setVisibility(View.VISIBLE);
-    		mLabelFuelMetric.setVisibility(View.GONE);
-    		mLabelFuelImperial.setVisibility(View.VISIBLE);
-    		mViewFuelMetric.setVisibility(View.GONE);
-    		mViewFuelImperial.setVisibility(View.VISIBLE);
-    	}
-    	
+    	if (prefs.getString("unit", "metric").equals("metric"))
+    		mUnitMetric = true;
+    	else
+    		mUnitMetric = false;
+    		   	
+    	drawLayout();
+            
     	// bind to the service
     	bindService(new Intent(this, HarleyDroidService.class), this, 0);	
     }
@@ -262,6 +207,28 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	mService = null;
     }
     
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+    	if (D) Log.d(TAG, "onConfigurationChanged()");
+    	super.onConfigurationChanged(newConfig);
+    	
+    	switch (mOrientation) {
+    	case ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED:
+    		if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+    			setContentView(R.layout.portrait);
+    		else
+    			setContentView(R.layout.landscape);
+    		drawLayout();
+    		break;
+    	case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
+    		//setContentView(R.layout.landscape);
+    		break;
+    	case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
+    		//setContentView(R.layout.portrait);
+    		break;
+    	}
+    }
+
     @Override
     protected Dialog onCreateDialog(int id) {
     	if (D) Log.d(TAG, "onCreateDialog()");
@@ -463,7 +430,37 @@ public class HarleyDroid extends Activity implements ServiceConnection
     };
    
     private void drawLayout() {
-    	if (mModeRaw) {
+    	
+    	mViewGr = findViewById(R.id.gr_layout);
+		mViewRaw = findViewById(R.id.raw_layout);
+        mViewRpm = (TextView) findViewById(R.id.rpm_field);
+        mGaugeRpm = (Gauge) findViewById(R.id.rpm_meter);
+        mLabelSpeedMetric = (TextView) findViewById(R.id.speed_metric_label);
+        mLabelSpeedImperial = (TextView) findViewById(R.id.speed_imperial_label);
+        mViewSpeedMetric = (TextView) findViewById(R.id.speed_metric_field);
+        mViewSpeedImperial = (TextView) findViewById(R.id.speed_imperial_field);
+        mGaugeSpeedMetric = (Gauge) findViewById(R.id.speed_metric_meter);
+        mGaugeSpeedImperial = (Gauge) findViewById(R.id.speed_imperial_meter);
+        mLabelEngTempMetric = (TextView) findViewById(R.id.enginetemp_metric_label);
+        mLabelEngTempImperial = (TextView) findViewById(R.id.enginetemp_imperial_label);
+        mViewEngTempMetric = (TextView) findViewById(R.id.enginetemp_metric_field);
+        mViewEngTempImperial = (TextView) findViewById(R.id.enginetemp_imperial_field);
+        mViewFull = (TextView) findViewById(R.id.full_field);
+        mViewTurnSignals = (TextView) findViewById(R.id.turnsignals_field);
+        mViewNeutral = (TextView) findViewById(R.id.neutral_field);
+        mViewClutch = (TextView) findViewById(R.id.clutch_field);
+        mViewGear = (TextView) findViewById(R.id.gear_field);
+        mViewCheckEngine = (TextView) findViewById(R.id.checkengine_field);
+        mLabelOdometerMetric = (TextView) findViewById(R.id.odometer_metric_label);
+        mLabelOdometerImperial = (TextView) findViewById(R.id.odometer_imperial_label);
+        mViewOdometerMetric = (TextView) findViewById(R.id.odometer_metric_field);
+        mViewOdometerImperial = (TextView) findViewById(R.id.odometer_imperial_field);
+        mLabelFuelMetric = (TextView) findViewById(R.id.fuel_metric_label);
+        mLabelFuelImperial = (TextView) findViewById(R.id.fuel_imperial_label);
+        mViewFuelMetric = (TextView) findViewById(R.id.fuel_metric_field);
+        mViewFuelImperial = (TextView) findViewById(R.id.fuel_imperial_field);
+        
+        if (mModeRaw) {
     		mViewGr.setVisibility(View.GONE);
         	mViewRaw.setVisibility(View.VISIBLE);
     	}
@@ -471,6 +468,58 @@ public class HarleyDroid extends Activity implements ServiceConnection
     		mViewRaw.setVisibility(View.GONE);
         	mViewGr.setVisibility(View.VISIBLE);
     	}
+        
+        if (mUnitMetric) {
+    		mGaugeSpeedImperial.setVisibility(View.GONE);
+    		mGaugeSpeedMetric.setVisibility(View.VISIBLE);
+    		mLabelSpeedImperial.setVisibility(View.GONE);
+    		mLabelSpeedMetric.setVisibility(View.VISIBLE);
+    		mViewSpeedImperial.setVisibility(View.GONE);
+    		mViewSpeedMetric.setVisibility(View.VISIBLE);
+    		mLabelEngTempImperial.setVisibility(View.GONE);
+    		mLabelEngTempMetric.setVisibility(View.VISIBLE);
+    		mViewEngTempImperial.setVisibility(View.GONE);
+    		mViewEngTempMetric.setVisibility(View.VISIBLE);
+    		mLabelOdometerImperial.setVisibility(View.GONE);
+    		mLabelOdometerMetric.setVisibility(View.VISIBLE);
+    		mViewOdometerImperial.setVisibility(View.GONE);
+    		mViewOdometerMetric.setVisibility(View.VISIBLE);
+    		mLabelFuelImperial.setVisibility(View.GONE);
+    		mLabelFuelMetric.setVisibility(View.VISIBLE);
+    		mViewFuelImperial.setVisibility(View.GONE);
+    		mViewFuelMetric.setVisibility(View.VISIBLE);
+    	} else {
+    		mGaugeSpeedMetric.setVisibility(View.GONE);
+    		mGaugeSpeedImperial.setVisibility(View.VISIBLE);
+    		mLabelSpeedMetric.setVisibility(View.GONE);
+    		mLabelSpeedImperial.setVisibility(View.VISIBLE);
+    		mViewSpeedMetric.setVisibility(View.GONE);
+    		mViewSpeedImperial.setVisibility(View.VISIBLE);
+    		mLabelEngTempMetric.setVisibility(View.GONE);
+    		mLabelEngTempImperial.setVisibility(View.VISIBLE);
+    		mViewEngTempMetric.setVisibility(View.GONE);
+    		mViewEngTempImperial.setVisibility(View.VISIBLE);
+    		mLabelOdometerMetric.setVisibility(View.GONE);
+    		mLabelOdometerImperial.setVisibility(View.VISIBLE);
+    		mViewOdometerMetric.setVisibility(View.GONE);
+    		mViewOdometerImperial.setVisibility(View.VISIBLE);
+    		mLabelFuelMetric.setVisibility(View.GONE);
+    		mLabelFuelImperial.setVisibility(View.VISIBLE);
+    		mViewFuelMetric.setVisibility(View.GONE);
+    		mViewFuelImperial.setVisibility(View.VISIBLE);
+    	}
+    	
+        drawRPM(0);
+        drawSpeed(0);
+        drawEngineTemp(0);
+        drawFull(0);
+        drawTurnSignals(0);
+        drawNeutral(0);
+        drawClutch(0);
+        drawGear(0);
+        drawCheckEngine(0);
+        drawOdometer(0);
+        drawFuel(0);
     }
     
     public void drawRPM(int value) {

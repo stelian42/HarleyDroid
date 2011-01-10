@@ -68,4 +68,10 @@
 	<item>"Metrique"</item>
 	<item>"Impérial"</item>
 </string-array>
+<string name="pref_orientation">Orientation de l\'écran</string>
+<string-array name="pref_orientation_names">
+	<item>"Automatique"</item>
+	<item>"Portrait"</item>
+	<item>"Paysage"</item>
+</string-array>
 </resources>
