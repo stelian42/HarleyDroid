@@ -212,20 +212,13 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	if (D) Log.d(TAG, "onConfigurationChanged()");
     	super.onConfigurationChanged(newConfig);
     	
-    	switch (mOrientation) {
-    	case ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED:
+    	if (mOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+    		Log.d(TAG, "orientation now " + newConfig.orientation);
     		if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
     			setContentView(R.layout.portrait);
     		else
     			setContentView(R.layout.landscape);
     		drawLayout();
-    		break;
-    	case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
-    		//setContentView(R.layout.landscape);
-    		break;
-    	case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
-    		//setContentView(R.layout.portrait);
-    		break;
     	}
     }
 
