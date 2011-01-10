@@ -114,18 +114,8 @@ public class HarleyDroidService extends Service
 		if (D) Log.d(TAG, "startService()");
 	
 		// open logfile if possible
-		if (logging) {
-			try {
-				File path = new File(Environment.getExternalStorageDirectory(), "/Android/data/org.harleydroid/files/");
-        		path.mkdirs();
-           		File logFile = new File(path, "harley-" + mDateFormat.format(new Date()) + ".log.gz");
-				mLog = new GZIPOutputStream(new FileOutputStream(logFile, true));
-				String header = "Starting at " + mDateFormat.format(new Date()) + "\n"; 
-				mLog.write(header.getBytes());
-			} catch (IOException e) {
-				Log.d(TAG, "Logfile open " + e);
-			}
-		}
+		if (logging)
+			startLog();
 		
 		mThread = new ThreadELM(dev);
 		mThread.start();
@@ -134,6 +124,25 @@ public class HarleyDroidService extends Service
 	public void stopService() {
 		if (D) Log.d(TAG, "stopService()");
 		
+		stopLog();
+		mThread.stop = true;
+		mThread = null;
+	}
+	
+	private void startLog() {
+		try {
+			File path = new File(Environment.getExternalStorageDirectory(), "/Android/data/org.harleydroid/files/");
+       		path.mkdirs();
+          	File logFile = new File(path, "harley-" + mDateFormat.format(new Date()) + ".log.gz");
+			mLog = new GZIPOutputStream(new FileOutputStream(logFile, true));
+			String header = "Starting at " + mDateFormat.format(new Date()) + "\n"; 
+			mLog.write(header.getBytes());
+		} catch (IOException e) {
+			Log.d(TAG, "Logfile open " + e);
+		}
+	}
+	
+	private void stopLog() {
 		if (mLog != null) {
 			String header = "Stopping at " + mDateFormat.format(new Date()) + "\n"; 
 			try {
@@ -142,8 +151,7 @@ public class HarleyDroidService extends Service
 			} catch (IOException e) {
 			}
 		}
-		mThread.stop = true;
-		mThread = null;
+		mLog = null;
 	}
 	
 	public boolean isRunning() {
@@ -235,6 +243,7 @@ public class HarleyDroidService extends Service
     				} catch (IOException e2) {
     				}
     				mHandler.obtainMessage(HarleyDroid.STATUS_ERROR, -1, -1).sendToTarget();
+    				stopLog();
     				stopSelf();
     				return;
     			}
@@ -252,6 +261,7 @@ public class HarleyDroidService extends Service
     				chat("ATMA", "", AT_TIMEOUT);
     			} catch (IOException e1) {
     				mHandler.obtainMessage(HarleyDroid.STATUS_ERRORAT, -1, -1).sendToTarget();
+    				stopLog();
     				stopSelf();
     				return;
     			}
@@ -311,6 +321,7 @@ public class HarleyDroidService extends Service
     			} catch (IOException e3) {
     			}
     		}
+    		stopLog();
     		stopSelf();
 		}
 	}
