@@ -19,8 +19,6 @@
 
 package org.harleydroid;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -75,7 +73,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
     private BluetoothAdapter mBluetoothAdapter = null;
     private Menu mOptionsMenu = null;
     private String mBluetoothID = null;
-    private File mLogFile = null;
+    private boolean mLogging = false;
     private HarleyDroidService mService = null;
     private boolean mModeRaw = false;
     private int mCurrentOdoValue = 0;
@@ -202,16 +200,12 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	// get preferences which may have been changed
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	mBluetoothID = prefs.getString("bluetoothid", null);
-    	mLogFile = null;
+    	mLogging = false;
     	if (prefs.getBoolean("logging", false)) {
         	if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()))
         		Toast.makeText(this, R.string.nologging, Toast.LENGTH_LONG).show();
-        	else {
-        		File path = new File(Environment.getExternalStorageDirectory(), "/Android/data/org.harleydroid/files/");
-        		path.mkdirs();
-           		mLogFile = new File(path, "harley.log.gz");
-        	}
-        	
+        	else
+        		mLogging = true;  	
         }
     	if (prefs.getBoolean("screenon", false)) 
     		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -371,9 +365,9 @@ public class HarleyDroid extends Activity implements ServiceConnection
 		showDialog(CONNECTING_TO_ELM327);
 		
     	if (!EMULATOR)
-    		mService.startService(mBluetoothAdapter.getRemoteDevice(mBluetoothID), mLogFile);
+    		mService.startService(mBluetoothAdapter.getRemoteDevice(mBluetoothID), mLogging);
     	else
-    		mService.startService(null, mLogFile);
+    		mService.startService(null, mLogging);
 	}
     
     private void startCapture() {

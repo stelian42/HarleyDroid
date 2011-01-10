@@ -40,6 +40,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -63,6 +64,7 @@ public class HarleyDroidService extends Service
 	private Handler mHandler = null;
 	private ThreadELM mThread = null;
 	private OutputStream mLog = null;
+	private SimpleDateFormat mDateFormat;
 
 	@Override
 	public void onCreate() {
@@ -70,6 +72,8 @@ public class HarleyDroidService extends Service
 		if (D) Log.d(TAG, "onCreate()");
 		
 		mHD = new HarleyData();
+		mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+			
 		mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		CharSequence text = getText(R.string.notification_start);
 		Notification notification = new Notification(R.drawable.stat_notify_car_mode, text, System.currentTimeMillis());
@@ -106,16 +110,17 @@ public class HarleyDroidService extends Service
 		mHD.setHandler(handler);
 	}
 	
-	public void startService(BluetoothDevice dev, File logFile) {
+	public void startService(BluetoothDevice dev, boolean logging) {
 		if (D) Log.d(TAG, "startService()");
 	
 		// open logfile if possible
-		if (logFile != null) {
+		if (logging) {
 			try {
+				File path = new File(Environment.getExternalStorageDirectory(), "/Android/data/org.harleydroid/files/");
+        		path.mkdirs();
+           		File logFile = new File(path, "harley-" + mDateFormat.format(new Date()) + ".log.gz");
 				mLog = new GZIPOutputStream(new FileOutputStream(logFile, true));
-				String header = "Starting at " + 
-				   new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) +
-				   "\n"; 
+				String header = "Starting at " + mDateFormat.format(new Date()) + "\n"; 
 				mLog.write(header.getBytes());
 			} catch (IOException e) {
 				Log.d(TAG, "Logfile open " + e);
@@ -130,9 +135,7 @@ public class HarleyDroidService extends Service
 		if (D) Log.d(TAG, "stopService()");
 		
 		if (mLog != null) {
-			String header = "Stopping at " + 
-			   new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) +
-			   "\n"; 
+			String header = "Stopping at " + mDateFormat.format(new Date()) + "\n"; 
 			try {
 				mLog.write(header.getBytes());
 				mLog.close();
