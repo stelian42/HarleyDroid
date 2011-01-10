@@ -260,12 +260,10 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	if (mService != null && mService.isRunning()) {
     		mOptionsMenu.findItem(R.id.startcapture_menu).setEnabled(false);
             mOptionsMenu.findItem(R.id.stopcapture_menu).setEnabled(true);
-            mOptionsMenu.findItem(R.id.preferences_menu).setEnabled(false);
     	}
     	else {
     		mOptionsMenu.findItem(R.id.startcapture_menu).setEnabled(true);
             mOptionsMenu.findItem(R.id.stopcapture_menu).setEnabled(false);
-            mOptionsMenu.findItem(R.id.preferences_menu).setEnabled(true);
     	}
     	if (mModeRaw)
     		mOptionsMenu.findItem(R.id.mode_menu).setTitle(R.string.mode_labelgr);
