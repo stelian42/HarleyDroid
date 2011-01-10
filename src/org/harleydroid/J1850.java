@@ -123,28 +123,18 @@ public class J1850 {
 		} else if ((x == 0x48da4039) && ((in[4] & 0xfc) == 0))
 			hd.setTurnSignals(in[4] & 0x03);
 		else if ((x & 0xffffff7f) == 0xa8691006) {
-			if ((x & 0x80) == 0) {
-				odolast = y - odolast;
-				if (odolast < 0)
-					odolast += 65536;
-				odoaccum += odolast;
-				odolast = y;
-			} else {
-				odoaccum = 0;
-				odolast = 0;
-			}
+			odolast = y - odolast;
+			if (odolast < 0)	// ...could also test for (x & 0x80)
+				odolast += 65536;
+			odoaccum += odolast;
+			odolast = y;
 			hd.setOdometer(odoaccum);
 		} else if ((x & 0xffffff7f) == 0xa883100a) {
-			if ((x & 0x80) == 0) {
-				fuellast = y - fuellast;
-				if (fuellast < 0)
-					fuellast += 65536;
-				fuelaccum += fuellast;
-				fuellast = y;
-			} else {
-				fuelaccum = 0;
-				fuellast = 0;
-			}
+			fuellast = y - fuellast;
+			if (fuellast < 0)	// ...could also test for (x & 0x80)
+				fuellast += 65536;
+			fuelaccum += fuellast;
+			fuellast = y;
 			hd.setFuel(fuelaccum);
 		} else if ((x == 0xa8836112) && ((in[4] & 0xd0) == 0xd0))
 			hd.setFull(in[4] & 0x0f);
