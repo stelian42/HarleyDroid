@@ -17,12 +17,9 @@
 -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/startcapture_menu"
+    <item android:id="@+id/capture_menu"
           android:icon="@drawable/ic_menu_play_clip"
           android:title="@string/startcapture_label" />
-    <item android:id="@+id/stopcapture_menu"
-          android:icon="@drawable/ic_menu_stop"
-          android:title="@string/stopcapture_label" />
     <item android:id="@+id/mode_menu"
           android:icon="@drawable/ic_menu_info_details"
           android:title="@string/mode_labelraw" />

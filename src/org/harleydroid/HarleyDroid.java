@@ -258,12 +258,12 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	if (D) Log.d(TAG, "onPrepareOptionsMenu()");
     	
     	if (mService != null && mService.isRunning()) {
-    		mOptionsMenu.findItem(R.id.startcapture_menu).setEnabled(false);
-            mOptionsMenu.findItem(R.id.stopcapture_menu).setEnabled(true);
+    		mOptionsMenu.findItem(R.id.capture_menu).setIcon(R.drawable.ic_menu_stop);
+    		mOptionsMenu.findItem(R.id.capture_menu).setTitle(R.string.stopcapture_label);
     	}
     	else {
-    		mOptionsMenu.findItem(R.id.startcapture_menu).setEnabled(true);
-            mOptionsMenu.findItem(R.id.stopcapture_menu).setEnabled(false);
+    		mOptionsMenu.findItem(R.id.capture_menu).setIcon(R.drawable.ic_menu_play_clip);
+    		mOptionsMenu.findItem(R.id.capture_menu).setTitle(R.string.startcapture_label);
     	}
     	if (mModeRaw)
     		mOptionsMenu.findItem(R.id.mode_menu).setTitle(R.string.mode_labelgr);
@@ -278,12 +278,12 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	if (D) Log.d(TAG, "onOptionsItemSelected");
     	
         switch (item.getItemId()) {
-        case R.id.startcapture_menu:
-        	startCapture();
+        case R.id.capture_menu:
+        	if (mService != null && mService.isRunning())
+        		stopCapture();
+        	else
+        		startCapture();
             return true;
-        case R.id.stopcapture_menu:
-        	stopCapture();
-        	return true;
         case R.id.mode_menu:
         	mModeRaw = !mModeRaw;
         	drawLayout();
