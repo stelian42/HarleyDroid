@@ -289,8 +289,8 @@ public class HarleyDroidService extends Service
     					line = readLine(ATMA_TIMEOUT);
     				} catch (IOException e1) {
     					mHandler.obtainMessage(HarleyDroid.STATUS_NODATA, -1, -1).sendToTarget();
-    					stop = true;
-    					break;
+    					finish();
+        				return;
     				}
     			}
     				
