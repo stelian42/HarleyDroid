@@ -243,8 +243,7 @@ public class HarleyDroidService extends Service
     				} catch (IOException e2) {
     				}
     				mHandler.obtainMessage(HarleyDroid.STATUS_ERROR, -1, -1).sendToTarget();
-    				stopLog();
-    				stopSelf();
+    				finish();
     				return;
     			}
     			
@@ -261,8 +260,7 @@ public class HarleyDroidService extends Service
     				chat("ATMA", "", AT_TIMEOUT);
     			} catch (IOException e1) {
     				mHandler.obtainMessage(HarleyDroid.STATUS_ERRORAT, -1, -1).sendToTarget();
-    				stopLog();
-    				stopSelf();
+    				finish();
     				return;
     			}
     		} // !EMULATOR
@@ -321,8 +319,13 @@ public class HarleyDroidService extends Service
     			} catch (IOException e3) {
     			}
     		}
-    		stopLog();
-    		stopSelf();
+    		finish();
+		}
+
+		private void finish() {
+			stopLog();
+			mTimer.cancel();
+			stopSelf();
 		}
 	}
 }
