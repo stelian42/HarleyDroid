@@ -78,15 +78,15 @@ public class HarleyDroid extends Activity implements ServiceConnection
     private String mBluetoothID = null;
     private boolean mLogging = false;
     private HarleyDroidService mService = null;
-    private boolean mModeRaw = false;
+    private boolean mModeText = false;
     private boolean mUnitMetric = false;
     private int mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     private int mCurrentOdoValue = 0;
     private int mResetOdoValue = 0;
     
     // Views references cached for performance
-    private View mViewRaw;
-    private View mViewGr;
+    private View mViewText;
+    private View mViewGraphic;
     private TextView mViewRpm;
     private Gauge mGaugeRpm;
     private TextView mLabelSpeedMetric;
@@ -100,10 +100,13 @@ public class HarleyDroid extends Activity implements ServiceConnection
     private TextView mViewEngTempMetric;
     private TextView mViewEngTempImperial;
     private TextView mViewFull;
+    private View mImageTurnSignalsLeft;
+    private View mImageTurnSignalsRight;
     private TextView mViewTurnSignals;
     private TextView mViewNeutral;
     private TextView mViewClutch;
     private TextView mViewGear;
+    private View mImageCheckEngine;
     private TextView mViewCheckEngine;
     private TextView mLabelOdometerMetric;
     private TextView mLabelOdometerImperial;
@@ -180,7 +183,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
     		mUnitMetric = true;
     	else
     		mUnitMetric = false;
-    	mModeRaw = mPrefs.getBoolean("moderaw", false);
+    	mModeText = mPrefs.getBoolean("modetext", false);
     	mCurrentOdoValue = mPrefs.getInt("currentodovalue", 0);
     	mResetOdoValue = mPrefs.getInt("resetodovalue", 0);
     		   	
@@ -199,7 +202,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	mService = null;
     	
     	SharedPreferences.Editor editor = mPrefs.edit();
-    	editor.putBoolean("moderaw", mModeRaw);
+    	editor.putBoolean("modetext", mModeText);
     	editor.putInt("currentodovalue", mCurrentOdoValue);
     	editor.putInt("resetodovalue", mResetOdoValue);
     	editor.commit();
@@ -256,7 +259,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
     		mOptionsMenu.findItem(R.id.capture_menu).setIcon(R.drawable.ic_menu_play_clip);
     		mOptionsMenu.findItem(R.id.capture_menu).setTitle(R.string.startcapture_label);
     	}
-    	if (mModeRaw)
+    	if (mModeText)
     		mOptionsMenu.findItem(R.id.mode_menu).setTitle(R.string.mode_labelgr);
     	else
     		mOptionsMenu.findItem(R.id.mode_menu).setTitle(R.string.mode_labelraw);
@@ -276,7 +279,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
         		startCapture();
             return true;
         case R.id.mode_menu:
-        	mModeRaw = !mModeRaw;
+        	mModeText = !mModeText;
         	drawLayout();
         	return true;
         case R.id.preferences_menu:
@@ -421,8 +424,8 @@ public class HarleyDroid extends Activity implements ServiceConnection
    
     private void drawLayout() {
     	
-    	mViewGr = findViewById(R.id.gr_layout);
-		mViewRaw = findViewById(R.id.raw_layout);
+    	mViewGraphic = findViewById(R.id.graphic_layout);
+		mViewText = findViewById(R.id.text_layout);
         mViewRpm = (TextView) findViewById(R.id.rpm_field);
         mGaugeRpm = (Gauge) findViewById(R.id.rpm_meter);
         mLabelSpeedMetric = (TextView) findViewById(R.id.speed_metric_label);
@@ -436,11 +439,14 @@ public class HarleyDroid extends Activity implements ServiceConnection
         mViewEngTempMetric = (TextView) findViewById(R.id.enginetemp_metric_field);
         mViewEngTempImperial = (TextView) findViewById(R.id.enginetemp_imperial_field);
         mViewFull = (TextView) findViewById(R.id.full_field);
+        mImageTurnSignalsLeft = (View) findViewById(R.id.turn_left);
+        mImageTurnSignalsRight = (View) findViewById(R.id.turn_right);
         mViewTurnSignals = (TextView) findViewById(R.id.turnsignals_field);
         mViewNeutral = (TextView) findViewById(R.id.neutral_field);
         mViewClutch = (TextView) findViewById(R.id.clutch_field);
         mViewGear = (TextView) findViewById(R.id.gear_field);
         mViewCheckEngine = (TextView) findViewById(R.id.checkengine_field);
+        mImageCheckEngine = (View) findViewById(R.id.check_engine);
         mLabelOdometerMetric = (TextView) findViewById(R.id.odometer_metric_label);
         mLabelOdometerImperial = (TextView) findViewById(R.id.odometer_imperial_label);
         mViewOdometerMetric = (TextView) findViewById(R.id.odometer_metric_field);
@@ -450,13 +456,13 @@ public class HarleyDroid extends Activity implements ServiceConnection
         mViewFuelMetric = (TextView) findViewById(R.id.fuel_metric_field);
         mViewFuelImperial = (TextView) findViewById(R.id.fuel_imperial_field);
         
-        if (mModeRaw) {
-    		mViewGr.setVisibility(View.GONE);
-        	mViewRaw.setVisibility(View.VISIBLE);
+        if (mModeText) {
+    		mViewGraphic.setVisibility(View.GONE);
+        	mViewText.setVisibility(View.VISIBLE);
     	}
     	else {
-    		mViewRaw.setVisibility(View.GONE);
-        	mViewGr.setVisibility(View.VISIBLE);
+    		mViewText.setVisibility(View.GONE);
+        	mViewGraphic.setVisibility(View.VISIBLE);
     	}
         
         if (mUnitMetric) {
@@ -536,14 +542,26 @@ public class HarleyDroid extends Activity implements ServiceConnection
     }
    
     public void drawTurnSignals(int value) {
-    	if ((value & 0x03) == 0x03)
+    	if ((value & 0x03) == 0x03) {
+    		mImageTurnSignalsLeft.setVisibility(View.VISIBLE);
+    		mImageTurnSignalsRight.setVisibility(View.VISIBLE);
     		mViewTurnSignals.setText("W");
-    	else if ((value & 0x01) == 0x01)
+    	}
+    	else if ((value & 0x01) == 0x01) {
+    		mImageTurnSignalsLeft.setVisibility(View.INVISIBLE);
+    		mImageTurnSignalsRight.setVisibility(View.VISIBLE);
     		mViewTurnSignals.setText("R");
-    	else if ((value & 0x02) == 0x02)
+    	}
+    	else if ((value & 0x02) == 0x02) {
+    		mImageTurnSignalsLeft.setVisibility(View.VISIBLE);
+    		mImageTurnSignalsRight.setVisibility(View.INVISIBLE);
     		mViewTurnSignals.setText("L");
-    	else
+    	}
+    	else {
+    		mImageTurnSignalsLeft.setVisibility(View.INVISIBLE);
+    		mImageTurnSignalsRight.setVisibility(View.INVISIBLE);
     		mViewTurnSignals.setText("");
+    	}
     }
     
     public void drawNeutral(int value) {
@@ -559,6 +577,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
     }
     
     public void drawCheckEngine(int value) {
+    	mImageCheckEngine.setVisibility(value == 0 ? View.INVISIBLE : View.VISIBLE);
     	mViewCheckEngine.setText(Integer.toString(value));
     }
     
