@@ -227,7 +227,7 @@ public class HarleyDroidService extends Service
 		
 		public void run() {
 			int errors = 0;
-    		//int cnt = 0;
+    		int cnt = 0;
     	
     		if (!HarleyDroid.EMULATOR) {
     			try {
@@ -276,6 +276,18 @@ public class HarleyDroidService extends Service
         				Thread.sleep(1000);
         			} catch (InterruptedException e1) {
         			}
+        		
+        			/* send several messages to update the UI */
+        			mHandler.obtainMessage(HarleyDroid.UPDATE_ODOMETER, cnt, -1).sendToTarget();
+        			cnt += 50;
+        			if (cnt % 100 == 0) {
+        				mHandler.obtainMessage(HarleyDroid.UPDATE_CHECKENGINE, 1, -1).sendToTarget();
+        				mHandler.obtainMessage(HarleyDroid.UPDATE_TURNSIGNALS, 0, -1).sendToTarget();
+        			}
+        			else {
+        				mHandler.obtainMessage(HarleyDroid.UPDATE_CHECKENGINE, 0, -1).sendToTarget();
+        				mHandler.obtainMessage(HarleyDroid.UPDATE_TURNSIGNALS, 3, -1).sendToTarget();
+        			}
         			
         			// RPM at 1053
     				line = "28 1B 10 02 10 74 4C";
@@ -306,8 +318,7 @@ public class HarleyDroidService extends Service
     					break;	
     				}
     			}
-    			//mHandler.obtainMessage(HarleyDroid.UPDATE_ODOMETER, cnt, -1).sendToTarget();
-    			//cnt += 5;
+    			
     		}
     		if (!HarleyDroid.EMULATOR) {
     			try {
