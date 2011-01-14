@@ -72,6 +72,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
 
     private static final int REQUEST_ENABLE_BT = 2;
     
+    private SharedPreferences mPrefs;    
     private BluetoothAdapter mBluetoothAdapter = null;
     private Menu mOptionsMenu = null;
     private String mBluetoothID = null;
@@ -119,17 +120,14 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	if (D) Log.d(TAG, "onCreate()");
     	
         super.onCreate(savedInstanceState);
+        
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
 			setContentView(R.layout.portrait);
 		else
 			setContentView(R.layout.landscape);
                 
-        if (savedInstanceState != null) {
-        	mModeRaw = savedInstanceState.getBoolean("moderaw");
-        	if (D) Log.d(TAG, "savedInstanceState: mModeRaw = " + mModeRaw);
-        	
-        }
-            
         // enable Bluetooth if necessary
         if (!EMULATOR) {
         	mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -152,45 +150,39 @@ public class HarleyDroid extends Activity implements ServiceConnection
     }
     
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-    	if (D) Log.d(TAG, "onSaveInstanceState(mModeRaw= " + mModeRaw + ")");
-    	
-    	outState.putBoolean("moderaw", mModeRaw);
-    }
-    
-    @Override
     public void onStart() {
     	if (D) Log.d(TAG, "onStart()");
     	super.onStart();
 
     	// get preferences which may have been changed
-    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-    	mBluetoothID = prefs.getString("bluetoothid", null);
-    	if (prefs.getString("orientation", "auto").equals("auto"))
+    	mBluetoothID = mPrefs.getString("bluetoothid", null);
+    	if (mPrefs.getString("orientation", "auto").equals("auto"))
     		mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-    	else if (prefs.getString("orientation", "auto").equals("portrait")) {
+    	else if (mPrefs.getString("orientation", "auto").equals("portrait")) {
     		mOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
     		setContentView(R.layout.portrait);
     	}
-    	else if (prefs.getString("orientation", "auto").equals("landscape")) {
+    	else if (mPrefs.getString("orientation", "auto").equals("landscape")) {
     		mOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
     		setContentView(R.layout.landscape);
     	}
     	this.setRequestedOrientation(mOrientation);
-    	
     	mLogging = false;
-    	if (prefs.getBoolean("logging", false)) {
+    	if (mPrefs.getBoolean("logging", false)) {
         	if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()))
         		Toast.makeText(this, R.string.nologging, Toast.LENGTH_LONG).show();
         	else
         		mLogging = true;  	
         }
-    	if (prefs.getBoolean("screenon", false)) 
+    	if (mPrefs.getBoolean("screenon", false)) 
     		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    	if (prefs.getString("unit", "metric").equals("metric"))
+    	if (mPrefs.getString("unit", "metric").equals("metric"))
     		mUnitMetric = true;
     	else
     		mUnitMetric = false;
+    	mModeRaw = mPrefs.getBoolean("moderaw", false);
+    	mCurrentOdoValue = mPrefs.getInt("currentodovalue", 0);
+    	mResetOdoValue = mPrefs.getInt("resetodovalue", 0);
     		   	
     	drawLayout();
             
@@ -205,6 +197,12 @@ public class HarleyDroid extends Activity implements ServiceConnection
 
     	unbindService(this);
     	mService = null;
+    	
+    	SharedPreferences.Editor editor = mPrefs.edit();
+    	editor.putBoolean("moderaw", mModeRaw);
+    	editor.putInt("currentodovalue", mCurrentOdoValue);
+    	editor.putInt("resetodovalue", mResetOdoValue);
+    	editor.commit();
     }
     
     @Override
@@ -287,7 +285,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
         	return true;
         case R.id.resetodo_menu:
         	mResetOdoValue = mCurrentOdoValue;
-        	drawOdometer(mCurrentOdoValue);
+        	drawOdometer(0);
         	return true;
         case R.id.quit_menu:
         	stopCapture();
@@ -411,7 +409,8 @@ public class HarleyDroid extends Activity implements ServiceConnection
     				drawCheckEngine(msg.arg1);
     				break;
     			case UPDATE_ODOMETER:
-    				drawOdometer(msg.arg1);
+    				mCurrentOdoValue = msg.arg1;
+    				drawOdometer(mCurrentOdoValue - mResetOdoValue);
     				break;
     			case UPDATE_FUEL:
     				drawFuel(msg.arg1);
@@ -509,7 +508,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
         drawClutch(0);
         drawGear(0);
         drawCheckEngine(0);
-        drawOdometer(0);
+        drawOdometer(mCurrentOdoValue - mResetOdoValue);
         drawFuel(0);
     }
     
@@ -565,8 +564,6 @@ public class HarleyDroid extends Activity implements ServiceConnection
     
     public void drawOdometer(int value) {
     	// value is in ticks, at 1 tick = 0.00025 miles
-    	mCurrentOdoValue = value;
-    	value -= mResetOdoValue;
     	float miles = value * 0.00025f;
     	float km = miles * 1.609344f; 
     	mViewOdometerMetric.setText(String.format("%4.2f", km));
