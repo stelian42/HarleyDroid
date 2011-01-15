@@ -59,7 +59,6 @@ class Eula {
     static boolean show(final Activity activity) {
         final SharedPreferences preferences = activity.getSharedPreferences(PREFERENCES_EULA,
                 Activity.MODE_PRIVATE);
-preferences.edit().putBoolean(PREFERENCE_EULA_ACCEPTED, false).commit();
         if (!preferences.getBoolean(PREFERENCE_EULA_ACCEPTED, false)) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle(R.string.eula_title);
