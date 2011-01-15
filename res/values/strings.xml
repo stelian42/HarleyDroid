@@ -20,8 +20,8 @@
 
 <resources>
     
-<string name="app_name">Harley Droid</string>
-<string name="settings_name">Harley Droid Settings</string>
+<string name="app_name">HarleyDroid</string>
+<string name="settings_name">HarleyDroid Settings</string>
 
 <string name="nobluetooth">Sorry, your device doesn\'t support bluetooth</string>
 <string name="noenablebluetooth">Unable to enable Bluetooth</string>
