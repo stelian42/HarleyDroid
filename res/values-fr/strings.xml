@@ -56,7 +56,6 @@
 <string name="mode_labelgr">Mode graphique</string>
 <string name="resetodo_label">RAZ distance</string>
 <string name="about_label">A propos</string>
-<string name="quit_label">Quitter</string>
 
 <string name="notification_label">HarleyDroidService</string>
 <string name="notification_start">Réception des données</string>

@@ -32,8 +32,5 @@
     <item android:id="@+id/about_menu"
           android:icon="@drawable/ic_menu_help"
           android:title="@string/about_label" />
-    <item android:id="@+id/quit_menu"
-          android:icon="@drawable/ic_menu_close_clear_cancel"
-          android:title="@string/quit_label" />
 </menu>
 

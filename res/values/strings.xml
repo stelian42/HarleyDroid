@@ -56,7 +56,6 @@
 <string name="mode_labelgr">Graphic mode</string>
 <string name="resetodo_label">Reset odo</string>
 <string name="about_label">About</string>
-<string name="quit_label">Quit</string>
 
 <string name="notification_label">HarleyDroidService</string>
 <string name="notification_start">Receiving data</string>

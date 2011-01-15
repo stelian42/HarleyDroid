@@ -48,7 +48,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
 {
 	private static final boolean D = true;
 	private static final String TAG = HarleyDroid.class.getSimpleName();
-	public static final boolean EMULATOR = false;
+	public static final boolean EMULATOR = true;
 	
     static final int CONNECTING_TO_ELM327 = 1;
 
@@ -294,9 +294,6 @@ public class HarleyDroid extends Activity implements ServiceConnection
         case R.id.about_menu:
         	Eula.show(this, true);
         	return true;
-        case R.id.quit_menu:
-        	stopCapture();
-        	finish();
         default:
             return super.onOptionsItemSelected(item);
         }
