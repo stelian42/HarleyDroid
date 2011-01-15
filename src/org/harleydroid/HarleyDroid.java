@@ -121,8 +121,9 @@ public class HarleyDroid extends Activity implements ServiceConnection
     public void onCreate(Bundle savedInstanceState)
     {
     	if (D) Log.d(TAG, "onCreate()");
-    	
         super.onCreate(savedInstanceState);
+        
+        Eula.show(this);
         
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         

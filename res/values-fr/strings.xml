@@ -74,4 +74,9 @@
 	<item>"Portrait"</item>
 	<item>"Paysage"</item>
 </string-array>
+
+<string name="eula_title">Licence</string>
+<string name="eula_accept">Accepter</string>
+<string name="eula_refuse">Refuser</string>
+
 </resources>

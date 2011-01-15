@@ -83,4 +83,9 @@
 	<item>"portrait"</item>
 	<item>"landscape"</item>
 </string-array>
+
+<string name="eula_title">License</string>
+<string name="eula_accept">Accept</string>
+<string name="eula_refuse">Refuse</string>
+
 </resources>
