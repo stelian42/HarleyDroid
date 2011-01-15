@@ -123,7 +123,7 @@ public class HarleyDroid extends Activity implements ServiceConnection
     	if (D) Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         
-        Eula.show(this);
+        Eula.show(this, false);
         
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         
@@ -290,6 +290,9 @@ public class HarleyDroid extends Activity implements ServiceConnection
         case R.id.resetodo_menu:
         	mResetOdoValue = mCurrentOdoValue;
         	drawOdometer(0);
+        	return true;
+        case R.id.about_menu:
+        	Eula.show(this, true);
         	return true;
         case R.id.quit_menu:
         	stopCapture();

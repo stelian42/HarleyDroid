@@ -56,10 +56,10 @@ class Eula {
      * @param activity The Activity to finish if the user rejects the EULA.
      * @return Whether the user has agreed already.
      */
-    static boolean show(final Activity activity) {
+    static boolean show(final Activity activity, boolean force) {
         final SharedPreferences preferences = activity.getSharedPreferences(PREFERENCES_EULA,
                 Activity.MODE_PRIVATE);
-        if (!preferences.getBoolean(PREFERENCE_EULA_ACCEPTED, false)) {
+        if (force || !preferences.getBoolean(PREFERENCE_EULA_ACCEPTED, false)) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle(R.string.eula_title);
             builder.setCancelable(true);
@@ -73,12 +73,12 @@ class Eula {
             });
             builder.setNegativeButton(R.string.eula_refuse, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    refuse(activity);
+                    refuse(preferences, activity);
                 }
             });
             builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 public void onCancel(DialogInterface dialog) {
-                    refuse(activity);
+                    refuse(preferences, activity);
                 }
             });
             builder.setMessage(readEula(activity));
@@ -92,7 +92,8 @@ class Eula {
         preferences.edit().putBoolean(PREFERENCE_EULA_ACCEPTED, true).commit();
     }
 
-    private static void refuse(Activity activity) {
+    private static void refuse(SharedPreferences preferences, Activity activity) {
+        preferences.edit().putBoolean(PREFERENCE_EULA_ACCEPTED, false).commit();
         activity.finish();
     }
 
