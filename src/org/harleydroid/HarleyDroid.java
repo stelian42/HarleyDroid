@@ -252,6 +252,8 @@ public class HarleyDroid extends Activity implements ServiceConnection
     public boolean onPrepareOptionsMenu(Menu menu) {
     	if (D) Log.d(TAG, "onPrepareOptionsMenu()");
     	
+    	mOptionsMenu.findItem(R.id.capture_menu).setEnabled(
+    			(mBluetoothID == null) ? false : true);
     	if (mService != null && mService.isRunning()) {
     		mOptionsMenu.findItem(R.id.capture_menu).setIcon(R.drawable.ic_menu_stop);
     		mOptionsMenu.findItem(R.id.capture_menu).setTitle(R.string.stopcapture_label);
@@ -261,9 +263,8 @@ public class HarleyDroid extends Activity implements ServiceConnection
     		mOptionsMenu.findItem(R.id.capture_menu).setTitle(R.string.startcapture_label);
     	}
     	if (mModeText)
-    		mOptionsMenu.findItem(R.id.mode_menu).setTitle(R.string.mode_labelgr);
-    	else
-    		mOptionsMenu.findItem(R.id.mode_menu).setTitle(R.string.mode_labelraw);
+    	mOptionsMenu.findItem(R.id.mode_menu).setTitle(
+    			mModeText ? R.string.mode_labelgr : R.string.mode_labelraw);
     		
 		return true;
     }
