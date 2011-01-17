@@ -44,7 +44,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class HarleyDroid extends Activity implements ServiceConnection
+public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnEulaAgreedTo
 {
 	private static final boolean D = false;
 	private static final String TAG = HarleyDroid.class.getSimpleName();
@@ -122,29 +122,32 @@ public class HarleyDroid extends Activity implements ServiceConnection
     {
     	if (D) Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
-        
-        Eula.show(this, false);
-        
+
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
 			setContentView(R.layout.portrait);
 		else
 			setContentView(R.layout.landscape);
-                
-        // enable Bluetooth if necessary
-        if (!EMULATOR) {
-        	mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        	if (mBluetoothAdapter == null) {
-        		Toast.makeText(this, R.string.nobluetooth, Toast.LENGTH_LONG).show();
-        		finish();
-        		return;
-        	}
-        	if (!mBluetoothAdapter.isEnabled()) {
-        		Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        		startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        	}
-        }
+        
+        if (Eula.show(this, false))
+        	onEulaAgreedTo();
+    }
+    
+    @Override
+    public void onEulaAgreedTo() {
+    	if (!EMULATOR) {
+    		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    		if (mBluetoothAdapter == null) {
+    			Toast.makeText(this, R.string.nobluetooth, Toast.LENGTH_LONG).show();
+    			finish();
+    			return;
+    		}
+    		if (!mBluetoothAdapter.isEnabled()) {
+    			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+    			startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+    		}
+    	}
     }
     
     @Override
