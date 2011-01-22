@@ -282,9 +282,9 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		showDialog(CONNECTING_TO_ELM327);
 		
     	if (!EMULATOR)
-    		mService.startService(mBluetoothAdapter.getRemoteDevice(mBluetoothID), mLogging);
+    		mService.startService(mBluetoothAdapter.getRemoteDevice(mBluetoothID), mUnitMetric, mLogging);
     	else
-    		mService.startService(null, mLogging);
+    		mService.startService(null, mUnitMetric, mLogging);
 	}
     
     private void startCapture() {

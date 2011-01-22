@@ -20,17 +20,12 @@
 package org.harleydroid;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.zip.GZIPOutputStream;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -40,7 +35,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -59,12 +53,11 @@ public class HarleyDroidService extends Service
 	private static final int MAX_ERRORS = 10;
 
 	private final IBinder binder = new HarleyDroidServiceBinder();
+	private HarleyDroidLogger mLogger = null;
 	private HarleyData mHD;
 	private NotificationManager mNM;
 	private Handler mHandler = null;
 	private ThreadELM mThread = null;
-	private OutputStream mLog = null;
-	private SimpleDateFormat mDateFormat;
 
 	@Override
 	public void onCreate() {
@@ -72,7 +65,6 @@ public class HarleyDroidService extends Service
 		if (D) Log.d(TAG, "onCreate()");
 		
 		mHD = new HarleyData();
-		mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 			
 		mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		CharSequence text = getText(R.string.notification_start);
@@ -113,12 +105,14 @@ public class HarleyDroidService extends Service
 		mHandler = handler;
 	}
 	
-	public void startService(BluetoothDevice dev, boolean logging) {
+	public void startService(BluetoothDevice dev, boolean metric, boolean logging) {
 		if (D) Log.d(TAG, "startService()");
-	
-		// open logfile if possible
-		if (logging)
-			startLog();
+		
+		if (logging) {
+			mLogger = new HarleyDroidLogger(this, metric);
+			mLogger.start();
+			mHD.addHarleyDataListener(mLogger);
+		}
 		
 		mThread = new ThreadELM(dev);
 		mThread.start();
@@ -127,36 +121,14 @@ public class HarleyDroidService extends Service
 	public void stopService() {
 		if (D) Log.d(TAG, "stopService()");
 		
-		stopLog();
 		mThread.stop = true;
 		mThread = null;
-	}
-	
-	private void startLog() {
-		try {
-			File path = new File(Environment.getExternalStorageDirectory(), "/Android/data/org.harleydroid/files/");
-       		path.mkdirs();
-          	File logFile = new File(path, "harley-" + mDateFormat.format(new Date()) + ".log.gz");
-			mLog = new GZIPOutputStream(new FileOutputStream(logFile, true));
-			String header = "Starting at " + mDateFormat.format(new Date()) + "\n"; 
-			mLog.write(header.getBytes());
-		} catch (IOException e) {
-			Log.d(TAG, "Logfile open " + e);
+		if (mLogger != null) {
+			mHD.removeHarleyDataListener(mLogger);
+			mLogger.stop();
 		}
 	}
-	
-	private void stopLog() {
-		if (mLog != null) {
-			String header = "Stopping at " + mDateFormat.format(new Date()) + "\n"; 
-			try {
-				mLog.write(header.getBytes());
-				mLog.close();
-			} catch (IOException e) {
-			}
-		}
-		mLog = null;
-	}
-	
+		
 	public boolean isRunning() {
 		if (D) Log.d(TAG, "isRunning()");
 
@@ -199,10 +171,6 @@ public class HarleyDroidService extends Service
 			String line = mIn.readLine();
 			t.cancel();
 			if (D) Log.d(TAG, "read (" + line.length() + "): " + line);
-			if (mLog != null) {
-				mLog.write(line.getBytes());
-				mLog.write('\n');
-			}
 			return line;
 		}
 		
@@ -334,7 +302,8 @@ public class HarleyDroidService extends Service
 		}
 
 		private void finish() {
-			stopLog();
+			if (mLogger != null)
+				mLogger.stop();
 			mTimer.cancel();
 			stopSelf();
 		}
