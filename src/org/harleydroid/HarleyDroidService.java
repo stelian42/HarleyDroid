@@ -45,7 +45,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-public class HarleyDroidService extends Service implements HarleyDataListener
+public class HarleyDroidService extends Service
 {
 	private static final boolean D = false;
 	private static final String TAG = HarleyDroidService.class.getSimpleName();
@@ -111,7 +111,6 @@ public class HarleyDroidService extends Service implements HarleyDataListener
 		if (D) Log.d(TAG, "setHandler()");
 		
 		mHandler = handler;
-		mHD.addHarleyDataListener(this);
 	}
 	
 	public void startService(BluetoothDevice dev, boolean logging) {
@@ -339,75 +338,5 @@ public class HarleyDroidService extends Service implements HarleyDataListener
 			mTimer.cancel();
 			stopSelf();
 		}
-	}
-	
-    public void onRPMChanged(int rpm) {
-        mHandler.obtainMessage(HarleyDroid.UPDATE_RPM, rpm, -1).sendToTarget();
-    }
-    
-    public void onSpeedImperialChanged(int speed) {
-    	mHandler.obtainMessage(HarleyDroid.UPDATE_SPEED_IMPERIAL, speed, -1).sendToTarget();
-    }
-  
-    public void onSpeedMetricChanged(int speed) {
-    	mHandler.obtainMessage(HarleyDroid.UPDATE_SPEED_METRIC, speed, -1).sendToTarget();
-    }
- 
-    public void onEngineTempImperialChanged(int engineTemp) {
-        mHandler.obtainMessage(HarleyDroid.UPDATE_ENGINETEMP_IMPERIAL, engineTemp, -1).sendToTarget();
-    }
-    
-    public void onEngineTempMetricChanged(int engineTemp) {
-    	mHandler.obtainMessage(HarleyDroid.UPDATE_ENGINETEMP_METRIC, engineTemp, -1).sendToTarget();
-    }
-  
-    public void onFuelGaugeChanged(int full) {
-        mHandler.obtainMessage(HarleyDroid.UPDATE_FUELGAUGE, full, -1).sendToTarget();
-    }
-
-    public void onTurnSignalsChanged(int turnSignals) {
-    	mHandler.obtainMessage(HarleyDroid.UPDATE_TURNSIGNALS, turnSignals, -1).sendToTarget();
-    }
-
-    public void onNeutralChanged(boolean neutral) {
-    	mHandler.obtainMessage(HarleyDroid.UPDATE_NEUTRAL, neutral ? 1 : 0, -1).sendToTarget();
-    }
-
-    public void onClutchChanged(boolean clutch) {
-    	mHandler.obtainMessage(HarleyDroid.UPDATE_CLUTCH, clutch ? 1 : 0, -1).sendToTarget();
-    }
-
-    public void onGearChanged(int gear) {
-    	mHandler.obtainMessage(HarleyDroid.UPDATE_GEAR, gear, -1).sendToTarget();
-    }
-
-    public void onCheckEngineChanged(boolean checkEngine) {
-    	mHandler.obtainMessage(HarleyDroid.UPDATE_CHECKENGINE, checkEngine ? 1 : 0, -1).sendToTarget();
-    }
-
-    public void onOdometerImperialChanged(int odometer) {
-    	mHandler.obtainMessage(HarleyDroid.UPDATE_ODOMETER_IMPERIAL, odometer, -1).sendToTarget();
-    }
-
-    public void onOdometerMetricChanged(int odometer) {
-    	mHandler.obtainMessage(HarleyDroid.UPDATE_ODOMETER_METRIC, odometer, -1).sendToTarget();
-    }
-
-    public void onFuelImperialChanged(int fuel) {
-    	mHandler.obtainMessage(HarleyDroid.UPDATE_FUEL_IMPERIAL, fuel, -1).sendToTarget();
-    }
-
-    public void onFuelMetricChanged(int fuel) {
-    	mHandler.obtainMessage(HarleyDroid.UPDATE_FUEL_METRIC, fuel, -1).sendToTarget();
-    }
-
-    public void onBadCRCChanged(byte[] buffer) {
-    	Log.d(TAG, "onBadCRC(" + new String(buffer) + ")");
-    }
-
-    public void onUnknownChanged(byte[] buffer) {
-    	Log.d(TAG, "onUnknown(" + new String(buffer) + ")");
-    }
-
-	
+	}	
 }
