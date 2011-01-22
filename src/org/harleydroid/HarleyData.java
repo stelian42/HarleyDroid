@@ -22,206 +22,247 @@
 
 package org.harleydroid;
 
-import android.os.Handler;
+import java.util.ArrayList;
 
 public class HarleyData {
-	private int rpm;				// RPM in 1000*rotation/minute */
-	private int speed;				// speed in 1000*mph */
-	private int engineTemp;			// XXX engine temperature in farenheit */
-	private int full;				// fuel gauge: 0 (empty) to 6 (full) */
-	private int turnSignals;		// turn signals bitmap: 0x1=right, 0x2=left */
-	private boolean neutral;		// XXX boolean: in neutral */
-	private boolean clutch;			// XXX boolean: clutch engaged */
-	private int gear;				// XXX current gear: 1 to 6 */
-	private boolean checkEngine;	// XXX boolean: check engine */
-	private int odometer;			// odometer tick (1 tick = 0.00025 miles) */
-	private int fuel;				// fuel consumption tick (1 tick = 0.000040 liters) */
 
-	private Handler handler;
+	// raw values reported in the J1850 stream
+	private int mRPM = 0;					// RPM in rotation/minute * 4
+	private int mSpeed = 0;					// speed in mph * 200
+	private int mEngineTemp = 0;			// XXX engine temperature in Fahrenheit
+	private int mFuelGauge = 0;				// fuel gauge: 0 (empty) to 6 (full)
+	private int mTurnSignals = 0;			// turn signals bitmap: 0x1=right, 0x2=left
+	private boolean mNeutral = false;		// XXX boolean: in neutral
+	private boolean mClutch = false;		// XXX boolean: clutch engaged
+	private int mGear = 0;					// XXX current gear: 1 to 6
+	private boolean mCheckEngine = false;	// XXX boolean: check engine
+	private int mOdometer = 0;				// odometer tick (1 tick = 0.00025 miles)
+	private int mFuel = 0;					// fuel consumption tick (1 tick = 0.000040 liters)
+	
+    private int mResetOdometer = 0;
+    
+	private ArrayList<HarleyDataListener> mListeners;
 
 	public HarleyData() {
-		setHandler(null);
+		mListeners = new ArrayList<HarleyDataListener>();
 	}
-	
-	public void setHandler(Handler handler) {
-		this.handler = handler;
-		rpm = 0;
-		speed = 0;
-		engineTemp = 0;
-		full = 0;
-		turnSignals = 0;
-		neutral = false;
-		clutch = false;
-		gear = 0;
-		checkEngine = false;
-		odometer = 0;
-		fuel = 0;
+
+	public void addHarleyDataListener(HarleyDataListener l) {
+		mListeners.add(l);
+	}
+
+	public void removeHarleyDataListener(HarleyDataListener l) {
+		mListeners.remove(l);
 	}
 
 	public int getRPM() {
-		return rpm;
+		return mRPM / 4;
 	}
-
+	
 	public void setRPM(int rpm) {
-		if (this.rpm != rpm) {
-			this.rpm = rpm;
-			if (handler != null)
-				handler.obtainMessage(HarleyDroid.UPDATE_RPM, rpm / 1000, -1).sendToTarget();
+		if (mRPM != rpm) {
+			mRPM = rpm;
+			for (HarleyDataListener l : mListeners)
+				l.onRPMChanged(mRPM / 4);
 		}
 	}
-
-	public int getSpeed() {
-		return speed;
+	
+	public int getSpeedImperial() {
+		return mSpeed / 200;
 	}
-
+	
+	public int getSpeedMetric() {
+		return (mSpeed * 1609) / 200000;
+	}
+	
+	
 	public void setSpeed(int speed) {
-		if (this.speed != speed) {
-			this.speed = speed;
-			if (handler != null)
-				handler.obtainMessage(HarleyDroid.UPDATE_SPEED, speed / 1000, -1).sendToTarget();
+		if (mSpeed != speed) {
+			mSpeed = speed;
+			for (HarleyDataListener l : mListeners) {
+				l.onSpeedImperialChanged(mSpeed / 200);
+				l.onSpeedMetricChanged((mSpeed * 1609) / 200000);
+			}
 		}
 	}
-
-	public int getEngineTemp() {
-		return engineTemp;
+	
+	public int getEngineTempImperial() {
+		return mEngineTemp;
 	}
-
+	
+	public int getEngineTempMetric() {
+		return (mEngineTemp - 32) * 5 / 9;
+	}
+	
 	public void setEngineTemp(int engineTemp) {
-		if (this.engineTemp != engineTemp) {
-			this.engineTemp = engineTemp;
-			if (handler != null)
-				handler.obtainMessage(HarleyDroid.UPDATE_ENGINETEMP, engineTemp, -1).sendToTarget();
+		if (mEngineTemp != engineTemp) {
+			mEngineTemp = engineTemp;
+			for (HarleyDataListener l : mListeners) {
+				l.onEngineTempImperialChanged(mEngineTemp);
+				l.onEngineTempMetricChanged((mEngineTemp - 32) * 5 / 9);
+			}
 		}
 	}
 
-	public int getFull() {
-		return full;
+	public int getFuelGauge() {
+		return mFuelGauge;
 	}
-
-	public void setFull(int full) {
-		if (this.full != full) {
-			this.full = full;
-			if (handler != null)
-				handler.obtainMessage(HarleyDroid.UPDATE_FULL, full, -1).sendToTarget();
+	
+	public void setFuelGauge(int fuelGauge) {
+		if (mFuelGauge != fuelGauge) {
+			mFuelGauge = fuelGauge;
+			for (HarleyDataListener l : mListeners)
+				l.onFuelGaugeChanged(mFuelGauge);
 		}
 	}
 
 	public int getTurnSignals() {
-		return turnSignals;
+		return mTurnSignals;
 	}
-
+	
 	public void setTurnSignals(int turnSignals) {
-		if (this.turnSignals != turnSignals) {
-			this.turnSignals = turnSignals;
-			if (handler != null)
-				handler.obtainMessage(HarleyDroid.UPDATE_TURNSIGNALS, turnSignals, -1).sendToTarget();
+		if (mTurnSignals != turnSignals) {
+			mTurnSignals = turnSignals;
+			for (HarleyDataListener l : mListeners)
+				l.onTurnSignalsChanged(mTurnSignals);
 		}
 	}
 
 	public boolean getNeutral() {
-		return neutral;
+		return mNeutral;
 	}
-
+	
 	public void setNeutral(boolean neutral) {
-		if (this.neutral != neutral) {
-			this.neutral = neutral;
-			if (handler != null)
-				handler.obtainMessage(HarleyDroid.UPDATE_NEUTRAL, neutral ? 1 : 0, -1).sendToTarget();
+		if (mNeutral != neutral) {
+			mNeutral = neutral;
+			for (HarleyDataListener l : mListeners)
+				l.onNeutralChanged(mNeutral);
 		}
 	}
 
 	public boolean getClutch() {
-		return clutch;
+		return mClutch;
 	}
-
+	
 	public void setClutch(boolean clutch) {
-		if (this.clutch != clutch) {
-			this.clutch = clutch;
-			if (handler != null)
-				handler.obtainMessage(HarleyDroid.UPDATE_CLUTCH, clutch ? 1 : 0, -1).sendToTarget();
+		if (mClutch != clutch) {
+			mClutch = clutch;
+			for (HarleyDataListener l : mListeners)
+				l.onClutchChanged(mClutch);
 		}
 	}
 
 	public int getGear() {
-		return gear;
+		return mGear;
 	}
-
+	
 	public void setGear(int gear) {
-		if (this.gear != gear) {
-			this.gear = gear;
-			if (handler != null)
-				handler.obtainMessage(HarleyDroid.UPDATE_GEAR, gear, -1).sendToTarget();
+		if (mGear != gear) {
+			mGear = gear;
+			for (HarleyDataListener l : mListeners)
+				l.onGearChanged(mGear);
 		}
 	}
 
 	public boolean getCheckEngine() {
-		return checkEngine;
+		return mCheckEngine;
 	}
-
+	
 	public void setCheckEngine(boolean checkEngine) {
-		if (this.checkEngine != checkEngine) {
-			this.checkEngine = checkEngine;
-			if (handler != null)
-				handler.obtainMessage(HarleyDroid.UPDATE_CHECKENGINE, checkEngine ? 1 : 0, -1).sendToTarget();
+		if (mCheckEngine != checkEngine) {
+			mCheckEngine = checkEngine;
+			for (HarleyDataListener l : mListeners)
+				l.onCheckEngineChanged(mCheckEngine);
 		}
 	}
 
-	public int getOdometer() {
-		return odometer;
+	public int getOdometerImperial() {
+		return (mOdometer - mResetOdometer) / 40;
 	}
-
+	
+	public int getOdometerMetric() {
+		return ((mOdometer - mResetOdometer) * 1609) / 40000;
+	}
+	
 	public void setOdometer(int odometer) {
-		if (this.odometer != odometer) {
-			this.odometer = odometer;
-			if (handler != null)
-				handler.obtainMessage(HarleyDroid.UPDATE_ODOMETER, odometer, -1).sendToTarget();
+		if (mOdometer != odometer) {
+			mOdometer = odometer;
+			for (HarleyDataListener l : mListeners) {
+				int o = mOdometer - mResetOdometer;
+				l.onOdometerImperialChanged(o / 40);
+				l.onOdometerMetricChanged((o * 1609) / 40000);
+			}
 		}
 	}
 
-	public int getFuel() {
-		return fuel;
+	public void resetOdometer() {
+		mResetOdometer = mOdometer;
+		for (HarleyDataListener l : mListeners) {
+			l.onOdometerImperialChanged(0);
+			l.onOdometerMetricChanged(0);
+		}
 	}
-
+	
+	public int getFuelImperial() {
+		return (mFuel * 338) / 250000;
+	}
+	
+	public int getFuelMetric() {
+		return mFuel / 25;
+	}
+	
 	public void setFuel(int fuel) {
-		if (this.fuel != fuel) {
-			this.fuel = fuel;
-			if (handler != null)
-				handler.obtainMessage(HarleyDroid.UPDATE_FUEL, fuel / 25, -1).sendToTarget();
+		if (mFuel != fuel) {
+			mFuel = fuel;
+			for (HarleyDataListener l : mListeners) {
+				l.onFuelImperialChanged((mFuel * 338) / 250000);
+				l.onFuelMetricChanged(mFuel / 25);
+			}
 		}
+	}
+
+	public void setBadCRC(byte[] buffer) {
+		for (HarleyDataListener l : mListeners)
+			l.onBadCRCChanged(buffer);
+	}
+
+	public void setUnknown(byte[] buffer) {
+		for (HarleyDataListener l : mListeners)
+			l.onUnknownChanged(buffer);
 	}
 
 	public String toString() {
 		String ret;
 
-		ret = "RPM:" + rpm / 1000;
-		ret += " SPEED:" + speed / 1000;
-		ret += " ENGTEMP:" + engineTemp;
-		ret += " FULL:" + full;
-		ret += " TURN:";
-		if ((turnSignals & 0x3) == 0x3)
+		ret = "RPM:" + mRPM / 1000;
+		ret += " SPD:" + mSpeed / 1000;
+		ret += " ETP:" + mEngineTemp;
+		ret += " FGE:" + mFuelGauge;
+		ret += " TRN:";
+		if ((mTurnSignals & 0x3) == 0x3)
 			ret += "W";
-		else if ((turnSignals & 0x1) != 0)
+		else if ((mTurnSignals & 0x1) != 0)
 			ret += "R";
-		else if ((turnSignals & 0x2) != 0)
+		else if ((mTurnSignals & 0x2) != 0)
 			ret += "L";
 		else
 			ret += "x";
-		ret += " CLUTCH:";
-		if (neutral)
+		ret += " CLU/NTR:";
+		if (mNeutral)
 			ret += "N";
 		else
 			ret += "x";
-		if (clutch)
+		if (mClutch)
 			ret += "C";
 		else
 			ret += "x";
-		if (gear > 0 && gear < 7)
-			ret += gear;
+		if (mGear > 0 && mGear < 7)
+			ret += mGear;
 		else
 			ret += "x";
-		ret += " CHECK:" + checkEngine;
-		ret += " ODO:" + odometer;
-		ret += " FUEL:" + fuel;
+		ret += " CHK:" + mCheckEngine;
+		ret += " ODO:" + mOdometer;
+		ret += " FUL:" + mFuel;
 		return ret;
 	}
 };

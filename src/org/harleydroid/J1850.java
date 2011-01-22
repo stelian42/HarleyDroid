@@ -79,7 +79,7 @@ public class J1850 {
 		return crc;
 	}
 
-	public static void parse(byte[] buffer, HarleyData hd) throws Exception {
+	public static boolean parse(byte[] buffer, HarleyData hd) {
 		byte[] in;
 		int x;
 		int y;
@@ -93,8 +93,10 @@ public class J1850 {
 		System.out.println("");
 		*/
 
-		if (crc(in) != (byte)0xc4)
-			throw new Exception("crc");
+		if (crc(in) != (byte)0xc4) {
+			hd.setBadCRC(buffer);
+			return false;
+		}
 
 		x = y = 0;
 		if (in.length >= 4)
@@ -107,9 +109,9 @@ public class J1850 {
 			     (in[5]       & 0x000000ff);
 
 		if (x == 0x281b1002)
-			hd.setRPM(y * 250);
+			hd.setRPM(y);
 		else if (x == 0x48291002)
-			hd.setSpeed(y * 5);
+			hd.setSpeed(y);
 		else if (x == 0xa8491010)
 			hd.setEngineTemp(in[4]);
 		else if (x == 0xa83b1003) {
@@ -137,27 +139,18 @@ public class J1850 {
 			fuellast = y;
 			hd.setFuel(fuelaccum);
 		} else if ((x == 0xa8836112) && ((in[4] & 0xd0) == 0xd0))
-			hd.setFull(in[4] & 0x0f);
+			hd.setFuelGauge(in[4] & 0x0f);
 		else if ((x & 0xffffff5d) == 0x483b4000) {
 			hd.setNeutral((in[3] & 0x20) != 0);
 			hd.setClutch((in[3] & 0x80) != 0);
-		} else if (x == 0x68ff1003 ||
-			   x == 0x68ff4003 ||
-			   x == 0x68ff6103 ||
-			   x == 0xc888100e ||
-			   x == 0xc8896103 ||
-			   x == 0xe889610e) {
-			/* ping */
-		} else if ((x & 0xffffff7f) == 0x4892402a ||
-			   (x & 0xffffff7f) == 0x6893612a) {
-			/* shutdown - lock */
 		} else if ((x & 0xffffff7f) == 0x68881003) {
 			if ((in[3] & 0x80) != 0)
 				hd.setCheckEngine(true);
 			else
 				hd.setCheckEngine(false);
 		} else
-			throw new Exception("unknown");
+			hd.setUnknown(buffer);
+		return true;
 	}
 
 	public static void main(String[] args) {
@@ -176,13 +169,8 @@ public class J1850 {
 
 		System.out.println("crc = " + crc(out));
 
-		try {
-			HarleyData data = new HarleyData();
-			parse(in, data);
-			System.out.println(data);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		HarleyData data = new HarleyData();
+		parse(in, data);
+		System.out.println(data);
 	}
 }

@@ -38,7 +38,7 @@
 <string name="speed_metric_label">Vitesse (km/h):</string>
 <string name="enginetemp_imperial_label">Temperature moteur (F):</string>
 <string name="enginetemp_metric_label">Temperature moteur (C):</string>
-<string name="full_label">Niveau réservoir d\'essence:</string>
+<string name="fuelgauge_label">Niveau d\'essence:</string>
 <string name="turnsignals_label">Clignotants:</string>
 <string name="neutral_label">Point mort:</string>
 <string name="clutch_label">Embrayage:</string>

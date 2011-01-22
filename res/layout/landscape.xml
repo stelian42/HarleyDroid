@@ -291,12 +291,12 @@
 			</TableRow>
 			<TableRow>
 			<TextView  
-				android:id="@+id/full_label" 
-    			android:text="@string/full_label"
+				android:id="@+id/fuelgauge_label" 
+    			android:text="@string/fuelgauge_label"
     			android:padding="3dip"
 	 	   		/>
 			<TextView
-				android:id="@+id/full_field"
+				android:id="@+id/fuelgauge_field"
 				android:padding="3dip"  
     			/>
 			</TableRow>

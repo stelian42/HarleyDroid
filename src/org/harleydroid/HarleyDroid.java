@@ -59,16 +59,20 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     public static final int STATUS_NODATA = 4;
     public static final int STATUS_TOOMANYERRORS = 5;
     public static final int UPDATE_RPM = 6;
-    public static final int UPDATE_SPEED = 7;
-    public static final int UPDATE_ENGINETEMP = 8;
-    public static final int UPDATE_FULL = 9;
-    public static final int UPDATE_TURNSIGNALS = 10;
-    public static final int UPDATE_NEUTRAL = 11;
-    public static final int UPDATE_CLUTCH = 12;
-    public static final int UPDATE_GEAR = 13;
-    public static final int UPDATE_CHECKENGINE = 14;
-    public static final int UPDATE_ODOMETER = 15;
-    public static final int UPDATE_FUEL = 16;
+    public static final int UPDATE_SPEED_METRIC = 7;
+    public static final int UPDATE_SPEED_IMPERIAL = 8;
+    public static final int UPDATE_ENGINETEMP_METRIC = 9;
+    public static final int UPDATE_ENGINETEMP_IMPERIAL = 10;
+    public static final int UPDATE_FUELGAUGE = 11;
+    public static final int UPDATE_TURNSIGNALS = 12;
+    public static final int UPDATE_NEUTRAL = 13;
+    public static final int UPDATE_CLUTCH = 14;
+    public static final int UPDATE_GEAR = 15;
+    public static final int UPDATE_CHECKENGINE = 16;
+    public static final int UPDATE_ODOMETER_METRIC = 17;
+    public static final int UPDATE_ODOMETER_IMPERIAL = 18;
+    public static final int UPDATE_FUEL_METRIC = 19;
+    public static final int UPDATE_FUEL_IMPERIAL = 20;
 
     private static final int REQUEST_ENABLE_BT = 2;
     
@@ -81,8 +85,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     private boolean mModeText = false;
     private boolean mUnitMetric = false;
     private int mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-    private int mCurrentOdoValue = 0;
-    private int mResetOdoValue = 0;
+    private HarleyData mHD;
     
     // Views references cached for performance
     private View mViewText;
@@ -99,7 +102,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     private TextView mLabelEngTempImperial;
     private TextView mViewEngTempMetric;
     private TextView mViewEngTempImperial;
-    private TextView mViewFull;
+    private TextView mViewFuelGauge;
     private View mImageTurnSignalsLeft;
     private View mImageTurnSignalsRight;
     private TextView mViewTurnSignals;
@@ -188,8 +191,6 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     	else
     		mUnitMetric = false;
     	mModeText = mPrefs.getBoolean("modetext", false);
-    	mCurrentOdoValue = mPrefs.getInt("currentodovalue", 0);
-    	mResetOdoValue = mPrefs.getInt("resetodovalue", 0);
     		   	
     	drawLayout();
             
@@ -207,8 +208,6 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     	
     	SharedPreferences.Editor editor = mPrefs.edit();
     	editor.putBoolean("modetext", mModeText);
-    	editor.putInt("currentodovalue", mCurrentOdoValue);
-    	editor.putInt("resetodovalue", mResetOdoValue);
     	editor.commit();
     }
     
@@ -292,8 +291,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
         	startActivity(settingsActivity);
         	return true;
         case R.id.resetodo_menu:
-        	mResetOdoValue = mCurrentOdoValue;
-        	drawOdometer(0);
+        	mHD.resetOdometer();
         	return true;
         case R.id.about_menu:
         	Eula.show(this, true);
@@ -322,6 +320,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     	
 		mService = ((HarleyDroidService.HarleyDroidServiceBinder)service).getService();
 		mService.setHandler(mHandler);
+		mHD = mService.getHarleyData();
 		
 		if (mService.isRunning())
 			return;
@@ -337,8 +336,6 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     private void startCapture() {
     	if (D) Log.d(TAG, "startCapture()");
     	
-    	mCurrentOdoValue = 0;
-    	mResetOdoValue = 0;
     	startService(new Intent(this, HarleyDroidService.class));
     	bindService(new Intent(this, HarleyDroidService.class), this, 0);
     }
@@ -392,14 +389,20 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     			case UPDATE_RPM:
     				drawRPM(msg.arg1);
     				break;
-    			case UPDATE_SPEED:
-    				drawSpeed(msg.arg1);
+    			case UPDATE_SPEED_IMPERIAL:
+    				drawSpeedImperial(msg.arg1);
     				break;
-    			case UPDATE_ENGINETEMP:
-    				drawEngineTemp(msg.arg1);
+    			case UPDATE_SPEED_METRIC:
+    				drawSpeedMetric(msg.arg1);
+    				break; 			
+    			case UPDATE_ENGINETEMP_IMPERIAL:
+    				drawEngineTempImperial(msg.arg1);
     				break;
-    			case UPDATE_FULL:
-    				drawFull(msg.arg1);
+    			case UPDATE_ENGINETEMP_METRIC:
+    				drawEngineTempMetric(msg.arg1);
+    				break;
+    			case UPDATE_FUELGAUGE:
+    				drawFuelGauge(msg.arg1);
     				break;
     			case UPDATE_TURNSIGNALS:
     				drawTurnSignals(msg.arg1);
@@ -416,12 +419,17 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     			case UPDATE_CHECKENGINE:
     				drawCheckEngine(msg.arg1);
     				break;
-    			case UPDATE_ODOMETER:
-    				mCurrentOdoValue = msg.arg1;
-    				drawOdometer(mCurrentOdoValue - mResetOdoValue);
+    			case UPDATE_ODOMETER_IMPERIAL:
+    				drawOdometerImperial(msg.arg1);
     				break;
-    			case UPDATE_FUEL:
-    				drawFuel(msg.arg1);
+    			case UPDATE_ODOMETER_METRIC:
+    				drawOdometerMetric(msg.arg1);
+    				break;
+    			case UPDATE_FUEL_IMPERIAL:
+    				drawFuelImperial(msg.arg1);
+    				break;
+    			case UPDATE_FUEL_METRIC:
+    				drawFuelMetric(msg.arg1);
     				break;
        		}
     	}
@@ -443,7 +451,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
         mLabelEngTempImperial = (TextView) findViewById(R.id.enginetemp_imperial_label);
         mViewEngTempMetric = (TextView) findViewById(R.id.enginetemp_metric_field);
         mViewEngTempImperial = (TextView) findViewById(R.id.enginetemp_imperial_field);
-        mViewFull = (TextView) findViewById(R.id.full_field);
+        mViewFuelGauge = (TextView) findViewById(R.id.fuelgauge_field);
         mImageTurnSignalsLeft = (View) findViewById(R.id.turn_left);
         mImageTurnSignalsRight = (View) findViewById(R.id.turn_right);
         mViewTurnSignals = (TextView) findViewById(R.id.turnsignals_field);
@@ -511,16 +519,20 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     	}
     	
         drawRPM(0);
-        drawSpeed(0);
-        drawEngineTemp(0);
-        drawFull(0);
+        drawSpeedImperial(0);
+        drawSpeedMetric(0);
+        drawEngineTempImperial(0);
+        drawEngineTempMetric(0);
+        drawFuelGauge(0);
         drawTurnSignals(0);
         drawNeutral(0);
         drawClutch(0);
         drawGear(0);
         drawCheckEngine(0);
-        drawOdometer(mCurrentOdoValue - mResetOdoValue);
-        drawFuel(0);
+        drawOdometerImperial(0);
+        drawOdometerMetric(0);
+        drawFuelImperial(0);
+        drawFuelMetric(0);
     }
     
     public void drawRPM(int value) {
@@ -528,22 +540,30 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
         mGaugeRpm.setValue(value / 100);
     }
     
-    public void drawSpeed(int value) {
+    public void drawSpeedImperial(int value) {
     	// value is in mph
-    	mViewSpeedMetric.setText(Integer.toString((int)(value * 1.609f)));
-        mGaugeSpeedMetric.setValue((int)(value * 1.609f));
-        mViewSpeedImperial.setText(Integer.toString(value));
+    	mViewSpeedImperial.setText(Integer.toString(value));
         mGaugeSpeedImperial.setValue(value);
     }
     
-    public void drawEngineTemp(int value) {
+    public void drawSpeedMetric(int value) {
+    	// value is in km/h
+    	mViewSpeedMetric.setText(Integer.toString(value));
+        mGaugeSpeedMetric.setValue(value);
+    }
+    
+    public void drawEngineTempImperial(int value) {
     	// value is in F
-    	mViewEngTempMetric.setText(Integer.toString((value - 32) * 5 / 9));
     	mViewEngTempImperial.setText(Integer.toString(value));
     }
-   
-    public void drawFull(int value) {
-    	mViewFull.setText(Integer.toString(value));
+
+    public void drawEngineTempMetric(int value) {
+    	// value is in C
+    	mViewEngTempMetric.setText(Integer.toString(value));
+    }
+
+    public void drawFuelGauge(int value) {
+    	mViewFuelGauge.setText(Integer.toString(value));
     }
    
     public void drawTurnSignals(int value) {
@@ -586,21 +606,27 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     	mViewCheckEngine.setText(Integer.toString(value));
     }
     
-    public void drawOdometer(int value) {
-    	// value is in ticks, at 1 tick = 0.00025 miles
-    	float miles = value * 0.00025f;
-    	float km = miles * 1.609344f; 
-    	mViewOdometerMetric.setText(String.format("%4.2f", km));
-    	mGaugeSpeedMetric.setOdoValue(km);
-    	mViewOdometerImperial.setText(String.format("%.2f", miles));
+    public void drawOdometerImperial(int value) {
+    	// value is miles * 100
+    	float miles = value / 100f;
+    	mViewOdometerImperial.setText(String.format("%4.2f", miles));
     	mGaugeSpeedImperial.setOdoValue(miles);
     }
-    
-    public void drawFuel(int value) {
+
+    public void drawOdometerMetric(int value) {
+    	// value is km * 100
+    	float km = value / 100f;
+    	mViewOdometerMetric.setText(String.format("%4.2f", km));
+    	mGaugeSpeedMetric.setOdoValue(km);
+    }
+
+    public void drawFuelImperial(int value) {
+    	// value is in fl oz
+    	mViewFuelImperial.setText(Float.toString(value));
+    }
+
+    public void drawFuelMetric(int value) {
     	// value is in milliliters
-    	float valueFlOz;
-    	mViewFuelMetric.setText(Integer.toString(value));
-    	valueFlOz = value * 0.0338140227f;
-    	mViewFuelImperial.setText(Float.toString(valueFlOz));
+    	mViewFuelMetric.setText(Float.toString(value));
     }
 }

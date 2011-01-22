@@ -38,7 +38,7 @@
 <string name="speed_metric_label">Speed (km/h):</string>
 <string name="enginetemp_imperial_label">Engine temperature (F):</string>
 <string name="enginetemp_metric_label">Engine temperature (C):</string>
-<string name="full_label">Fuel tank level:</string>
+<string name="fuelgauge_label">Fuel gauge:</string>
 <string name="turnsignals_label">Turn signals:</string>
 <string name="neutral_label">Neutral:</string>
 <string name="clutch_label">Clutch:</string>

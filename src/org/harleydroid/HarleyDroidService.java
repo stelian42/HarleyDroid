@@ -45,7 +45,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-public class HarleyDroidService extends Service
+public class HarleyDroidService extends Service implements HarleyDataListener
 {
 	private static final boolean D = false;
 	private static final String TAG = HarleyDroidService.class.getSimpleName();
@@ -102,12 +102,16 @@ public class HarleyDroidService extends Service
 		
 	    return START_STICKY;
 	}
-	
+
+	public HarleyData getHarleyData() {
+		return mHD;
+	}
+
 	public void setHandler(Handler handler) {
 		if (D) Log.d(TAG, "setHandler()");
 		
 		mHandler = handler;
-		mHD.setHandler(handler);
+		mHD.addHarleyDataListener(this);
 	}
 	
 	public void startService(BluetoothDevice dev, boolean logging) {
@@ -278,15 +282,15 @@ public class HarleyDroidService extends Service
         			}
         		
         			/* send several messages to update the UI */
-        			mHandler.obtainMessage(HarleyDroid.UPDATE_ODOMETER, cnt, -1).sendToTarget();
+        			mHD.setOdometer(cnt);
         			cnt += 50;
         			if (cnt % 100 == 0) {
-        				mHandler.obtainMessage(HarleyDroid.UPDATE_CHECKENGINE, 1, -1).sendToTarget();
-        				mHandler.obtainMessage(HarleyDroid.UPDATE_TURNSIGNALS, 0, -1).sendToTarget();
+        				mHD.setCheckEngine(true);
+        				mHD.setTurnSignals(0);
         			}
         			else {
-        				mHandler.obtainMessage(HarleyDroid.UPDATE_CHECKENGINE, 0, -1).sendToTarget();
-        				mHandler.obtainMessage(HarleyDroid.UPDATE_TURNSIGNALS, 3, -1).sendToTarget();
+        				mHD.setCheckEngine(false);
+        				mHD.setTurnSignals(3);
         			}
         			
         			// RPM at 1053
@@ -306,19 +310,16 @@ public class HarleyDroidService extends Service
     				}
     			}
     				
-    			try {
-    				J1850.parse(line.getBytes(), mHD);
+    			if (J1850.parse(line.getBytes(), mHD))
     				errors = 0;
-    			} catch (Exception e1) {
-    				if (D) Log.d(TAG, "Error: " + e1.getMessage());
+    			else
     				++errors;
-    				if (errors > MAX_ERRORS) {
-    					mHandler.obtainMessage(HarleyDroid.STATUS_TOOMANYERRORS, -1, -1).sendToTarget();
-    					stop = true;
-    					break;	
-    				}
-    			}
     			
+    			if (errors > MAX_ERRORS) {
+    				mHandler.obtainMessage(HarleyDroid.STATUS_TOOMANYERRORS, -1, -1).sendToTarget();
+    				stop = true;
+    				break;	
+    			}
     		}
     		if (!HarleyDroid.EMULATOR) {
     			try {
@@ -339,4 +340,74 @@ public class HarleyDroidService extends Service
 			stopSelf();
 		}
 	}
+	
+    public void onRPMChanged(int rpm) {
+        mHandler.obtainMessage(HarleyDroid.UPDATE_RPM, rpm, -1).sendToTarget();
+    }
+    
+    public void onSpeedImperialChanged(int speed) {
+    	mHandler.obtainMessage(HarleyDroid.UPDATE_SPEED_IMPERIAL, speed, -1).sendToTarget();
+    }
+  
+    public void onSpeedMetricChanged(int speed) {
+    	mHandler.obtainMessage(HarleyDroid.UPDATE_SPEED_METRIC, speed, -1).sendToTarget();
+    }
+ 
+    public void onEngineTempImperialChanged(int engineTemp) {
+        mHandler.obtainMessage(HarleyDroid.UPDATE_ENGINETEMP_IMPERIAL, engineTemp, -1).sendToTarget();
+    }
+    
+    public void onEngineTempMetricChanged(int engineTemp) {
+    	mHandler.obtainMessage(HarleyDroid.UPDATE_ENGINETEMP_METRIC, engineTemp, -1).sendToTarget();
+    }
+  
+    public void onFuelGaugeChanged(int full) {
+        mHandler.obtainMessage(HarleyDroid.UPDATE_FUELGAUGE, full, -1).sendToTarget();
+    }
+
+    public void onTurnSignalsChanged(int turnSignals) {
+    	mHandler.obtainMessage(HarleyDroid.UPDATE_TURNSIGNALS, turnSignals, -1).sendToTarget();
+    }
+
+    public void onNeutralChanged(boolean neutral) {
+    	mHandler.obtainMessage(HarleyDroid.UPDATE_NEUTRAL, neutral ? 1 : 0, -1).sendToTarget();
+    }
+
+    public void onClutchChanged(boolean clutch) {
+    	mHandler.obtainMessage(HarleyDroid.UPDATE_CLUTCH, clutch ? 1 : 0, -1).sendToTarget();
+    }
+
+    public void onGearChanged(int gear) {
+    	mHandler.obtainMessage(HarleyDroid.UPDATE_GEAR, gear, -1).sendToTarget();
+    }
+
+    public void onCheckEngineChanged(boolean checkEngine) {
+    	mHandler.obtainMessage(HarleyDroid.UPDATE_CHECKENGINE, checkEngine ? 1 : 0, -1).sendToTarget();
+    }
+
+    public void onOdometerImperialChanged(int odometer) {
+    	mHandler.obtainMessage(HarleyDroid.UPDATE_ODOMETER_IMPERIAL, odometer, -1).sendToTarget();
+    }
+
+    public void onOdometerMetricChanged(int odometer) {
+    	mHandler.obtainMessage(HarleyDroid.UPDATE_ODOMETER_METRIC, odometer, -1).sendToTarget();
+    }
+
+    public void onFuelImperialChanged(int fuel) {
+    	mHandler.obtainMessage(HarleyDroid.UPDATE_FUEL_IMPERIAL, fuel, -1).sendToTarget();
+    }
+
+    public void onFuelMetricChanged(int fuel) {
+    	mHandler.obtainMessage(HarleyDroid.UPDATE_FUEL_METRIC, fuel, -1).sendToTarget();
+    }
+
+    public void onBadCRCChanged(byte[] buffer) {
+    	Log.d(TAG, "onBadCRC(" + new String(buffer) + ")");
+    }
+
+    public void onUnknownChanged(byte[] buffer) {
+    	Log.d(TAG, "onUnknown(" + new String(buffer) + ")");
+    }
+
+	
 }
