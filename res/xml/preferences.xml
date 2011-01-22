@@ -28,6 +28,12 @@
         android:persistent="true"
         android:defaultValue="false"
         android:key="logging" />
+    <CheckBoxPreference
+        android:title="@string/pref_gps"
+	android:dependency="logging"
+        android:persistent="true"
+        android:defaultValue="false"
+        android:key="gps" />
 	<CheckBoxPreference
         android:title="@string/pref_screenon"
         android:persistent="true"

@@ -105,15 +105,14 @@ public class HarleyDroidService extends Service
 		mHandler = handler;
 	}
 	
-	public void startService(BluetoothDevice dev, boolean metric, boolean logging) {
+	public void startService(BluetoothDevice dev, boolean metric, boolean logging, boolean gps) {
 		if (D) Log.d(TAG, "startService()");
 		
 		if (logging) {
-			mLogger = new HarleyDroidLogger(this, metric);
+			mLogger = new HarleyDroidLogger(this, metric, gps);
 			mLogger.start();
 			mHD.addHarleyDataListener(mLogger);
 		}
-		
 		mThread = new ThreadELM(dev);
 		mThread.start();
 	}

@@ -43,16 +43,22 @@ public class HarleyDroidLogger implements HarleyDataListener
 		TIMESTAMP_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 
+	private HarleyDroidGPS mGPS = null;
 	private OutputStream mLog = null;
 	private boolean mUnitMetric = false;
 	
-	public HarleyDroidLogger(Context context, boolean metric) {
+	public HarleyDroidLogger(Context context, boolean metric, boolean gps) {
 		mUnitMetric = metric;
+		if (gps)
+			mGPS = new HarleyDroidGPS(context);
 	}
 	
 	public void start() {
 		if (D) Log.d(TAG, "start()");
 		
+		if (mGPS != null)
+			mGPS.start();
+
 		try {
 			File path = new File(Environment.getExternalStorageDirectory(), "/Android/data/org.harleydroid/files/");
        		path.mkdirs();
@@ -71,6 +77,11 @@ public class HarleyDroidLogger implements HarleyDataListener
 				mLog.write(TIMESTAMP_FORMAT.format(new Date()).getBytes());
 				mLog.write(',');
 				mLog.write(data.getBytes());
+				mLog.write(',');
+				if (mGPS != null)
+					mLog.write(mGPS.getLocation().getBytes());
+				else
+					mLog.write(",,".getBytes());
 				mLog.write('\n');
 			} catch (IOException e) {
 			}
@@ -79,7 +90,11 @@ public class HarleyDroidLogger implements HarleyDataListener
 	
 	public void stop() {
 		if (D) Log.d(TAG, "stop()");
-		
+
+		if (mGPS != null) {
+			mGPS.stop();
+			mGPS = null;
+		}
 		if (mLog != null) {
 			try {
 				mLog.close();

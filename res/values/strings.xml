@@ -62,6 +62,7 @@
 
 <string name="pref_bluetoothdev">Bluetooth device</string>
 <string name="pref_logging">Log to external media</string>
+<string name="pref_gps">Add GPS data to log</string>
 <string name="pref_screenon">Keep the screen on</string>
 <string name="pref_unit">Unit system</string>
 <string-array name="pref_unit_names">

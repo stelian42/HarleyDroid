@@ -64,6 +64,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     private Menu mOptionsMenu = null;
     private String mBluetoothID = null;
     private boolean mLogging = false;
+    private boolean mGPS = false;
     private HarleyDroidService mService = null;
     private boolean mModeText = false;
     private boolean mUnitMetric = false;
@@ -136,6 +137,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
         	else
         		mLogging = true;  	
         }
+    	mGPS = mPrefs.getBoolean("gps", false);
     	if (mPrefs.getBoolean("screenon", false)) 
     		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     	if (mPrefs.getString("unit", "metric").equals("metric"))
@@ -217,7 +219,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
     		mOptionsMenu.findItem(R.id.capture_menu).setTitle(R.string.startcapture_label);
     	}
     	if (mModeText)
-    	mOptionsMenu.findItem(R.id.mode_menu).setTitle(
+    		mOptionsMenu.findItem(R.id.mode_menu).setTitle(
     			mModeText ? R.string.mode_labelgr : R.string.mode_labelraw);
     		
 		return true;
@@ -282,9 +284,9 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		showDialog(CONNECTING_TO_ELM327);
 		
     	if (!EMULATOR)
-    		mService.startService(mBluetoothAdapter.getRemoteDevice(mBluetoothID), mUnitMetric, mLogging);
+    		mService.startService(mBluetoothAdapter.getRemoteDevice(mBluetoothID), mUnitMetric, mLogging, mGPS);
     	else
-    		mService.startService(null, mUnitMetric, mLogging);
+    		mService.startService(null, mUnitMetric, mLogging, mGPS);
 	}
     
     private void startCapture() {
