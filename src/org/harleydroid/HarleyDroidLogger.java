@@ -46,32 +46,32 @@ public class HarleyDroidLogger implements HarleyDataListener
 	private HarleyDroidGPS mGPS = null;
 	private OutputStream mLog = null;
 	private boolean mUnitMetric = false;
-	
+
 	public HarleyDroidLogger(Context context, boolean metric, boolean gps) {
 		mUnitMetric = metric;
 		if (gps)
 			mGPS = new HarleyDroidGPS(context);
 	}
-	
+
 	public void start() {
 		if (D) Log.d(TAG, "start()");
-		
+
 		if (mGPS != null)
 			mGPS.start();
 
 		try {
 			File path = new File(Environment.getExternalStorageDirectory(), "/Android/data/org.harleydroid/files/");
-       		path.mkdirs();
-          	File logFile = new File(path, "harley-" + TIMESTAMP_FORMAT.format(new Date()) + ".log.gz");
+			path.mkdirs();
+			File logFile = new File(path, "harley-" + TIMESTAMP_FORMAT.format(new Date()) + ".log.gz");
 			mLog = new GZIPOutputStream(new FileOutputStream(logFile, false));
 		} catch (IOException e) {
 			Log.d(TAG, "Logfile open " + e);
 		}
 	}
-	
+
 	public void write(String data) {
 		if (D) Log.d(TAG, "write()");
-		
+
 		if (mLog != null) {
 			try {
 				mLog.write(TIMESTAMP_FORMAT.format(new Date()).getBytes());
@@ -87,7 +87,7 @@ public class HarleyDroidLogger implements HarleyDataListener
 			}
 		}
 	}
-	
+
 	public void stop() {
 		if (D) Log.d(TAG, "stop()");
 
@@ -103,90 +103,90 @@ public class HarleyDroidLogger implements HarleyDataListener
 			mLog = null;
 		}
 	}
-	
+
 	public void onRPMChanged(int rpm) {
 		write("RPM," + rpm);
-    }
-	
+	}
+
 	public void onSpeedImperialChanged(int speed) {
 		if (!mUnitMetric)
 			write("SPD," + speed);
-    }
-	
+	}
+
 	public void onSpeedMetricChanged(int speed) {
 		if (mUnitMetric)
 			write("SPD," + speed);
-    }
-	
+	}
+
 	public void onEngineTempImperialChanged(int engineTemp) {
 		if (!mUnitMetric)
 			write("ETP," + engineTemp);
-    }
-	
+	}
+
 	public void onEngineTempMetricChanged(int engineTemp) {
 		if (mUnitMetric)
 			write("ETP," + engineTemp);
-    }
-    
+	}
+
 	public void onFuelGaugeChanged(int full) {
 		write("FGE," + full);
-    }
-	
+	}
+
 	public void onTurnSignalsChanged(int turnSignals) {
 		if ((turnSignals & 0x03) == 0x03)
 			write("TRN,W");
-    	else if ((turnSignals & 0x01) == 0x01)
-    		write("TRN,R");
-	    else if ((turnSignals & 0x02) == 0x02)
-	    	write("TRN,L");
-	    else
-	    	write("TRN,");
-    }
-	
+		else if ((turnSignals & 0x01) == 0x01)
+			write("TRN,R");
+		else if ((turnSignals & 0x02) == 0x02)
+			write("TRN,L");
+		else
+			write("TRN,");
+	}
+
 	public void onNeutralChanged(boolean neutral) {
 		write("NTR," + (neutral ? "1" : "0"));
-    }
-    
+	}
+
 	public void onClutchChanged(boolean clutch) {
-   		write("CLU," + (clutch ? "1" : "0"));
-   	}
- 
+		write("CLU," + (clutch ? "1" : "0"));
+	}
+
 	public void onGearChanged(int gear) {
-   		write("GER," + gear);
-   	}
+		write("GER," + gear);
+	}
 
 	public void onCheckEngineChanged(boolean checkEngine) {
-   		write("CHK," + (checkEngine ? "1" : "0"));
-   	}
- 
+		write("CHK," + (checkEngine ? "1" : "0"));
+	}
+
 	public void onOdometerImperialChanged(int odometer) {
-   		if (!mUnitMetric)
-   			write("ODO," + odometer);
-   	}
-	
+		if (!mUnitMetric)
+			write("ODO," + odometer);
+	}
+
 	public void onOdometerMetricChanged(int odometer) {
-   		if (mUnitMetric)
-   			write("ODO," + odometer);
-   	}
-	
-   	public void onFuelImperialChanged(int fuel) {
-   		if (!mUnitMetric)
-   			write("FUL," + fuel);
-   	}
+		if (mUnitMetric)
+			write("ODO," + odometer);
+	}
 
-   	public void onFuelMetricChanged(int fuel) {
-   		if (mUnitMetric)
-   			write("FUL," + fuel);
-   	}
+	public void onFuelImperialChanged(int fuel) {
+		if (!mUnitMetric)
+			write("FUL," + fuel);
+	}
 
-   	public void onBadCRCChanged(byte[] buffer) {
-   		String bad = new String(buffer);
-   		if (bad.equals(">ATMA") || bad.equals("SEARCHING..."))
-   			return;
-   		write("CRC," + bad.trim());
-    }
-    
-   	public void onUnknownChanged(byte[] buffer) {
-   		write("UNK," + new String(buffer).trim());
-   	}
+	public void onFuelMetricChanged(int fuel) {
+		if (mUnitMetric)
+			write("FUL," + fuel);
+	}
+
+	public void onBadCRCChanged(byte[] buffer) {
+		String bad = new String(buffer);
+		if (bad.equals(">ATMA") || bad.equals("SEARCHING..."))
+			return;
+		write("CRC," + bad.trim());
+	}
+
+	public void onUnknownChanged(byte[] buffer) {
+		write("UNK," + new String(buffer).trim());
+	}
 }

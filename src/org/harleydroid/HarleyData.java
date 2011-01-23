@@ -38,9 +38,9 @@ public class HarleyData {
 	private boolean mCheckEngine = false;	// XXX boolean: check engine
 	private int mOdometer = 0;				// odometer tick (1 tick = 0.00025 miles)
 	private int mFuel = 0;					// fuel consumption tick (1 tick = 0.000040 liters)
-	
-    private int mResetOdometer = 0;
-    
+
+	private int mResetOdometer = 0;
+
 	private ArrayList<HarleyDataListener> mListeners;
 
 	public HarleyData() {
@@ -58,7 +58,7 @@ public class HarleyData {
 	public int getRPM() {
 		return mRPM / 4;
 	}
-	
+
 	public void setRPM(int rpm) {
 		if (mRPM != rpm) {
 			mRPM = rpm;
@@ -66,16 +66,15 @@ public class HarleyData {
 				l.onRPMChanged(mRPM / 4);
 		}
 	}
-	
+
 	public int getSpeedImperial() {
 		return mSpeed / 200;
 	}
-	
+
 	public int getSpeedMetric() {
 		return (mSpeed * 1609) / 200000;
 	}
-	
-	
+
 	public void setSpeed(int speed) {
 		if (mSpeed != speed) {
 			mSpeed = speed;
@@ -85,15 +84,15 @@ public class HarleyData {
 			}
 		}
 	}
-	
+
 	public int getEngineTempImperial() {
 		return mEngineTemp;
 	}
-	
+
 	public int getEngineTempMetric() {
 		return (mEngineTemp - 32) * 5 / 9;
 	}
-	
+
 	public void setEngineTemp(int engineTemp) {
 		if (mEngineTemp != engineTemp) {
 			mEngineTemp = engineTemp;
@@ -107,7 +106,7 @@ public class HarleyData {
 	public int getFuelGauge() {
 		return mFuelGauge;
 	}
-	
+
 	public void setFuelGauge(int fuelGauge) {
 		if (mFuelGauge != fuelGauge) {
 			mFuelGauge = fuelGauge;
@@ -119,7 +118,7 @@ public class HarleyData {
 	public int getTurnSignals() {
 		return mTurnSignals;
 	}
-	
+
 	public void setTurnSignals(int turnSignals) {
 		if (mTurnSignals != turnSignals) {
 			mTurnSignals = turnSignals;
@@ -131,7 +130,7 @@ public class HarleyData {
 	public boolean getNeutral() {
 		return mNeutral;
 	}
-	
+
 	public void setNeutral(boolean neutral) {
 		if (mNeutral != neutral) {
 			mNeutral = neutral;
@@ -143,7 +142,7 @@ public class HarleyData {
 	public boolean getClutch() {
 		return mClutch;
 	}
-	
+
 	public void setClutch(boolean clutch) {
 		if (mClutch != clutch) {
 			mClutch = clutch;
@@ -155,7 +154,7 @@ public class HarleyData {
 	public int getGear() {
 		return mGear;
 	}
-	
+
 	public void setGear(int gear) {
 		if (mGear != gear) {
 			mGear = gear;
@@ -167,7 +166,7 @@ public class HarleyData {
 	public boolean getCheckEngine() {
 		return mCheckEngine;
 	}
-	
+
 	public void setCheckEngine(boolean checkEngine) {
 		if (mCheckEngine != checkEngine) {
 			mCheckEngine = checkEngine;
@@ -179,11 +178,11 @@ public class HarleyData {
 	public int getOdometerImperial() {
 		return (mOdometer - mResetOdometer) / 40;
 	}
-	
+
 	public int getOdometerMetric() {
 		return ((mOdometer - mResetOdometer) * 1609) / 40000;
 	}
-	
+
 	public void setOdometer(int odometer) {
 		if (mOdometer != odometer) {
 			mOdometer = odometer;
@@ -202,15 +201,15 @@ public class HarleyData {
 			l.onOdometerMetricChanged(0);
 		}
 	}
-	
+
 	public int getFuelImperial() {
 		return (mFuel * 338) / 250000;
 	}
-	
+
 	public int getFuelMetric() {
 		return mFuel / 25;
 	}
-	
+
 	public void setFuel(int fuel) {
 		if (mFuel != fuel) {
 			mFuel = fuel;

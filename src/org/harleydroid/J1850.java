@@ -42,14 +42,14 @@ public class J1850 {
 			int digit0, digit1;
 
 			while (inidx < in.length &&
-			       Character.isWhitespace((char)in[inidx]))
+					Character.isWhitespace((char)in[inidx]))
 				inidx++;
 			if (inidx >= in.length)
 				break;
 			digit0 = Character.digit((char)in[inidx++], 16);
 
 			while (inidx < in.length &&
-			       Character.isWhitespace((char)in[inidx]))
+					Character.isWhitespace((char)in[inidx]))
 				inidx++;
 			if (inidx >= in.length)
 				break;
@@ -91,7 +91,7 @@ public class J1850 {
 		for (int i = 0; i < in.length; i++)
 			System.out.print(Integer.toHexString(in[i]) + " ");
 		System.out.println("");
-		*/
+		 */
 
 		if (crc(in) != (byte)0xc4) {
 			hd.setBadCRC(buffer);
@@ -101,12 +101,12 @@ public class J1850 {
 		x = y = 0;
 		if (in.length >= 4)
 			x = ((in[0] << 24) & 0xff000000) |
-			    ((in[1] << 16) & 0x00ff0000) |
-			    ((in[2] <<  8) & 0x0000ff00) |
-			     (in[3]        & 0x000000ff);
+			((in[1] << 16) & 0x00ff0000) |
+			((in[2] <<  8) & 0x0000ff00) |
+			(in[3]        & 0x000000ff);
 		if (in.length >= 6)
 			y = ((in[4] << 8) & 0x0000ff00) |
-			     (in[5]       & 0x000000ff);
+			(in[5]       & 0x000000ff);
 
 		if (x == 0x281b1002)
 			hd.setRPM(y);
@@ -154,9 +154,9 @@ public class J1850 {
 	}
 
 	public static void main(String[] args) {
-//		String line = "28 1B 10 02 00 00 D5";
-//		String line = "C8 88 10 0E BA ";
-//		String line = "E8 89 61 0E 18 ";
+		//		String line = "28 1B 10 02 00 00 D5";
+		//		String line = "C8 88 10 0E BA ";
+		//		String line = "E8 89 61 0E 18 ";
 		String line = "28 1B 10 02 10 74 4C";
 
 		byte[] in = line.getBytes();
