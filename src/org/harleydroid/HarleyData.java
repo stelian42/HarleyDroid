@@ -22,7 +22,7 @@
 
 package org.harleydroid;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class HarleyData {
 
@@ -41,10 +41,10 @@ public class HarleyData {
 
 	private int mResetOdometer = 0;
 
-	private ArrayList<HarleyDataListener> mListeners;
+	private CopyOnWriteArrayList<HarleyDataListener> mListeners;
 
 	public HarleyData() {
-		mListeners = new ArrayList<HarleyDataListener>();
+		mListeners = new CopyOnWriteArrayList<HarleyDataListener>();
 	}
 
 	public void addHarleyDataListener(HarleyDataListener l) {
