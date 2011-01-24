@@ -248,7 +248,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 			mHD.resetOdometer();
 			return true;
 		case R.id.about_menu:
-			Eula.show(this, true);
+			About.about(this);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

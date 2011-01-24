@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
+
+     Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content"
+	android:layout_width="wrap_content"
+	android:stretchColumns="2">
+	<TableRow>
+		<ImageView
+			android:layout_column="1"
+			android:padding="10dip"
+			android:src="@drawable/icon" />
+		<LinearLayout
+			android:layout_column="2"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:orientation="vertical">
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="@string/app_name"
+				android:textSize="30sp" />
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="@string/about_copyright"
+				android:textSize="15sp" />
+		</LinearLayout>
+	</TableRow>
+
+	<View android:layout_height="2dip" />
+
+	<TableRow>
+		<TextView
+			android:paddingLeft="10dip"
+			android:paddingRight="10dip"
+			android:layout_column="1"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="@string/about_version"
+			android:textSize="20sp" />
+		<TextView
+			android:layout_height="wrap_content"
+			android:id="@+id/about_version"
+			android:layout_width="wrap_content"
+			android:text="@string/about_unknown"
+			android:textSize="20sp" />
+	</TableRow>
+
+	<View android:layout_height="2dip" />
+
+	<TableRow>
+		<TextView
+			android:paddingLeft="10dip"
+			android:paddingRight="10dip"
+			android:layout_column="1"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="@string/about_support"
+			android:textSize="20sp" />
+		<TextView
+			android:autoLink="web"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="@string/about_weburl"
+			android:textSize="12sp" />
+	</TableRow>
+
+	<View android:layout_height="4dip" />
+
+</TableLayout>

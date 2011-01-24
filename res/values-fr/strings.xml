@@ -21,6 +21,7 @@
 <resources>
     
 <string name="app_name">HarleyDroid</string>
+
 <string name="settings_name">Préférences de HarleyDroid</string>
 
 <string name="nobluetooth">Désolé, votre appareil ne supporte pas le Bluetooth</string>
@@ -79,5 +80,11 @@
 <string name="eula_title">Licence</string>
 <string name="eula_accept">Accepter</string>
 <string name="eula_refuse">Refuser</string>
+
+<string name="about_version">Version:</string>
+<string name="about_unknown">inconnue</string>
+<string name="about_support">Support:</string>
+<string name="about_ok">OK</string>
+<string name="about_license">Licence</string>
 
 </resources>
