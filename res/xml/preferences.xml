@@ -24,6 +24,11 @@
         android:persistent="true"
         android:key="bluetoothid" />
     <CheckBoxPreference
+        android:title="@string/pref_autoconnect"
+        android:persistent="true"
+        android:defaultValue="false"
+        android:key="autoconnect" />
+    <CheckBoxPreference
         android:title="@string/pref_logging"
         android:persistent="true"
         android:defaultValue="false"

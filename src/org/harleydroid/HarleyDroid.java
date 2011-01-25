@@ -60,6 +60,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 	private BluetoothAdapter mBluetoothAdapter = null;
 	private Menu mOptionsMenu = null;
 	private String mBluetoothID = null;
+	private boolean mAutoConnect = false;
 	private boolean mLogging = false;
 	private boolean mGPS = false;
 	private HarleyDroidService mService = null;
@@ -82,6 +83,8 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 			setContentView(R.layout.portrait);
 		else
 			setContentView(R.layout.landscape);
+
+		mAutoConnect = true;
 
 		if (Eula.show(this, false))
 			onEulaAgreedTo();
@@ -116,6 +119,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 
 		// get preferences which may have been changed
 		mBluetoothID = mPrefs.getString("bluetoothid", null);
+		mAutoConnect = mAutoConnect && mPrefs.getBoolean("autoconnect", false);
 		if (mPrefs.getString("orientation", "auto").equals("auto"))
 			mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 		else if (mPrefs.getString("orientation", "auto").equals("portrait")) {
@@ -147,6 +151,11 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 
 		// bind to the service
 		bindService(new Intent(this, HarleyDroidService.class), this, 0);
+
+		if (mAutoConnect && mService == null) {
+			mAutoConnect = false;
+			startCapture();
+		}
 	}
 
 	@Override
