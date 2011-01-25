@@ -83,6 +83,22 @@
 			android:textSize="12sp" />
 	</TableRow>
 
+	<TextView
+		android:paddingLeft="10dip"
+		android:paddingRight="10dip"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:text="@string/about_notendorsed"
+		android:textSize="15sp" />
+
+	<TextView
+		android:paddingLeft="10dip"
+		android:paddingRight="10dip"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:text="@string/about_needelm327"
+		android:textSize="15sp" />
+
 	<View android:layout_height="4dip" />
 
 </TableLayout>

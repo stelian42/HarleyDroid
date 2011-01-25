@@ -95,6 +95,8 @@
 <string name="about_unknown">unknown</string>
 <string name="about_support">Support:</string>
 <string name="about_weburl">github.com/stelian42/HarleyDroid</string>
+<string name="about_notendorsed">HarleyDroid is not endorsed or certified by the Harley-Davidson Motor Company.</string>
+<string name="about_needelm327">This application requires an ELM327 bluetooth module and a custom cable.</string>
 <string name="about_ok">OK</string>
 <string name="about_license">License</string>
 

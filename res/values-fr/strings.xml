@@ -84,6 +84,8 @@
 <string name="about_version">Version:</string>
 <string name="about_unknown">inconnue</string>
 <string name="about_support">Support:</string>
+<string name="about_notendorsed">HarleyDroid n\'est pas approuvé ou certifié par Harley-Davidson Motor Company.</string>
+<string name="about_needelm327">Cette application nécessite un module bluetooth ELM327 et un câble spécifique.</string>
 <string name="about_ok">OK</string>
 <string name="about_license">Licence</string>
 
