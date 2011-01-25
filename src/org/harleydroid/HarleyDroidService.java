@@ -68,7 +68,7 @@ public class HarleyDroidService extends Service
 
 		mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		CharSequence text = getText(R.string.notification_start);
-		Notification notification = new Notification(R.drawable.stat_notify_car_mode, text, System.currentTimeMillis());
+		Notification notification = new Notification(R.drawable.stat_notify_harleydroid, text, System.currentTimeMillis());
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, HarleyDroid.class), 0);
 		notification.setLatestEventInfo(this, getText(R.string.notification_label), text, contentIntent);
 		mNM.notify(R.string.notification_label, notification);
