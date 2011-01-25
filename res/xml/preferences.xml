@@ -19,7 +19,7 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<ListPreference
+    <ListPreference
         android:title="@string/pref_bluetoothdev"
         android:persistent="true"
         android:key="bluetoothid" />
@@ -29,17 +29,29 @@
         android:defaultValue="false"
         android:key="autoconnect" />
     <CheckBoxPreference
+        android:title="@string/pref_autoreconnect"
+        android:persistent="true"
+        android:defaultValue="false"
+        android:key="autoreconnect" />
+    <EditTextPreference
+        android:title="@string/pref_reconnectdelay"
+        android:inputType="number"
+        android:dependency="autoreconnect"
+        android:persistent="true"
+        android:defaultValue="30"
+        android:key="reconnectdelay" />
+    <CheckBoxPreference
         android:title="@string/pref_logging"
         android:persistent="true"
         android:defaultValue="false"
         android:key="logging" />
     <CheckBoxPreference
         android:title="@string/pref_gps"
-	android:dependency="logging"
+        android:dependency="logging"
         android:persistent="true"
         android:defaultValue="false"
         android:key="gps" />
-	<CheckBoxPreference
+    <CheckBoxPreference
         android:title="@string/pref_screenon"
         android:persistent="true"
         android:defaultValue="false"

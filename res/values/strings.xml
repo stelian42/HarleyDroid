@@ -64,6 +64,8 @@
 
 <string name="pref_bluetoothdev">Bluetooth device</string>
 <string name="pref_autoconnnect">Autoconnect on startup</string>
+<string name="pref_autoreconnect">Auto reconnect if disconnected</string>
+<string name="pref_reconnectdelay">Delay before reconnect (seconds)</string>
 <string name="pref_logging">Log to external media</string>
 <string name="pref_gps">Add GPS data to log</string>
 <string name="pref_screenon">Keep the screen on</string>

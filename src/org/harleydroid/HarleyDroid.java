@@ -53,6 +53,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 	public static final int STATUS_ERRORAT = 4;
 	public static final int STATUS_NODATA = 5;
 	public static final int STATUS_TOOMANYERRORS = 6;
+	public static final int STATUS_AUTORECON = 7;
 
 	private static final int REQUEST_ENABLE_BT = 2;
 
@@ -61,6 +62,8 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 	private Menu mOptionsMenu = null;
 	private String mBluetoothID = null;
 	private boolean mAutoConnect = false;
+	private boolean mAutoReconnect = false;
+	private String mReconnectDelay;
 	private boolean mLogging = false;
 	private boolean mGPS = false;
 	private HarleyDroidService mService = null;
@@ -120,6 +123,8 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		// get preferences which may have been changed
 		mBluetoothID = mPrefs.getString("bluetoothid", null);
 		mAutoConnect = mAutoConnect && mPrefs.getBoolean("autoconnect", false);
+		mAutoReconnect = mPrefs.getBoolean("autoreconnect", false);
+		mReconnectDelay = mPrefs.getString("reconnectdelay", "30");
 		if (mPrefs.getString("orientation", "auto").equals("auto"))
 			mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 		else if (mPrefs.getString("orientation", "auto").equals("portrait")) {
@@ -274,9 +279,9 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 			return;
 
 		if (!EMULATOR)
-			mService.startService(mBluetoothAdapter.getRemoteDevice(mBluetoothID), mUnitMetric, mLogging, mGPS);
+			mService.startService(mBluetoothAdapter.getRemoteDevice(mBluetoothID), mUnitMetric, mLogging, mGPS, mAutoReconnect, Integer.parseInt(mReconnectDelay));
 		else
-			mService.startService(null, mUnitMetric, mLogging, mGPS);
+			mService.startService(null, mUnitMetric, mLogging, mGPS, mAutoReconnect, Integer.parseInt(mReconnectDelay));
 	}
 
 	private void startCapture() {
@@ -332,6 +337,9 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 				break;
 			case STATUS_TOOMANYERRORS:
 				Toast.makeText(getApplicationContext(), R.string.toast_toomanyerrors, Toast.LENGTH_LONG).show();
+				break;
+			case STATUS_AUTORECON:
+				Toast.makeText(getApplicationContext(), String.format(getText(R.string.toast_autorecon).toString(), mReconnectDelay), Toast.LENGTH_LONG).show();
 				break;
 			}
 		}

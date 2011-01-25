@@ -64,6 +64,8 @@
 
 <string name="pref_bluetoothdev">Périphérique Bluetooth</string>
 <string name="pref_autoconnect">Connexion automatique au lancement</string>
+<string name="pref_autoreconnect">Reconnexion automatique si déconnexion</string>
+<string name="pref_reconnectdelay">Délai avant reconnexion (secondes)</string>
 <string name="pref_logging">Enregistrer les données sur le stockage externe</string>
 <string name="pref_gps">Ajouter les coordonnées GPS à la sauvegarde</string>
 <string name="pref_screenon">Garder l\'écran activé</string>

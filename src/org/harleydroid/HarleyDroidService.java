@@ -58,6 +58,8 @@ public class HarleyDroidService extends Service
 	private NotificationManager mNM;
 	private Handler mHandler = null;
 	private ThreadELM mThread = null;
+	private boolean mAutoReconnect = false;
+	private int mReconnectDelay = 0;
 
 	@Override
 	public void onCreate() {
@@ -105,8 +107,11 @@ public class HarleyDroidService extends Service
 		mHandler = handler;
 	}
 
-	public void startService(BluetoothDevice dev, boolean metric, boolean logging, boolean gps) {
+	public void startService(BluetoothDevice dev, boolean metric, boolean logging, boolean gps, boolean autoReconnect, int reconnectDelay) {
 		if (D) Log.d(TAG, "startService()");
+
+		mAutoReconnect = autoReconnect;
+		mReconnectDelay = reconnectDelay;
 
 		if (logging) {
 			mLogger = new HarleyDroidLogger(this, metric, gps);
@@ -195,45 +200,9 @@ public class HarleyDroidService extends Service
 			throw new IOException("timeout");
 		}
 
-		public void run() {
-			int errors = 0;
+		public void runEmulator() {
 			int cnt = 0;
-
-			if (!HarleyDroid.EMULATOR) {
-				try {
-					if (D) Log.d(TAG, "started");
-					mSock = mDevice.createRfcommSocketToServiceRecord(MY_UUID);
-					mSock.connect();
-					if (D) Log.d(TAG, "connected");
-					mIn = new BufferedReader(new InputStreamReader(mSock.getInputStream()), 128);
-					mOut = mSock.getOutputStream();
-				} catch (IOException e1) {
-					try {
-						mSock.close();
-					} catch (IOException e2) {
-					}
-					mHandler.obtainMessage(HarleyDroid.STATUS_ERROR, -1, -1).sendToTarget();
-					finish();
-					return;
-				}
-
-				try {
-					chat("AT", "", AT_TIMEOUT);
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e2) {
-					}
-					chat("ATZ", "ELM327", ATZ_TIMEOUT);
-					chat("ATE1", "OK", AT_TIMEOUT);
-					chat("ATH1", "OK", AT_TIMEOUT);
-					chat("ATSP2", "OK", AT_TIMEOUT);
-					chat("ATMA", "", AT_TIMEOUT);
-				} catch (IOException e1) {
-					mHandler.obtainMessage(HarleyDroid.STATUS_ERRORAT, -1, -1).sendToTarget();
-					finish();
-					return;
-				}
-			} // !EMULATOR
+			int errors = 0;
 
 			if (D) Log.d(TAG, "ready");
 			mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTED, -1, -1).sendToTarget();
@@ -241,39 +210,96 @@ public class HarleyDroidService extends Service
 			while (!stop) {
 				String line;
 
-				if (HarleyDroid.EMULATOR) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e1) {
-					}
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+				}
 
-					/* send several messages to update the UI */
-					mHD.setOdometer(cnt);
-					cnt += 50;
-					if (cnt % 100 == 0) {
-						mHD.setCheckEngine(true);
-						mHD.setTurnSignals(0);
-					}
-					else {
-						mHD.setCheckEngine(false);
-						mHD.setTurnSignals(3);
-					}
-
-					// RPM at 1053
-					line = "28 1B 10 02 10 74 4C";
-					// Speed at 100 mph
-					line = "48 29 10 02 4E 20 D4";
-					// Odometer
-					//line = "a8 69 10 06 00 00 FF 61";
+				/* send several messages to update the UI */
+				mHD.setOdometer(cnt);
+				cnt += 50;
+				if (cnt % 100 == 0) {
+					mHD.setCheckEngine(true);
+					mHD.setTurnSignals(0);
 				}
 				else {
-					try {
-						line = readLine(ATMA_TIMEOUT);
-					} catch (IOException e1) {
-						mHandler.obtainMessage(HarleyDroid.STATUS_NODATA, -1, -1).sendToTarget();
-						finish();
-						return;
-					}
+					mHD.setCheckEngine(false);
+					mHD.setTurnSignals(3);
+				}
+
+				// RPM at 1053
+				line = "28 1B 10 02 10 74 4C";
+				// Speed at 100 mph
+				line = "48 29 10 02 4E 20 D4";
+				// Odometer
+				//line = "a8 69 10 06 00 00 FF 61";
+
+
+				if (J1850.parse(line.getBytes(), mHD))
+					//errors = 0;
+					++errors;
+				else
+					++errors;
+
+				if (errors > MAX_ERRORS) {
+					mHandler.obtainMessage(HarleyDroid.STATUS_TOOMANYERRORS, -1, -1).sendToTarget();
+					break;
+				}
+			}
+		}
+
+		public void runBluetooth() {
+			int errors = 0;
+
+			if (D) Log.d(TAG, "started");
+			mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTING, -1, -1).sendToTarget();
+
+			try {
+				mSock = mDevice.createRfcommSocketToServiceRecord(MY_UUID);
+				mSock.connect();
+				mIn = new BufferedReader(new InputStreamReader(mSock.getInputStream()), 128);
+				mOut = mSock.getOutputStream();
+			} catch (IOException e1) {
+				try {
+					mSock.close();
+				} catch (IOException e2) {
+				}
+				mHandler.obtainMessage(HarleyDroid.STATUS_ERROR, -1, -1).sendToTarget();
+				return;
+			}
+
+			if (D) Log.d(TAG, "connected");
+
+			try {
+				chat("AT", "", AT_TIMEOUT);
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e2) {
+				}
+				chat("ATWS", "ELM327", ATZ_TIMEOUT);
+				chat("ATE1", "OK", AT_TIMEOUT);
+				chat("ATH1", "OK", AT_TIMEOUT);
+				chat("ATS0", "OK", AT_TIMEOUT);
+				chat("ATSP2", "OK", AT_TIMEOUT);
+				chat("ATMA", "", AT_TIMEOUT);
+			} catch (IOException e1) {
+				mHandler.obtainMessage(HarleyDroid.STATUS_ERRORAT, -1, -1).sendToTarget();
+				// socket is already closed...
+				return;
+			}
+
+			if (D) Log.d(TAG, "ready");
+			mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTED, -1, -1).sendToTarget();
+
+			while (!stop) {
+				String line;
+
+				try {
+					line = readLine(ATMA_TIMEOUT);
+				} catch (IOException e1) {
+					mHandler.obtainMessage(HarleyDroid.STATUS_NODATA, -1, -1).sendToTarget();
+					// socket is already closed...
+					return;
 				}
 
 				if (J1850.parse(line.getBytes(), mHD))
@@ -283,19 +309,49 @@ public class HarleyDroidService extends Service
 
 				if (errors > MAX_ERRORS) {
 					mHandler.obtainMessage(HarleyDroid.STATUS_TOOMANYERRORS, -1, -1).sendToTarget();
-					stop = true;
-					break;
+					try {
+						writeLine("");
+					} catch (IOException e1) {
+					}
+					try {
+						mSock.close();
+					} catch (IOException e2) {
+					}
+					return;
 				}
 			}
-			if (!HarleyDroid.EMULATOR) {
+
+			try {
+				writeLine("");
+			} catch (IOException e1) {
+			}
+			try {
+				mSock.close();
+			} catch (IOException e2) {
+			}
+		}
+
+		public void run() {
+
+			while (true) {
+
+				if (HarleyDroid.EMULATOR)
+					runEmulator();
+				else
+					runBluetooth();
+
+				if (stop || !mAutoReconnect)
+					break;
+
+				mHandler.obtainMessage(HarleyDroid.STATUS_AUTORECON, -1, -1).sendToTarget();
+
 				try {
-					writeLine("");
-				} catch (IOException e1) {
+					Thread.sleep(mReconnectDelay * 1000);
+				} catch (InterruptedException e) {
 				}
-				try {
-					mSock.close();
-				} catch (IOException e3) {
-				}
+
+				if (stop)
+					break;
 			}
 			finish();
 		}
