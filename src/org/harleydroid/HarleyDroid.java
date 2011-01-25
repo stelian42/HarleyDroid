@@ -20,8 +20,6 @@
 package org.harleydroid;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -48,14 +46,13 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 	private static final String TAG = HarleyDroid.class.getSimpleName();
 	public static final boolean EMULATOR = false;
 
-	static final int CONNECTING_TO_ELM327 = 1;
-
 	// Message types sent from HarleyDroidService
-	public static final int STATUS_ERROR = 1;
-	public static final int STATUS_ERRORAT = 2;
-	public static final int STATUS_CONNECTED = 3;
-	public static final int STATUS_NODATA = 4;
-	public static final int STATUS_TOOMANYERRORS = 5;
+	public static final int STATUS_CONNECTING = 1;
+	public static final int STATUS_CONNECTED = 2;
+	public static final int STATUS_ERROR = 3;
+	public static final int STATUS_ERRORAT = 4;
+	public static final int STATUS_NODATA = 5;
+	public static final int STATUS_TOOMANYERRORS = 6;
 
 	private static final int REQUEST_ENABLE_BT = 2;
 
@@ -95,7 +92,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		if (!EMULATOR) {
 			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 			if (mBluetoothAdapter == null) {
-				Toast.makeText(this, R.string.nobluetooth, Toast.LENGTH_LONG).show();
+				Toast.makeText(this, R.string.toast_nobluetooth, Toast.LENGTH_LONG).show();
 				finish();
 				return;
 			}
@@ -133,7 +130,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		mLogging = false;
 		if (mPrefs.getBoolean("logging", false)) {
 			if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()))
-				Toast.makeText(this, R.string.nologging, Toast.LENGTH_LONG).show();
+				Toast.makeText(this, R.string.toast_errorlogging, Toast.LENGTH_LONG).show();
 			else
 				mLogging = true;
 		}
@@ -178,20 +175,6 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 				setContentView(R.layout.landscape);
 			mHarleyDroidView.drawAll(mHD, mModeText, mUnitMetric);
 		}
-	}
-
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		if (D) Log.d(TAG, "onCreateDialog()");
-
-		switch (id) {
-		case CONNECTING_TO_ELM327:
-			ProgressDialog pd = new ProgressDialog(this);
-			pd.setMessage(getText(R.string.connectingelm327));
-			pd.setIndeterminate(true);
-			return pd;
-		}
-		return null;
 	}
 
 	@Override
@@ -262,7 +245,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		switch (requestCode) {
 		case REQUEST_ENABLE_BT:
 			if (resultCode != Activity.RESULT_OK) {
-				Toast.makeText(this, R.string.noenablebluetooth, Toast.LENGTH_LONG).show();
+				Toast.makeText(this, R.string.toast_errorenablebluetooth, Toast.LENGTH_LONG).show();
 				finish();
 			}
 		}
@@ -280,8 +263,6 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 
 		if (mService.isRunning())
 			return;
-
-		showDialog(CONNECTING_TO_ELM327);
 
 		if (!EMULATOR)
 			mService.startService(mBluetoothAdapter.getRemoteDevice(mBluetoothID), mUnitMetric, mLogging, mGPS);
@@ -325,22 +306,23 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 			if (D) Log.d(TAG, "handleMessage " + msg.what);
 
 			switch (msg.what) {
+			case STATUS_CONNECTING:
+				Toast.makeText(getApplicationContext(), R.string.toast_connecting, Toast.LENGTH_LONG).show();
+				break;
 			case STATUS_ERROR:
-				dismissDialog(CONNECTING_TO_ELM327);
-				Toast.makeText(getApplicationContext(), R.string.errorconnecting, Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), R.string.toast_errorconnecting, Toast.LENGTH_LONG).show();
 				break;
 			case STATUS_ERRORAT:
-				dismissDialog(CONNECTING_TO_ELM327);
-				Toast.makeText(getApplicationContext(), R.string.errorat, Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), R.string.toast_errorat, Toast.LENGTH_LONG).show();
 				break;
 			case STATUS_CONNECTED:
-				dismissDialog(CONNECTING_TO_ELM327);
+				Toast.makeText(getApplicationContext(), R.string.toast_connected, Toast.LENGTH_LONG).show();
 				break;
 			case STATUS_NODATA:
-				Toast.makeText(getApplicationContext(), R.string.errornodata, Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), R.string.toast_nodata, Toast.LENGTH_LONG).show();
 				break;
 			case STATUS_TOOMANYERRORS:
-				Toast.makeText(getApplicationContext(), R.string.errortoomany, Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), R.string.toast_toomanyerrors, Toast.LENGTH_LONG).show();
 				break;
 			}
 		}

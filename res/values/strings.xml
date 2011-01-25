@@ -24,15 +24,16 @@
 
 <string name="settings_name">HarleyDroid Settings</string>
 
-<string name="nobluetooth">Sorry, your device doesn\'t support bluetooth</string>
-<string name="noenablebluetooth">Unable to enable Bluetooth</string>
-<string name="errorconnecting">Error connecting to ELM327</string>
-<string name="errornodata">No data from ELM327</string>
-<string name="errortoomany">Too many communication errors, aborting...</string>
-<string name="nologging">Unable to write logs to external storage</string>
-<string name="errorat">Error configuring ELM327</string>
-
-<string name="connectingelm327">Connecting to ELM327...</string>
+<string name="toast_nobluetooth">Sorry, your device doesn\'t support bluetooth</string>
+<string name="toast_errorenablebluetooth">Unable to enable Bluetooth</string>
+<string name="toast_connecting">Connecting to ELM327...</string>
+<string name="toast_errorconnecting">Error connecting to ELM327</string>
+<string name="toast_connected">Connected to ELM327</string>
+<string name="toast_nodata">No data from ELM327</string>
+<string name="toast_toomanyerrors">Too many communication errors, aborting...</string>
+<string name="toast_errorlogging">Unable to write logs to external storage</string>
+<string name="toast_errorat">Error configuring ELM327</string>
+<string name="toast_autorecon">Reconnecting in %s seconds</string>
 
 <string name="rpm_label">RPM:</string>
 <string name="speed_imperial_label">Speed (mph):</string>
