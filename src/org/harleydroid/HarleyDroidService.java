@@ -277,11 +277,17 @@ public class HarleyDroidService extends Service
 					Thread.sleep(1000);
 				} catch (InterruptedException e2) {
 				}
+				// Warm Start
 				chat("ATWS", "ELM327", ATZ_TIMEOUT);
+				// Echo ON
 				chat("ATE1", "OK", AT_TIMEOUT);
+				// Headers ON
 				chat("ATH1", "OK", AT_TIMEOUT);
+				// Spaces OFF
 				chat("ATS0", "OK", AT_TIMEOUT);
+				// Select Protocol SAE J1850 VPW (10.4 kbaud)
 				chat("ATSP2", "OK", AT_TIMEOUT);
+				// Monitor All
 				chat("ATMA", "", AT_TIMEOUT);
 			} catch (IOException e1) {
 				mHandler.obtainMessage(HarleyDroid.STATUS_ERRORAT, -1, -1).sendToTarget();
