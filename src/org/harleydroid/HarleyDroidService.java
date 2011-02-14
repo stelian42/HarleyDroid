@@ -158,6 +158,10 @@ public class HarleyDroidService extends Service
 			public void run() {
 				if (D) Log.d(TAG, "CANCEL AT " + System.currentTimeMillis());
 				try {
+					writeLine("");
+				} catch (IOException e) {
+				}
+				try {
 					mSock.close();
 				} catch (IOException e) {
 				}
