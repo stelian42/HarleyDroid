@@ -48,7 +48,7 @@ public class HarleyDroidService extends Service
 
 	private static final int AT_TIMEOUT = 2000;
 	private static final int ATZ_TIMEOUT = 5000;
-	private static final int ATMA_TIMEOUT = 2000;
+	private static final int ATMA_TIMEOUT = 30000;
 
 	private static final int MAX_ERRORS = 10;
 
