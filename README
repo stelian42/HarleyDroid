@@ -34,7 +34,7 @@ The J1850 stream contains the following commands (found by trial and error,
 no official Harley Davidson documentation was used):
 
 	28 1b 10 02 xx xx : rpm, xxxx = rotations/minute * 4
-	48 29 10 02 xx xx : speed, xxxx = miles per hour * 200
+	48 29 10 02 xx xx : speed, xxxx = km/h * 125
 	48 3b 40 xx       : gear in neutral if (xx & 0x20),
 	                  : clutch engaged if (xx & 0x80)
 	48 da 40 39 xx    : turn signals, xx = 1,2,3 for left/right/both
@@ -42,7 +42,7 @@ no official Harley Davidson documentation was used):
 	68 88 10 83       : check engine indicator on
 	a8 3b 10 03 xx    : current gear, xx = 1,3,7,15,31,63 for gears 1-6
 	a8 49 10 10 xx    : engine temperature, xx = degrees Fahrenheit
-	a8 69 10 06 xx xx : odometer, xxxx = ticks, each tick = 0.00025 miles
+	a8 69 10 06 xx xx : odometer, xxxx = ticks, each tick = 0.4 meters
 	a8 69 10 86 xx xx : same as above, but a wraparound occured
 	a8 83 10 0a xx xx : fuel consumption, xxxx = ticks, each tick = 0.000040 liters
 	a8 83 10 8a xx xx : same as above, but a wraparound occured

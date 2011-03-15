@@ -36,7 +36,7 @@ public class HarleyData {
 	private boolean mClutch = false;		// XXX boolean: clutch engaged
 	private int mGear = 0;					// XXX current gear: 1 to 6
 	private boolean mCheckEngine = false;	// XXX boolean: check engine
-	private int mOdometer = 0;				// odometer tick (1 tick = 0.00025 miles)
+	private int mOdometer = 0;				// odometer tick (1 tick = 0.4 meters)
 	private int mFuel = 0;					// fuel consumption tick (1 tick = 0.000040 liters)
 
 	private int mResetOdometer = 0;
@@ -55,6 +55,7 @@ public class HarleyData {
 		mListeners.remove(l);
 	}
 
+	// returns the rotations per minute
 	public int getRPM() {
 		return mRPM / 4;
 	}
@@ -67,28 +68,32 @@ public class HarleyData {
 		}
 	}
 
+	// returns the speed in mph
 	public int getSpeedImperial() {
-		return mSpeed / 200;
+		return mSpeed * 8 / 1609;
 	}
 
+	// returns the speed in km/h
 	public int getSpeedMetric() {
-		return (mSpeed * 1609) / 200000;
+		return mSpeed / 125;
 	}
 
 	public void setSpeed(int speed) {
 		if (mSpeed != speed) {
 			mSpeed = speed;
 			for (HarleyDataListener l : mListeners) {
-				l.onSpeedImperialChanged(mSpeed / 200);
-				l.onSpeedMetricChanged((mSpeed * 1609) / 200000);
+				l.onSpeedImperialChanged((mSpeed * 8) / 1609);
+				l.onSpeedMetricChanged(mSpeed / 125);
 			}
 		}
 	}
 
+	// returns the temperature in F
 	public int getEngineTempImperial() {
 		return mEngineTemp;
 	}
 
+	// returns the temperature in C
 	public int getEngineTempMetric() {
 		return (mEngineTemp - 32) * 5 / 9;
 	}
@@ -103,6 +108,7 @@ public class HarleyData {
 		}
 	}
 
+	// returns the fuel gauge as 0 (empty) to 6 (full)
 	public int getFuelGauge() {
 		return mFuelGauge;
 	}
@@ -115,6 +121,7 @@ public class HarleyData {
 		}
 	}
 
+	// returns the turn signals bitmap: 0x1=right, 0x2=left
 	public int getTurnSignals() {
 		return mTurnSignals;
 	}
@@ -127,6 +134,7 @@ public class HarleyData {
 		}
 	}
 
+	// returns the neutral clutch: true = in neutral
 	public boolean getNeutral() {
 		return mNeutral;
 	}
@@ -139,6 +147,7 @@ public class HarleyData {
 		}
 	}
 
+	// returns the clutch position: true = clutch engaged
 	public boolean getClutch() {
 		return mClutch;
 	}
@@ -151,6 +160,7 @@ public class HarleyData {
 		}
 	}
 
+	// returns the current gear: 1 to 6
 	public int getGear() {
 		return mGear;
 	}
@@ -163,6 +173,7 @@ public class HarleyData {
 		}
 	}
 
+	// returns the check engine light: true = on
 	public boolean getCheckEngine() {
 		return mCheckEngine;
 	}
@@ -175,12 +186,14 @@ public class HarleyData {
 		}
 	}
 
+	// returns the odometer in miles * 100
 	public int getOdometerImperial() {
-		return (mOdometer - mResetOdometer) / 40;
+		return ((mOdometer - mResetOdometer) * 40) / 1609;
 	}
 
+	// returns the odometer in km * 100
 	public int getOdometerMetric() {
-		return ((mOdometer - mResetOdometer) * 1609) / 40000;
+		return (mOdometer - mResetOdometer) / 25;
 	}
 
 	public void setOdometer(int odometer) {
@@ -188,8 +201,8 @@ public class HarleyData {
 			mOdometer = odometer;
 			for (HarleyDataListener l : mListeners) {
 				int o = mOdometer - mResetOdometer;
-				l.onOdometerImperialChanged(o / 40);
-				l.onOdometerMetricChanged((o * 1609) / 40000);
+				l.onOdometerImperialChanged((o * 40) / 1609);
+				l.onOdometerMetricChanged(o / 25);
 			}
 		}
 	}
@@ -202,10 +215,12 @@ public class HarleyData {
 		}
 	}
 
+	// returns the fuel in fl oz
 	public int getFuelImperial() {
 		return (mFuel * 338) / 250000;
 	}
 
+	// returns the fuel in milliliters
 	public int getFuelMetric() {
 		return mFuel / 25;
 	}
