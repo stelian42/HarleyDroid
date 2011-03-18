@@ -70,20 +70,20 @@ public class HarleyData {
 
 	// returns the speed in mph
 	public int getSpeedImperial() {
-		return mSpeed * 8 / 1609;
+		return (mSpeed * 125) / (16 * 1609);
 	}
 
 	// returns the speed in km/h
 	public int getSpeedMetric() {
-		return mSpeed / 125;
+		return mSpeed / 128;
 	}
 
 	public void setSpeed(int speed) {
 		if (mSpeed != speed) {
 			mSpeed = speed;
 			for (HarleyDataListener l : mListeners) {
-				l.onSpeedImperialChanged((mSpeed * 8) / 1609);
-				l.onSpeedMetricChanged(mSpeed / 125);
+				l.onSpeedImperialChanged((mSpeed * 125) / (16 * 1609));
+				l.onSpeedMetricChanged(mSpeed / 128);
 			}
 		}
 	}

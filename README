@@ -34,7 +34,7 @@ The J1850 stream contains the following commands (found by trial and error,
 no official Harley Davidson documentation was used):
 
 	28 1b 10 02 xx xx : rpm, xxxx = rotations/minute * 4
-	48 29 10 02 xx xx : speed, xxxx = km/h * 125
+	48 29 10 02 xx xx : speed, xxxx = km/h * 128
 	48 3b 40 xx       : gear in neutral if (xx & 0x20),
 	                  : clutch engaged if (xx & 0x80)
 	48 da 40 39 xx    : turn signals, xx = 1,2,3 for left/right/both
