@@ -248,8 +248,8 @@ public class HarleyData {
 	public String toString() {
 		String ret;
 
-		ret = "RPM:" + mRPM / 1000;
-		ret += " SPD:" + mSpeed / 1000;
+		ret = "RPM:" + mRPM / 4;
+		ret += " SPD:" + mSpeed / 128;
 		ret += " ETP:" + mEngineTemp;
 		ret += " FGE:" + mFuelGauge;
 		ret += " TRN:";

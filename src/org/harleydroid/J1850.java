@@ -154,23 +154,30 @@ public class J1850 {
 	}
 
 	public static void main(String[] args) {
-		//		String line = "28 1B 10 02 00 00 D5";
-		//		String line = "C8 88 10 0E BA ";
-		//		String line = "E8 89 61 0E 18 ";
-		String line = "28 1B 10 02 10 74 4C";
+		// RPM at 1000 RPM
+		//String line = "28 1B 10 02 0f a0 d7";
+		// Speed at 100 km/h
+		String line = "48 29 10 02 32 00 0f";
 
 		byte[] in = line.getBytes();
-		for (int i = 0; i < in.length; i++)
-			System.out.println("in[" + i + "] = " + in[i]);
-
 		byte[] out = bytes_to_hex(in);
-		for (int i = 0; i < out.length; i++)
-			System.out.println("out[" + i + "] = " + out[i]);
 
-		System.out.println("crc = " + crc(out));
+		System.out.print("Input: ");
+		for (int i = 0; i < out.length; i++)
+			System.out.print(String.format("0x%02x ", out[i]));
+		System.out.println("");
+
+		System.out.println("CRC: " + String.format("0x%02x", crc(out)));
+
+		byte[] out_without_crc = new byte[out.length - 1];
+		System.arraycopy(out, 0, out_without_crc, 0, out.length - 1);
+
+		System.out.println("Need CRC byte: " + String.format("0x%02x", ~crc(out_without_crc)));
 
 		HarleyData data = new HarleyData();
-		parse(in, data);
-		System.out.println(data);
+		if (parse(in, data))
+			System.out.println(data);
+		else
+			System.out.println("Parse error");
 	}
 }
