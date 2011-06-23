@@ -40,7 +40,7 @@ public class HarleyDroidLogger implements HarleyDataListener
 	static final SimpleDateFormat TIMESTAMP_FORMAT =
 		new SimpleDateFormat("yyyyMMddHHmmss");
 	static {
-		TIMESTAMP_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+		TIMESTAMP_FORMAT.setTimeZone(TimeZone.getDefault());
 	}
 
 	private HarleyDroidGPS mGPS = null;
