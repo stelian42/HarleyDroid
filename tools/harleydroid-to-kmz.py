@@ -68,8 +68,7 @@ for line in f:
 	if val.count('.') != 0:
 		print >> sys.stderr, 'error', line
 	if date and not desc_date:
-		desc_date = date
-		desc_date = time.asctime(time.strptime(date, "%Y%m%d%H%M%S")) + " UTC"
+		desc_date = time.asctime(time.strptime(date[:-3], "%Y%m%d%H%M%S"))
 	if typ == "ODO":
 		if int(val) > oldval:
 			desc_odo += int(val) - oldval

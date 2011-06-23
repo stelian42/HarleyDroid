@@ -38,7 +38,7 @@ public class HarleyDroidLogger implements HarleyDataListener
 	private static final String TAG = HarleyDroidLogger.class.getSimpleName();
 
 	static final SimpleDateFormat TIMESTAMP_FORMAT =
-		new SimpleDateFormat("yyyyMMddHHmmss");
+		new SimpleDateFormat("yyyyMMddHHmmssSSS");
 	static {
 		TIMESTAMP_FORMAT.setTimeZone(TimeZone.getDefault());
 	}
