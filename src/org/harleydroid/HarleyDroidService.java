@@ -26,6 +26,8 @@ import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -190,15 +192,15 @@ public class HarleyDroidService extends Service
 			mOut.flush();
 		}
 
-		private void chat(String send, String expect, long timeout) throws IOException {
-			String line = null;
+		private String chat(String send, String expect, long timeout) throws IOException {
+			StringBuilder line = new StringBuilder();
 			writeLine(send);
 			long start = System.currentTimeMillis();
 			while (timeout > 0) {
-				line = readLine(timeout);
+				line.append(readLine(timeout));
 				long now = System.currentTimeMillis();
 				if (line.indexOf(expect) != -1)
-					return;
+					return line.toString();
 				timeout -= (now - start);
 				start = now;
 			}
@@ -255,6 +257,9 @@ public class HarleyDroidService extends Service
 
 		public void runBluetooth() {
 			int errors = 0;
+			int elmVersionMajor = 0;
+			int elmVersionMinor = 0;
+			int elmVersionRelease = 0;
 
 			if (D) Log.d(TAG, "started");
 			mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTING, -1, -1).sendToTarget();
@@ -282,13 +287,23 @@ public class HarleyDroidService extends Service
 				} catch (InterruptedException e2) {
 				}
 				// Warm Start
-				chat("ATWS", "ELM327", ATZ_TIMEOUT);
+				String reply = chat("ATWS", "ELM327", ATZ_TIMEOUT);
+				// parse reply to extract version information
+				Pattern p = Pattern.compile("(?s)^.*ELM327 v(\\d+)\\.(\\d+)(\\w?).*$");
+				Matcher m = p.matcher(reply);
+				if (m.matches()) {
+						elmVersionMajor = Integer.parseInt(m.group(1));
+						elmVersionMinor = Integer.parseInt(m.group(2));
+						if (m.group(3).length() > 0)
+							elmVersionRelease = m.group(3).charAt(0);
+				}
 				// Echo ON
 				chat("ATE1", "OK", AT_TIMEOUT);
 				// Headers ON
 				chat("ATH1", "OK", AT_TIMEOUT);
 				// Spaces OFF
-				chat("ATS0", "OK", AT_TIMEOUT);
+				if (elmVersionMajor >= 1 && elmVersionMinor >= 3)
+					chat("ATS0", "OK", AT_TIMEOUT);
 				// Select Protocol SAE J1850 VPW (10.4 kbaud)
 				chat("ATSP2", "OK", AT_TIMEOUT);
 				// Monitor All
