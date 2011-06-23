@@ -113,7 +113,7 @@ public class J1850 {
 		else if (x == 0x48291002)
 			hd.setSpeed(y);
 		else if (x == 0xa8491010)
-			hd.setEngineTemp(in[4]);
+			hd.setEngineTemp((int)in[4] & 0xff);
 		else if (x == 0xa83b1003) {
 			if (in[4] != 0) {
 				int gear = 0;
