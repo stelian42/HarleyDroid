@@ -26,7 +26,7 @@
 		<ImageView
 			android:layout_column="1"
 			android:padding="10dip"
-			android:src="@drawable/icon" />
+			android:src="@drawable/ic_launcher_harleydroid" />
 		<LinearLayout
 			android:layout_column="2"
 			android:layout_height="wrap_content"

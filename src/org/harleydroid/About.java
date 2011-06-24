@@ -43,7 +43,7 @@ public class About {
 				Eula.show(activity, true);
 			}
 		});
-		builder.setIcon(R.drawable.icon);
+		builder.setIcon(R.drawable.ic_launcher_harleydroid);
 		AlertDialog dialog = builder.create();
 		dialog.show();
 
