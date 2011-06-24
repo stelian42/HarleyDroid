@@ -259,6 +259,7 @@ public class HarleyDroidService extends Service
 			int errors = 0;
 			int elmVersionMajor = 0;
 			int elmVersionMinor = 0;
+			@SuppressWarnings("unused")
 			int elmVersionRelease = 0;
 
 			if (D) Log.d(TAG, "started");
