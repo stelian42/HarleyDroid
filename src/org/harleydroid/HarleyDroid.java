@@ -280,10 +280,15 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		if (mService.isRunning())
 			return;
 
-		if (!EMULATOR)
+		if (!EMULATOR) {
+			// should not happen because capture menu is disabled, but the
+			// error was somehow reproduced by users.
+			if (mBluetoothID == null)
+				return;
 			mService.startService(mInterfaceType, mBluetoothAdapter.getRemoteDevice(mBluetoothID),
 								  mUnitMetric, mLogging, mGPS, mAutoReconnect,
 								  Integer.parseInt(mReconnectDelay));
+		}
 		else
 			mService.startService(mInterfaceType, null,
 								  mUnitMetric, mLogging, mGPS, mAutoReconnect,
