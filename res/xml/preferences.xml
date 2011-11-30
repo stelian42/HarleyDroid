@@ -20,6 +20,13 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <ListPreference
+        android:title="@string/pref_interfacetype"
+        android:persistent="true"
+        android:entries="@array/pref_interfacetype_names"
+        android:entryValues="@array/pref_interfacetype_values"
+        android:defaultValue="elm327"
+        android:key="interfacetype" />
+    <ListPreference
         android:title="@string/pref_bluetoothdev"
         android:persistent="true"
         android:key="bluetoothid" />

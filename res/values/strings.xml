@@ -62,6 +62,15 @@
 <string name="notification_label">HarleyDroidService</string>
 <string name="notification_start">Receiving data</string>
 
+<string name="pref_interfacetype">Interface type</string>
+<string-array name="pref_interfacetype_names">
+	<item>"ELM327"</item>
+	<item>"HarleyDroid"</item>
+</string-array>
+<string-array name="pref_interfacetype_values">
+	<item>"elm327"</item>
+	<item>"harleydroid"</item>
+</string-array>
 <string name="pref_bluetoothdev">Bluetooth device</string>
 <string name="pref_autoconnect">Autoconnect on startup</string>
 <string name="pref_autoreconnect">Auto reconnect if disconnected</string>

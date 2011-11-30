@@ -62,6 +62,7 @@
 <string name="notification_label">HarleyDroidService</string>
 <string name="notification_start">Réception des données</string>
 
+<string name="pref_interfacetype">Type d\'interface</string>
 <string name="pref_bluetoothdev">Périphérique Bluetooth</string>
 <string name="pref_autoconnect">Connexion automatique au lancement</string>
 <string name="pref_autoreconnect">Reconnexion automatique si déconnexion</string>

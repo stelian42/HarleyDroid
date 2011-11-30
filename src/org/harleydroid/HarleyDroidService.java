@@ -60,6 +60,7 @@ public class HarleyDroidService extends Service
 	private NotificationManager mNM;
 	private Handler mHandler = null;
 	private ThreadELM mThread = null;
+	private String mInterfaceType = null;
 	private boolean mAutoReconnect = false;
 	private int mReconnectDelay = 0;
 
@@ -110,9 +111,10 @@ public class HarleyDroidService extends Service
 		mHandler = handler;
 	}
 
-	public void startService(BluetoothDevice dev, boolean metric, boolean logging, boolean gps, boolean autoReconnect, int reconnectDelay) {
+	public void startService(String interfaceType, BluetoothDevice dev, boolean metric, boolean logging, boolean gps, boolean autoReconnect, int reconnectDelay) {
 		if (D) Log.d(TAG, "startService()");
 
+		mInterfaceType = interfaceType;
 		mAutoReconnect = autoReconnect;
 		mReconnectDelay = reconnectDelay;
 
@@ -237,7 +239,7 @@ public class HarleyDroidService extends Service
 				// RPM at 1053
 				line = "28 1B 10 02 10 74 4C";
 				// Speed at 100 km/h
-				line = "48 29 10 02 32 00 0f";
+				line = "J4829100232000f";
 				// Odometer
 				//line = "a8 69 10 06 00 00 FF 61";
 
@@ -281,38 +283,40 @@ public class HarleyDroidService extends Service
 
 			if (D) Log.d(TAG, "connected");
 
-			try {
-				chat("AT", "", AT_TIMEOUT);
+			if (mInterfaceType.equals("elm327")) {
 				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e2) {
-				}
-				// Warm Start
-				String reply = chat("ATWS", "ELM327", ATZ_TIMEOUT);
-				// parse reply to extract version information
-				Pattern p = Pattern.compile("(?s)^.*ELM327 v(\\d+)\\.(\\d+)(\\w?).*$");
-				Matcher m = p.matcher(reply);
-				if (m.matches()) {
+					chat("AT", "", AT_TIMEOUT);
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e2) {
+					}
+					// Warm Start
+					String reply = chat("ATWS", "ELM327", ATZ_TIMEOUT);
+					// parse reply to extract version information
+					Pattern p = Pattern.compile("(?s)^.*ELM327 v(\\d+)\\.(\\d+)(\\w?).*$");
+					Matcher m = p.matcher(reply);
+					if (m.matches()) {
 						elmVersionMajor = Integer.parseInt(m.group(1));
 						elmVersionMinor = Integer.parseInt(m.group(2));
 						if (m.group(3).length() > 0)
 							elmVersionRelease = m.group(3).charAt(0);
+					}
+					// Echo ON
+					chat("ATE1", "OK", AT_TIMEOUT);
+					// Headers ON
+					chat("ATH1", "OK", AT_TIMEOUT);
+					// Spaces OFF
+					if (elmVersionMajor >= 1 && elmVersionMinor >= 3)
+						chat("ATS0", "OK", AT_TIMEOUT);
+					// Select Protocol SAE J1850 VPW (10.4 kbaud)
+					chat("ATSP2", "OK", AT_TIMEOUT);
+					// Monitor All
+					chat("ATMA", "", AT_TIMEOUT);
+				} catch (IOException e1) {
+					mHandler.obtainMessage(HarleyDroid.STATUS_ERRORAT, -1, -1).sendToTarget();
+					// socket is already closed...
+					return;
 				}
-				// Echo ON
-				chat("ATE1", "OK", AT_TIMEOUT);
-				// Headers ON
-				chat("ATH1", "OK", AT_TIMEOUT);
-				// Spaces OFF
-				if (elmVersionMajor >= 1 && elmVersionMinor >= 3)
-					chat("ATS0", "OK", AT_TIMEOUT);
-				// Select Protocol SAE J1850 VPW (10.4 kbaud)
-				chat("ATSP2", "OK", AT_TIMEOUT);
-				// Monitor All
-				chat("ATMA", "", AT_TIMEOUT);
-			} catch (IOException e1) {
-				mHandler.obtainMessage(HarleyDroid.STATUS_ERRORAT, -1, -1).sendToTarget();
-				// socket is already closed...
-				return;
 			}
 
 			if (D) Log.d(TAG, "ready");

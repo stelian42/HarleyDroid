@@ -58,6 +58,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 	private static final int REQUEST_ENABLE_BT = 2;
 
 	private SharedPreferences mPrefs;
+	private String mInterfaceType = null;
 	private BluetoothAdapter mBluetoothAdapter = null;
 	private Menu mOptionsMenu = null;
 	private String mBluetoothID = null;
@@ -121,6 +122,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		super.onStart();
 
 		// get preferences which may have been changed
+		mInterfaceType = mPrefs.getString("interfacetype", null);
 		mBluetoothID = mPrefs.getString("bluetoothid", null);
 		mAutoConnect = mAutoConnect && mPrefs.getBoolean("autoconnect", false);
 		mAutoReconnect = mPrefs.getBoolean("autoreconnect", false);
@@ -279,9 +281,13 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 			return;
 
 		if (!EMULATOR)
-			mService.startService(mBluetoothAdapter.getRemoteDevice(mBluetoothID), mUnitMetric, mLogging, mGPS, mAutoReconnect, Integer.parseInt(mReconnectDelay));
+			mService.startService(mInterfaceType, mBluetoothAdapter.getRemoteDevice(mBluetoothID),
+								  mUnitMetric, mLogging, mGPS, mAutoReconnect,
+								  Integer.parseInt(mReconnectDelay));
 		else
-			mService.startService(null, mUnitMetric, mLogging, mGPS, mAutoReconnect, Integer.parseInt(mReconnectDelay));
+			mService.startService(mInterfaceType, null,
+								  mUnitMetric, mLogging, mGPS, mAutoReconnect,
+								  Integer.parseInt(mReconnectDelay));
 	}
 
 	private void startCapture() {

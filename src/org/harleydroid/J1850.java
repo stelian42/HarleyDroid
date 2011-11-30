@@ -42,14 +42,14 @@ public class J1850 {
 			int digit0, digit1;
 
 			while (inidx < in.length &&
-					Character.isWhitespace((char)in[inidx]))
+					Character.digit((char)in[inidx], 16) == -1)
 				inidx++;
 			if (inidx >= in.length)
 				break;
 			digit0 = Character.digit((char)in[inidx++], 16);
 
 			while (inidx < in.length &&
-					Character.isWhitespace((char)in[inidx]))
+					Character.digit((char)in[inidx], 16) == -1)
 				inidx++;
 			if (inidx >= in.length)
 				break;
