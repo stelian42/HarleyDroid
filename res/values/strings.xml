@@ -26,10 +26,10 @@
 
 <string name="toast_nobluetooth">Sorry, your device doesn\'t support bluetooth</string>
 <string name="toast_errorenablebluetooth">Unable to enable Bluetooth</string>
-<string name="toast_connecting">Connecting to ELM327...</string>
-<string name="toast_errorconnecting">Error connecting to ELM327</string>
-<string name="toast_connected">Connected to ELM327</string>
-<string name="toast_nodata">No data from ELM327</string>
+<string name="toast_connecting">Connecting to interface...</string>
+<string name="toast_errorconnecting">Error connecting to interface</string>
+<string name="toast_connected">Connected to interface</string>
+<string name="toast_nodata">No data from interface</string>
 <string name="toast_toomanyerrors">Too many communication errors, aborting...</string>
 <string name="toast_errorlogging">Unable to write logs to external storage</string>
 <string name="toast_errorat">Error configuring ELM327</string>
@@ -109,7 +109,7 @@
 <string name="about_support">Support:</string>
 <string name="about_weburl">github.com/stelian42/HarleyDroid</string>
 <string name="about_notendorsed">HarleyDroid is not endorsed or certified by the Harley-Davidson Motor Company.</string>
-<string name="about_needelm327">This application requires an ELM327 bluetooth module and a custom cable.</string>
+<string name="about_needelm327">This application requires a custom interface connected to the motorcycle diag bus.</string>
 <string name="about_ok">OK</string>
 <string name="about_license">License</string>
 

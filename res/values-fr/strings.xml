@@ -26,10 +26,10 @@
 
 <string name="toast_nobluetooth">Désolé, votre appareil ne supporte pas le Bluetooth</string>
 <string name="toast_errorenablebluetooth">Impossible d\'activer le Bluetooth</string>
-<string name="toast_connecting">Connexion au ELM327...</string>
-<string name="toast_errorconnecting">Erreur de connexion au ELM327</string>
-<string name="toast_connected">Connecté au ELM327</string>
-<string name="toast_nodata">Pas de données en provenance de l\'ELM327</string>
+<string name="toast_connecting">Connexion à l\'interface...</string>
+<string name="toast_errorconnecting">Erreur de connexion à l\'interface</string>
+<string name="toast_connected">Connecté à l\'interface </string>
+<string name="toast_nodata">Pas de données en provenance de l\'interface</string>
 <string name="toast_toomanyerrors">Trop d\'erreurs de communication, abandon...</string>
 <string name="toast_errorlogging">Impossible d\'écrire les données sur le stockage externe</string>
 <string name="toast_errorat">Erreur de configuration de l\'ELM327</string>
@@ -90,7 +90,7 @@
 <string name="about_unknown">inconnue</string>
 <string name="about_support">Support:</string>
 <string name="about_notendorsed">HarleyDroid n\'est pas approuvé ou certifié par Harley-Davidson Motor Company.</string>
-<string name="about_needelm327">Cette application nécessite un module bluetooth ELM327 et un câble spécifique.</string>
+<string name="about_needelm327">Cette application nécessite une interface spécifique connectée au bus de diagnostique de la moto.</string>
 <string name="about_ok">OK</string>
 <string name="about_license">Licence</string>
 
