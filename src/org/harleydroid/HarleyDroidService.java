@@ -19,50 +19,65 @@
 
 package org.harleydroid;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.util.Log;
 
 public class HarleyDroidService extends Service
 {
-	private static final boolean D = false;
+	private static final boolean D = true;
 	private static final String TAG = HarleyDroidService.class.getSimpleName();
 
-	private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+	private static final int MSG_NONE = 0;
+	private static final int MSG_CONNECTED = 1;
+	private static final int MSG_DISCONNECTED = 2;
+	private static final int MSG_START_POLL = 3;
+	private static final int MSG_STARTED_POLL = 4;
+	private static final int MSG_STOP_POLL = 5;
+	private static final int MSG_STOPPED_POLL = 6;
+	private static final int MSG_SEND = 7;
+	private static final int MSG_SEND_DONE = 8;
 
-	private static final int AT_TIMEOUT = 2000;
-	private static final int ATZ_TIMEOUT = 5000;
-	private static final int ATMA_TIMEOUT = 30000;
-
-	private static final int MAX_ERRORS = 10;
+	private static final int STATE_DISCONNECT = 1;
+	private static final int STATE_TO_DISCONNECT = 2;
+	private static final int STATE_CONNECT = 3;
+	private static final int STATE_TO_CONNECT = 4;
+	private static final int STATE_POLL = 5;
+	private static final int STATE_TO_POLL = 6;
+	private static final int STATE_SEND = 7;
+	private static final int STATE_TO_SEND = 8;
 
 	private final IBinder binder = new HarleyDroidServiceBinder();
 	private HarleyDroidLogger mLogger = null;
 	private HarleyData mHD;
 	private NotificationManager mNM;
+	private Notification notification;
+	private PendingIntent notificationIntent;
 	private Handler mHandler = null;
-	private ThreadELM mThread = null;
-	private String mInterfaceType = null;
+	private J1850Interface mInterface = null;
+	private boolean mLogging = false;
+	private boolean mMetric = true;
+	private boolean mGPS = true;
+	private boolean mLogRaw = false;
 	private boolean mAutoReconnect = false;
+	private Thread mReconThread = null;
 	private int mReconnectDelay = 0;
+	private int mCurrentState = STATE_DISCONNECT;
+	private int mWantedState = STATE_DISCONNECT;
+	private String mSendType;
+	private String mSendTA;
+	private String mSendSA;
+	private String mSendCommand;
+	private String mSendExpect;
 
 	@Override
 	public void onCreate() {
@@ -72,18 +87,22 @@ public class HarleyDroidService extends Service
 		mHD = new HarleyData();
 
 		mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-		CharSequence text = getText(R.string.notification_start);
-		Notification notification = new Notification(R.drawable.ic_stat_notify_harleydroid, text, System.currentTimeMillis());
+		notification = new Notification(R.drawable.ic_stat_notify_harleydroid, "", System.currentTimeMillis());
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, HarleyDroid.class), 0);
-		notification.setLatestEventInfo(this, getText(R.string.notification_label), text, contentIntent);
-		mNM.notify(R.string.notification_label, notification);
+		notificationIntent = PendingIntent.getActivity(this, 0, new Intent(this, HarleyDroid.class), 0);
+		notify(R.string.notification_disconnected);
 	}
 
 	public void onDestroy() {
 		super.onDestroy();
 		if (D) Log.d(TAG, "onDestroy()");
 
+		if (mReconThread != null)
+			mReconThread.interrupt();
+		if (mLogger != null) {
+			mHD.removeHarleyDataListener(mLogger);
+			mLogger.stop();
+		}
 		mNM.cancel(R.string.notification_label);
 	}
 
@@ -101,6 +120,12 @@ public class HarleyDroidService extends Service
 		return START_STICKY;
 	}
 
+	public class HarleyDroidServiceBinder extends Binder {
+		HarleyDroidService getService() {
+			return HarleyDroidService.this;
+		}
+	}
+
 	public HarleyData getHarleyData() {
 		return mHD;
 	}
@@ -111,287 +136,283 @@ public class HarleyDroidService extends Service
 		mHandler = handler;
 	}
 
-	public void startService(String interfaceType, BluetoothDevice dev, boolean metric, boolean logging, boolean gps, boolean autoReconnect, int reconnectDelay) {
-		if (D) Log.d(TAG, "startService()");
+	public void setLogging(boolean logging, boolean metric, boolean gps, boolean logRaw) {
+		mLogging = logging;
+		mMetric = metric;
+		mGPS = gps;
+		mLogRaw = logRaw;
+	}
 
-		mInterfaceType = interfaceType;
+	public void setAutoReconnect(boolean autoReconnect, int reconnectDelay) {
 		mAutoReconnect = autoReconnect;
 		mReconnectDelay = reconnectDelay;
-
-		if (logging) {
-			mLogger = new HarleyDroidLogger(this, metric, gps);
-			mLogger.start();
-			mHD.addHarleyDataListener(mLogger);
-		}
-		mThread = new ThreadELM(dev);
-		mThread.start();
 	}
 
-	public void stopService() {
-		if (D) Log.d(TAG, "stopService()");
-
-		mThread.stop = true;
-		mThread = null;
-		if (mLogger != null) {
-			mHD.removeHarleyDataListener(mLogger);
-			mLogger.stop();
+	public void setInterfaceType(String interfaceType, BluetoothDevice dev) {
+		if (HarleyDroid.EMULATOR)
+			mInterface = new EmulatorInterface(this);
+		else {
+			if (interfaceType.equals("elm327"))
+				mInterface = new ELM327Interface(this, dev);
+			else if (interfaceType.equals("harleydroid"))
+				mInterface = new HarleyDroidInterface(this, dev);
 		}
 	}
 
-	public boolean isRunning() {
-		if (D) Log.d(TAG, "isRunning()");
-
-		return (mThread != null);
+	private void notify(int id) {
+		CharSequence text = getText(id);
+		notification.setLatestEventInfo(this, getText(R.string.notification_label), text, notificationIntent);
+		mNM.notify(R.string.notification_label, notification);
 	}
 
-	public class HarleyDroidServiceBinder extends Binder {
-		HarleyDroidService getService() {
-			return HarleyDroidService.this;
-		}
-	}
+	private void stateMachine() {
+		Log.e(TAG, "stateMachine(): transition from " + mCurrentState + " to " + mWantedState);
 
-	private class ThreadELM extends Thread {
-		private BluetoothDevice mDevice;
-		private BufferedReader mIn;
-		private OutputStream mOut;
-		private BluetoothSocket mSock;
-		private Timer mTimer;
-		boolean stop = false;
+		if (mCurrentState == mWantedState)
+			return;
 
-		class CancelTimer extends TimerTask {
-			public void run() {
-				if (D) Log.d(TAG, "CANCEL AT " + System.currentTimeMillis());
-				try {
-					writeLine("");
-				} catch (IOException e) {
-				}
-				try {
-					mSock.close();
-				} catch (IOException e) {
-				}
-			}
-		};
-
-		public ThreadELM(BluetoothDevice device) {
-			mDevice = device;
-			mTimer = new Timer();
-		}
-
-		private String readLine(long timeout) throws IOException {
-			CancelTimer t = new CancelTimer();
-			mTimer.schedule(t, timeout);
-			if (D) Log.d(TAG, "READLINE AT " + System.currentTimeMillis());
-			String line = mIn.readLine();
-			t.cancel();
-			if (D) Log.d(TAG, "read (" + line.length() + "): " + line);
-			return line;
-		}
-
-		private void writeLine(String line) throws IOException {
-			line += "\r";
-			if (D) Log.d(TAG, "write: " + line);
-			mOut.write(line.getBytes());
-			mOut.flush();
-		}
-
-		private String chat(String send, String expect, long timeout) throws IOException {
-			StringBuilder line = new StringBuilder();
-			writeLine(send);
-			long start = System.currentTimeMillis();
-			while (timeout > 0) {
-				line.append(readLine(timeout));
-				long now = System.currentTimeMillis();
-				if (line.indexOf(expect) != -1)
-					return line.toString();
-				timeout -= (now - start);
-				start = now;
-			}
-			throw new IOException("timeout");
-		}
-
-		public void runEmulator() {
-			int cnt = 0;
-			int errors = 0;
-
-			if (D) Log.d(TAG, "ready");
-			mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTED, -1, -1).sendToTarget();
-
-			while (!stop) {
-				String line;
-
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e1) {
-				}
-
-				/* send several messages to update the UI */
-				mHD.setOdometer(cnt);
-				cnt += 50;
-				if (cnt % 100 == 0) {
-					mHD.setCheckEngine(true);
-					mHD.setTurnSignals(0);
-				}
-				else {
-					mHD.setCheckEngine(false);
-					mHD.setTurnSignals(3);
-				}
-
-				// RPM at 1053
-				line = "28 1B 10 02 10 74 4C";
-				// Speed at 100 km/h
-				line = "J4829100232000f";
-				// Odometer
-				//line = "a8 69 10 06 00 00 FF 61";
-
-
-				if (J1850.parse(line.getBytes(), mHD))
-					errors = 0;
-					//++errors;
-				else
-					++errors;
-
-				if (errors > MAX_ERRORS) {
-					mHandler.obtainMessage(HarleyDroid.STATUS_TOOMANYERRORS, -1, -1).sendToTarget();
-					break;
-				}
-			}
-		}
-
-		public void runBluetooth() {
-			int errors = 0;
-			int elmVersionMajor = 0;
-			int elmVersionMinor = 0;
-			@SuppressWarnings("unused")
-			int elmVersionRelease = 0;
-
-			if (D) Log.d(TAG, "started");
-			mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTING, -1, -1).sendToTarget();
-
-			try {
-				mSock = mDevice.createRfcommSocketToServiceRecord(MY_UUID);
-				mSock.connect();
-				mIn = new BufferedReader(new InputStreamReader(mSock.getInputStream()), 128);
-				mOut = mSock.getOutputStream();
-			} catch (IOException e1) {
-				try {
-					mSock.close();
-				} catch (IOException e2) {
-				}
-				mHandler.obtainMessage(HarleyDroid.STATUS_ERROR, -1, -1).sendToTarget();
+		switch (mWantedState) {
+		case STATE_CONNECT:
+			switch (mCurrentState) {
+			case STATE_DISCONNECT:
+				mCurrentState = STATE_TO_CONNECT;
+				notify(R.string.notification_connecting);
+				mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTING, -1, -1).sendToTarget();
+				mInterface.connect(mHD);
+				return;
+			case STATE_POLL:
+			case STATE_SEND:
+				mCurrentState = STATE_TO_CONNECT;
+				mInterface.stopPoll();
+				return;
+			case STATE_TO_DISCONNECT:
+			case STATE_TO_CONNECT:
+			case STATE_TO_POLL:
+			case STATE_TO_SEND:
+				/* nothing to done, wait for state to settle */
 				return;
 			}
-
-			if (D) Log.d(TAG, "connected");
-
-			if (mInterfaceType.equals("elm327")) {
-				try {
-					chat("AT", "", AT_TIMEOUT);
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e2) {
-					}
-					// Warm Start
-					String reply = chat("ATWS", "ELM327", ATZ_TIMEOUT);
-					// parse reply to extract version information
-					Pattern p = Pattern.compile("(?s)^.*ELM327 v(\\d+)\\.(\\d+)(\\w?).*$");
-					Matcher m = p.matcher(reply);
-					if (m.matches()) {
-						elmVersionMajor = Integer.parseInt(m.group(1));
-						elmVersionMinor = Integer.parseInt(m.group(2));
-						if (m.group(3).length() > 0)
-							elmVersionRelease = m.group(3).charAt(0);
-					}
-					// Echo ON
-					chat("ATE1", "OK", AT_TIMEOUT);
-					// Headers ON
-					chat("ATH1", "OK", AT_TIMEOUT);
-					// Spaces OFF
-					if (elmVersionMajor >= 1 && elmVersionMinor >= 3)
-						chat("ATS0", "OK", AT_TIMEOUT);
-					// Select Protocol SAE J1850 VPW (10.4 kbaud)
-					chat("ATSP2", "OK", AT_TIMEOUT);
-					// Monitor All
-					chat("ATMA", "", AT_TIMEOUT);
-				} catch (IOException e1) {
-					mHandler.obtainMessage(HarleyDroid.STATUS_ERRORAT, -1, -1).sendToTarget();
-					// socket is already closed...
-					return;
-				}
+			break;
+		case STATE_DISCONNECT:
+			switch (mCurrentState) {
+			case STATE_CONNECT:
+			case STATE_POLL:
+			case STATE_SEND:
+				mCurrentState = STATE_TO_DISCONNECT;
+				mInterface.disconnect();
+				return;
+			case STATE_TO_DISCONNECT:
+			case STATE_TO_CONNECT:
+			case STATE_TO_POLL:
+			case STATE_TO_SEND:
+				/* nothing to done, wait for state to settle */
+				return;
 			}
-
-			if (D) Log.d(TAG, "ready");
-			mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTED, -1, -1).sendToTarget();
-
-			while (!stop) {
-				String line;
-
-				try {
-					line = readLine(ATMA_TIMEOUT);
-				} catch (IOException e1) {
-					mHandler.obtainMessage(HarleyDroid.STATUS_NODATA, -1, -1).sendToTarget();
-					// socket is already closed...
-					return;
-				}
-
-				if (J1850.parse(line.getBytes(), mHD))
-					errors = 0;
-				else
-					++errors;
-
-				if (errors > MAX_ERRORS) {
-					mHandler.obtainMessage(HarleyDroid.STATUS_TOOMANYERRORS, -1, -1).sendToTarget();
-					try {
-						writeLine("");
-					} catch (IOException e1) {
-					}
-					try {
-						mSock.close();
-					} catch (IOException e2) {
-					}
-					return;
-				}
+			return;
+		case STATE_POLL:
+			switch (mCurrentState) {
+			case STATE_DISCONNECT:
+				mCurrentState = STATE_TO_CONNECT;
+				notify(R.string.notification_connecting);
+				mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTING, -1, -1).sendToTarget();
+				mInterface.connect(mHD);
+				return;
+			case STATE_CONNECT:
+				mCurrentState = STATE_TO_POLL;
+				mInterface.startPoll();
+				return;
+			case STATE_SEND:
+				/* wait for send to finish, then go to poll */
+				return;
+			case STATE_TO_DISCONNECT:
+			case STATE_TO_CONNECT:
+			case STATE_TO_POLL:
+			case STATE_TO_SEND:
+				/* nothing to done, wait for state to settle */
+				return;
 			}
+			break;
+		case STATE_SEND:
+			switch (mCurrentState) {
+			case STATE_DISCONNECT:
+				mCurrentState = STATE_TO_CONNECT;
+				notify(R.string.notification_connecting);
+				mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTING, -1, -1).sendToTarget();
+				mInterface.connect(mHD);
+				return;
+			case STATE_CONNECT:
+				mCurrentState = STATE_TO_SEND;
+				mInterface.send(mSendType, mSendTA, mSendSA, mSendCommand, mSendExpect);
+				return;
+			case STATE_POLL:
+				mCurrentState = STATE_TO_CONNECT;
+				mInterface.stopPoll();
+				return;
+			case STATE_TO_DISCONNECT:
+			case STATE_TO_CONNECT:
+			case STATE_TO_POLL:
+			case STATE_TO_SEND:
+				/* nothing to done, wait for state to settle */
+				return;
+			}
+			break;
 
-			try {
-				writeLine("");
-			} catch (IOException e1) {
-			}
-			try {
-				mSock.close();
-			} catch (IOException e2) {
-			}
 		}
+		Log.e(TAG, "stateMachine(): bad state transition from " + mCurrentState + " to " + mWantedState);
+	}
 
-		public void run() {
+	private final Handler mServiceHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			if (D) Log.d(TAG, "handleMessage " + msg.what);
 
-			while (true) {
-
-				if (HarleyDroid.EMULATOR)
-					runEmulator();
-				else
-					runBluetooth();
-
-				if (stop || !mAutoReconnect)
-					break;
-
-				mHandler.obtainMessage(HarleyDroid.STATUS_AUTORECON, -1, -1).sendToTarget();
-
-				try {
-					Thread.sleep(mReconnectDelay * 1000);
-				} catch (InterruptedException e) {
+			switch (msg.what) {
+			case MSG_NONE:
+				mReconThread = null;
+				mWantedState = msg.arg1;
+				break;
+			case MSG_CONNECTED:
+				mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTED, -1, -1).sendToTarget();
+				HarleyDroidService.this.notify(R.string.notification_connected);
+				mCurrentState = STATE_CONNECT;
+				if (mLogging) {
+					mLogger = new HarleyDroidLogger(HarleyDroidService.this, mMetric, mGPS, mLogRaw);
+					mLogger.start();
+					mHD.addHarleyDataListener(mLogger);
 				}
+				break;
+			case MSG_DISCONNECTED:
+				HarleyDroidService.this.notify(R.string.notification_disconnected);
+				if (mLogger != null) {
+					mHD.removeHarleyDataListener(mLogger);
+					mLogger.stop();
+				}
+				mCurrentState = STATE_DISCONNECT;
 
-				if (stop)
-					break;
+				if (msg.arg1 == HarleyDroid.STATUS_OK) {
+					mWantedState = STATE_DISCONNECT;
+				}
+				else {
+					mHandler.obtainMessage(msg.arg1, -1, -1).sendToTarget();
+					if (mAutoReconnect) {
+						final int lastState = mWantedState;
+						mHandler.obtainMessage(HarleyDroid.STATUS_AUTORECON, -1, -1).sendToTarget();
+						mReconThread = new Thread() {
+							public void run() {
+								try {
+									Thread.sleep(mReconnectDelay * 1000);
+									mServiceHandler.removeCallbacksAndMessages(null);
+									mServiceHandler.obtainMessage(MSG_NONE, lastState, -1).sendToTarget();
+									// try again to go to mWantedState
+								} catch (InterruptedException e) {
+								}
+							}
+						};
+						mReconThread.start();
+					}
+					mWantedState = STATE_DISCONNECT;
+				}
+				break;
+			case MSG_START_POLL:
+				HarleyDroidService.this.notify(R.string.notification_startpoll);
+				mWantedState = STATE_POLL;
+				break;
+			case MSG_STARTED_POLL:
+				HarleyDroidService.this.notify(R.string.notification_polling);
+				mCurrentState = STATE_POLL;
+				break;
+			case MSG_STOP_POLL:
+				HarleyDroidService.this.notify(R.string.notification_stoppoll);
+				mWantedState = STATE_CONNECT;
+				break;
+			case MSG_STOPPED_POLL:
+				HarleyDroidService.this.notify(R.string.notification_connected);
+				mCurrentState = STATE_CONNECT;
+				break;
+			case MSG_SEND:
+				HarleyDroidService.this.notify(R.string.notification_connected);
+				mWantedState = STATE_SEND;
+				mSendType = (String)msg.getData().get("type");
+				mSendTA = (String)msg.getData().get("ta");
+				mSendSA = (String)msg.getData().get("sa");
+				mSendCommand = (String)msg.getData().get("command");
+				mSendExpect = (String)msg.getData().get("expect");
+				break;
+			case MSG_SEND_DONE:
+				HarleyDroidService.this.notify(R.string.notification_connected);
+				mCurrentState = STATE_CONNECT;
+				mWantedState = STATE_CONNECT;
+				break;
 			}
-			finish();
+			stateMachine();
 		}
+	};
 
-		private void finish() {
-			if (mLogger != null)
-				mLogger.stop();
-			mTimer.cancel();
-			stopSelf();
-		}
+	public void connected() {
+		if (D) Log.d(TAG, "connected()");
+		mServiceHandler.removeCallbacksAndMessages(null);
+		mServiceHandler.obtainMessage(MSG_CONNECTED, -1, -1).sendToTarget();
+	}
+
+	public void disconnected(int error) {
+		if (D) Log.d(TAG, "disconnected()" + mCurrentState + " " + mWantedState);
+		mServiceHandler.removeCallbacksAndMessages(null);
+		mServiceHandler.obtainMessage(MSG_DISCONNECTED, error, -1).sendToTarget();
+	}
+
+	public void startPoll() {
+		if (D) Log.d(TAG, "startPoll()");
+		mServiceHandler.removeCallbacksAndMessages(null);
+		mServiceHandler.obtainMessage(MSG_START_POLL, -1, -1).sendToTarget();
+	}
+
+	public void startedPoll() {
+		if (D) Log.d(TAG, "startedPoll()");
+		mServiceHandler.removeCallbacksAndMessages(null);
+		mServiceHandler.obtainMessage(MSG_STARTED_POLL, -1, -1).sendToTarget();
+	}
+
+	public void stopPoll() {
+		if (D) Log.d(TAG, "stopPoll()");
+		mServiceHandler.removeCallbacksAndMessages(null);
+		mServiceHandler.obtainMessage(MSG_STOP_POLL, -1, -1).sendToTarget();
+	}
+
+	public void stoppedPoll() {
+		if (D) Log.d(TAG, "stoppedPoll()");
+		mServiceHandler.removeCallbacksAndMessages(null);
+		mServiceHandler.obtainMessage(MSG_STOPPED_POLL, -1, -1).sendToTarget();
+	}
+
+	public void send(String type, String ta, String sa, String command, String expect) {
+		if (D) Log.d(TAG, "send()");
+		Message m = mServiceHandler.obtainMessage(MSG_SEND);
+		Bundle b = new Bundle();
+		b.putString("type", type);
+		b.putString("ta", ta);
+		b.putString("sa", sa);
+		b.putString("command", command);
+		b.putString("expect", expect);
+		m.setData(b);
+		mServiceHandler.removeCallbacksAndMessages(null);
+		m.sendToTarget();
+	}
+
+	public void sendDone() {
+		if (D) Log.d(TAG, "sendDone()");
+		mServiceHandler.removeCallbacksAndMessages(null);
+		mServiceHandler.obtainMessage(MSG_SEND_DONE, -1, -1).sendToTarget();
+	}
+
+	public boolean isConnected() {
+		if (D) Log.d(TAG, "isConnected()");
+
+		return (mCurrentState != STATE_DISCONNECT);
+	}
+
+	public boolean isPolling() {
+		if (D) Log.d(TAG, "isPolling()");
+
+		return (mCurrentState == STATE_POLL);
 	}
 }

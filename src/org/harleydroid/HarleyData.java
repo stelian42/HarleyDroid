@@ -38,13 +38,22 @@ public class HarleyData {
 	private boolean mCheckEngine = false;	// XXX boolean: check engine
 	private int mOdometer = 0;				// odometer tick (1 tick = 0.4 meters)
 	private int mFuel = 0;					// fuel consumption tick (1 tick = 0.000040 liters)
+	private String mVIN = "N/A";			// VIN
+	private String mECMPN = "N/A";			// ECM Part Number
+	private String mECMCalID = "N/A";		// ECM Calibration ID
+	private int mECMSWLevel = 0;			// ECM Software Level
+	private CopyOnWriteArrayList<Integer> mHistoricDTC; // Historic DTC
+	private CopyOnWriteArrayList<Integer> mCurrentDTC;	// Current DTC
 
 	private int mResetOdometer = 0;
+	private int mResetFuel = 0;
 
 	private CopyOnWriteArrayList<HarleyDataListener> mListeners;
 
 	public HarleyData() {
 		mListeners = new CopyOnWriteArrayList<HarleyDataListener>();
+		mHistoricDTC = new CopyOnWriteArrayList<Integer>();
+		mCurrentDTC = new CopyOnWriteArrayList<Integer>();
 	}
 
 	public void addHarleyDataListener(HarleyDataListener l) {
@@ -207,32 +216,124 @@ public class HarleyData {
 		}
 	}
 
-	public void resetOdometer() {
-		mResetOdometer = mOdometer;
-		for (HarleyDataListener l : mListeners) {
-			l.onOdometerImperialChanged(0);
-			l.onOdometerMetricChanged(0);
-		}
-	}
-
 	// returns the fuel in fl oz
 	public int getFuelImperial() {
-		return (mFuel * 338) / 250000;
+		return ((mFuel - mResetFuel) * 338) / 250000;
 	}
 
 	// returns the fuel in milliliters
 	public int getFuelMetric() {
-		return mFuel / 25;
+		return (mFuel - mResetFuel) / 25;
 	}
 
 	public void setFuel(int fuel) {
 		if (mFuel != fuel) {
 			mFuel = fuel;
 			for (HarleyDataListener l : mListeners) {
-				l.onFuelImperialChanged((mFuel * 338) / 250000);
-				l.onFuelMetricChanged(mFuel / 25);
+				int f = mFuel - mResetFuel;
+				l.onFuelImperialChanged((f * 338) / 250000);
+				l.onFuelMetricChanged(f / 25);
 			}
 		}
+	}
+
+	public void resetCounters() {
+		mResetOdometer = mOdometer;
+		mResetFuel = mFuel;
+		for (HarleyDataListener l : mListeners) {
+			l.onOdometerImperialChanged(0);
+			l.onOdometerMetricChanged(0);
+			l.onFuelImperialChanged(0);
+			l.onFuelMetricChanged(0);
+		}
+	}
+
+	public String getVIN() {
+		return mVIN;
+	}
+
+	public void setVIN(String vin) {
+		mVIN = vin;
+		for (HarleyDataListener l : mListeners)
+			l.onVINChanged(mVIN);
+	}
+
+	public String getECMPN() {
+		return mECMPN;
+	}
+
+	public void setECMPN(String ecmPN) {
+		mECMPN = ecmPN;
+		for (HarleyDataListener l : mListeners)
+			l.onECMPNChanged(mECMPN);
+	}
+
+	public String getECMCalID() {
+		return mECMCalID;
+	}
+
+	public void setECMCalID(String ecmCalID) {
+		mECMCalID = ecmCalID;
+		for (HarleyDataListener l : mListeners)
+			l.onECMCalIDChanged(mECMCalID);
+	}
+
+	public int getECMSWLevel() {
+		return mECMSWLevel;
+	}
+
+	public void setECMSWLevel(int ecmSWLevel) {
+		mECMSWLevel = ecmSWLevel;
+		for (HarleyDataListener l : mListeners)
+			l.onECMSWLevelChanged(mECMSWLevel);
+	}
+
+	public int[] getHistoricDTC() {
+		int[] dtclist = new int[mHistoricDTC.size()];
+		int i = 0;
+		for (Integer n : mHistoricDTC)
+			dtclist[i++] = n;
+		return dtclist;
+	}
+
+	public void resetHistoricDTC() {
+		mHistoricDTC.clear();
+	}
+
+	public void addHistoricDTC(int dtc) {
+		if (mHistoricDTC.contains(dtc))
+			return;
+		mHistoricDTC.add(dtc);
+		int[] dtclist = new int[mHistoricDTC.size()];
+		int i = 0;
+		for (Integer n : mHistoricDTC)
+			dtclist[i++] = n;
+		for (HarleyDataListener l : mListeners)
+			l.onHistoricDTCChanged(dtclist);
+	}
+
+	public int[] getCurrentDTC() {
+		int[] dtclist = new int[mCurrentDTC.size()];
+		int i = 0;
+		for (Integer n : mCurrentDTC)
+			dtclist[i++] = n;
+		return dtclist;
+	}
+
+	public void resetCurrentDTC() {
+		mCurrentDTC.clear();
+	}
+
+	public void addCurrentDTC(int dtc) {
+		if (mCurrentDTC.contains(dtc))
+			return;
+		mCurrentDTC.add(dtc);
+		int[] dtclist = new int[mCurrentDTC.size()];
+		int i = 0;
+		for (Integer n : mCurrentDTC)
+			dtclist[i++] = n;
+		for (HarleyDataListener l : mListeners)
+			l.onCurrentDTCChanged(dtclist);
 	}
 
 	public void setBadCRC(byte[] buffer) {
@@ -243,6 +344,11 @@ public class HarleyData {
 	public void setUnknown(byte[] buffer) {
 		for (HarleyDataListener l : mListeners)
 			l.onUnknownChanged(buffer);
+	}
+
+	public void setRaw(byte[] buffer) {
+		for (HarleyDataListener l : mListeners)
+			l.onRawChanged(buffer);
 	}
 
 	public String toString() {

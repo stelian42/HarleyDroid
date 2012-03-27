@@ -19,6 +19,7 @@
 
 package org.harleydroid;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,11 +45,13 @@ public class HarleyDroidLogger implements HarleyDataListener
 	}
 
 	private HarleyDroidGPS mGPS = null;
-	private OutputStream mLog = null;
+	private BufferedOutputStream mLog = null;
 	private boolean mUnitMetric = false;
+	private boolean mLogRaw = false;
 
-	public HarleyDroidLogger(Context context, boolean metric, boolean gps) {
+	public HarleyDroidLogger(Context context, boolean metric, boolean gps, boolean logRaw) {
 		mUnitMetric = metric;
+		mLogRaw = logRaw;
 		if (gps)
 			mGPS = new HarleyDroidGPS(context);
 	}
@@ -63,10 +66,18 @@ public class HarleyDroidLogger implements HarleyDataListener
 			File path = new File(Environment.getExternalStorageDirectory(), "/Android/data/org.harleydroid/files/");
 			path.mkdirs();
 			File logFile = new File(path, "harley-" + TIMESTAMP_FORMAT.format(new Date()) + ".log.gz");
-			mLog = new GZIPOutputStream(new FileOutputStream(logFile, false));
+			mLog = new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(logFile, false)));
 		} catch (IOException e) {
 			Log.d(TAG, "Logfile open " + e);
 		}
+	}
+
+	static byte[] myGetBytes(String s) {
+		byte[] result = new byte[s.length()];
+		for (int i = 0; i < s.length(); i++) {
+			result[i] = (byte) s.charAt(i);
+		}
+		return result;
 	}
 
 	public void write(String data) {
@@ -74,14 +85,16 @@ public class HarleyDroidLogger implements HarleyDataListener
 
 		if (mLog != null) {
 			try {
-				mLog.write(TIMESTAMP_FORMAT.format(new Date()).getBytes());
+				mLog.write(myGetBytes(TIMESTAMP_FORMAT.format(new Date())));
 				mLog.write(',');
-				mLog.write(data.getBytes());
+				mLog.write(myGetBytes(data));
 				mLog.write(',');
 				if (mGPS != null)
-					mLog.write(mGPS.getLocation().getBytes());
-				else
-					mLog.write(",,".getBytes());
+					mLog.write(myGetBytes(mGPS.getLocation()));
+				else {
+					mLog.write(',');
+					mLog.write(',');
+				}
 				mLog.write('\n');
 			} catch (IOException e) {
 			}
@@ -179,6 +192,36 @@ public class HarleyDroidLogger implements HarleyDataListener
 			write("FUL," + fuel);
 	}
 
+	public void onVINChanged(String vin) {
+		write("VIN," + vin);
+	}
+
+	public void onECMPNChanged(String ecmPN) {
+		write("EPN," + ecmPN);
+	}
+
+	public void onECMCalIDChanged(String ecmCalID) {
+		write("ECI," + ecmCalID);
+	}
+
+	public void onECMSWLevelChanged(int ecmSWLevel) {
+		write("ESL," + ecmSWLevel);
+	}
+
+	public void onHistoricDTCChanged(int[] dtc) {
+		String data = "";
+		for (int i = 0; i < dtc.length; i++)
+			data += dtc[i] + ",";
+		write("DTH," + data);
+	}
+
+	public void onCurrentDTCChanged(int[] dtc) {
+		String data = "";
+		for (int i = 0; i < dtc.length; i++)
+			data += dtc[i] + ",";
+		write("DTC," + data);
+	}
+
 	public void onBadCRCChanged(byte[] buffer) {
 		String bad = new String(buffer);
 		if (bad.equals(">ATMA") || bad.equals("SEARCHING..."))
@@ -188,5 +231,10 @@ public class HarleyDroidLogger implements HarleyDataListener
 
 	public void onUnknownChanged(byte[] buffer) {
 		write("UNK," + new String(buffer).trim());
+	}
+
+	public void onRawChanged(byte[] buffer) {
+		if (mLogRaw)
+			write("RAW," + new String(buffer).trim());
 	}
 }

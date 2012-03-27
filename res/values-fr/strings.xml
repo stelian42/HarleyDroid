@@ -26,11 +26,11 @@
 
 <string name="toast_nobluetooth">Désolé, votre appareil ne supporte pas le Bluetooth</string>
 <string name="toast_errorenablebluetooth">Impossible d\'activer le Bluetooth</string>
-<string name="toast_connecting">Connexion à l\'interface...</string>
+<string name="toast_connecting">Connexion à l\'interface&#8230;</string>
 <string name="toast_errorconnecting">Erreur de connexion à l\'interface</string>
 <string name="toast_connected">Connecté à l\'interface </string>
 <string name="toast_nodata">Pas de données en provenance de l\'interface</string>
-<string name="toast_toomanyerrors">Trop d\'erreurs de communication, abandon...</string>
+<string name="toast_toomanyerrors">Trop d\'erreurs de communication, abandon&#8230;</string>
 <string name="toast_errorlogging">Impossible d\'écrire les données sur le stockage externe</string>
 <string name="toast_errorat">Erreur de configuration de l\'ELM327</string>
 <string name="toast_autorecon">Reconnexion automatique dans %s secondes</string>
@@ -38,8 +38,8 @@
 <string name="rpm_label">RPM:</string>
 <string name="speed_imperial_label">Vitesse (mph):</string>
 <string name="speed_metric_label">Vitesse (km/h):</string>
-<string name="enginetemp_imperial_label">Temperature moteur (F):</string>
-<string name="enginetemp_metric_label">Temperature moteur (C):</string>
+<string name="enginetemp_imperial_label">Temperature moteur (°F):</string>
+<string name="enginetemp_metric_label">Temperature moteur (°C):</string>
 <string name="fuelgauge_label">Niveau d\'essence:</string>
 <string name="turnsignals_label">Clignotants:</string>
 <string name="neutral_label">Point mort:</string>
@@ -50,17 +50,30 @@
 <string name="odometer_metric_label">Distance (km):</string>
 <string name="fuel_imperial_label">Essence (fl oz):</string>
 <string name="fuel_metric_label">Essence (ml):</string>
+<string name="ecmcalid_label">Calibration ECM:</string>
+<string name="ecmswlevel_label">Version logiciel ECM:</string>
+<string name="currentdtc_label">Erreurs courantes:</string>
+<string name="historicdtc_label">Erreurs historiques:</string>
 
 <string name="startcapture_label">Démarrer</string>
 <string name="stopcapture_label">Arrêter</string>
 <string name="preferences_label">Préférences</string>
 <string name="mode_labelraw">Mode text</string>
 <string name="mode_labelgr">Mode graphique</string>
-<string name="resetodo_label">RAZ distance</string>
+<string name="diag_label">Mode diagnostique</string>
+<string name="resetcounters_label">RAZ</string>
 <string name="about_label">A propos</string>
 
+<string name="cleardtc_label">Effacer erreurs historiques</string>
+<string name="exitdiag_label">Sortir du mode diagnostique</string>
+
 <string name="notification_label">HarleyDroidService</string>
-<string name="notification_start">Réception des données</string>
+<string name="notification_disconnected">Déconnecté</string>
+<string name="notification_connecting">Connexion en cours&#8230;</string>
+<string name="notification_connected">Connecté</string>
+<string name="notification_startpoll">Lancement de la capture&#8230;</string>
+<string name="notification_polling">Capture en cours</string>
+<string name="notification_stoppoll">Arrêt capture en cours&#8230;</string>
 
 <string name="pref_interfacetype">Type d\'interface</string>
 <string name="pref_bluetoothdev">Périphérique Bluetooth</string>
@@ -69,6 +82,7 @@
 <string name="pref_reconnectdelay">Délai avant reconnexion (secondes)</string>
 <string name="pref_logging">Enregistrer les données sur le stockage externe</string>
 <string name="pref_gps">Ajouter les coordonnées GPS à la sauvegarde</string>
+<string name="pref_lograw">Ajouter les données J1850 brutes à la sauvegarde</string>
 <string name="pref_screenon">Garder l\'écran activé</string>
 <string name="pref_unit">Système d\'unités</string>
 <string-array name="pref_unit_names">

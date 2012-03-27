@@ -18,16 +18,16 @@
      along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-    <FrameLayout 
+    <FrameLayout
     	android:id="@+id/graphic_layout"
     	android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
     >
-		<LinearLayout	
+		<LinearLayout
 			android:orientation="vertical"
 			android:layout_width="fill_parent"
 	    	android:layout_height="fill_parent"
@@ -46,7 +46,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="center"
-					android:layout_margin="2px"
+					android:layout_margin="2dp"
 					atswidget:totalNotches="300"
 					atswidget:incrementPerLargeNotch="10"
 					atswidget:incrementPerSmallNotch="1"
@@ -55,17 +55,17 @@
 					atswidget:scaleMinValue="0"
     				atswidget:scaleMaxValue="220"
     				atswidget:rangeOkColor="0x9f00ff00"
-	    			atswidget:rangeOkMinValue="0" 
+	    			atswidget:rangeOkMinValue="0"
     				atswidget:rangeOkMaxValue="220"
     				atswidget:rangeWarningColor="0x9fff8800"
     				atswidget:rangeWarningMinValue="220"
     				atswidget:rangeWarningMaxValue="220"
 	    			atswidget:rangeErrorColor="0x9fff0000"
     				atswidget:rangeErrorMinValue="220"
-    				atswidget:rangeErrorMaxValue="220" 
+    				atswidget:rangeErrorMaxValue="220"
     				atswidget:unitTitle="km/h"
     				atswidget:lowerTitle="HarleyDroid"
-	    			atswidget:upperTitle="" 
+	    			atswidget:upperTitle=""
     				atswidget:showGauge = "false"
     				atswidget:showHand="true"
     				atswidget:showRange="false"
@@ -79,7 +79,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="center"
-					android:layout_margin="2px"
+					android:layout_margin="2dp"
 					android:visibility="gone"
 					atswidget:totalNotches="160"
 					atswidget:incrementPerLargeNotch="10"
@@ -89,17 +89,17 @@
 					atswidget:scaleMinValue="0"
     				atswidget:scaleMaxValue="120"
 	    			atswidget:rangeOkColor="0x9f00ff00"
-    				atswidget:rangeOkMinValue="0" 
+    				atswidget:rangeOkMinValue="0"
     				atswidget:rangeOkMaxValue="120"
     				atswidget:rangeWarningColor="0x9fff8800"
     				atswidget:rangeWarningMinValue="120"
 	    			atswidget:rangeWarningMaxValue="120"
     				atswidget:rangeErrorColor="0x9fff0000"
     				atswidget:rangeErrorMinValue="120"
-    				atswidget:rangeErrorMaxValue="120" 
+    				atswidget:rangeErrorMaxValue="120"
     				atswidget:unitTitle="mph"
-	    			atswidget:lowerTitle="HarleyDroid" 
-    				atswidget:upperTitle="" 
+	    			atswidget:lowerTitle="HarleyDroid"
+    				atswidget:upperTitle=""
     				atswidget:showGauge = "false"
     				atswidget:showHand="true"
     				atswidget:showRange="false"
@@ -114,7 +114,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"
-				android:layout_margin="2px"
+				android:layout_margin="2dp"
 				android:layout_weight="1.0"
 				atswidget:totalNotches="120"
 				atswidget:incrementPerLargeNotch="10"
@@ -131,10 +131,10 @@
     			atswidget:rangeWarningMaxValue="55"
 	    		atswidget:rangeErrorColor="0x9fff0000"
     			atswidget:rangeErrorMinValue="55"
-    			atswidget:rangeErrorMaxValue="80" 
+    			atswidget:rangeErrorMaxValue="80"
     			atswidget:unitTitle="RPM x 100"
-	    		atswidget:lowerTitle="HarleyDroid" 
-    			atswidget:upperTitle="" 
+	    		atswidget:lowerTitle="HarleyDroid"
+    			atswidget:upperTitle=""
     			atswidget:showGauge = "false"
     			atswidget:showHand="true"
 	    		atswidget:showRange="true"
@@ -148,7 +148,7 @@
     		android:layout_height="wrap_content"
     		android:weightSum="3.0"
     		>
-	    	<ImageView 
+	    	<ImageView
     			android:id="@+id/turn_left"
     			android:src="@drawable/turn_left"
     			android:layout_width="fill_parent"
@@ -156,8 +156,9 @@
     			android:scaleType="fitStart"
     			android:layout_weight="1.0"
     			android:visibility="invisible"
+    			android:contentDescription="@string/turn_left"
 	    		/>
-    		<ImageView 
+    		<ImageView
     			android:id="@+id/check_engine"
     			android:src="@drawable/check_engine"
 	    		android:layout_width="fill_parent"
@@ -165,8 +166,9 @@
     			android:scaleType="fitCenter"
     			android:layout_weight="1.0"
 	    		android:visibility="invisible"
+	    		android:contentDescription="@string/check_engine"
     			/>
-    		<ImageView 
+    		<ImageView
     			android:id="@+id/turn_right"
 	    		android:src="@drawable/turn_right"
     			android:layout_width="fill_parent"
@@ -174,12 +176,11 @@
     			android:scaleType="fitEnd"
 	    		android:layout_weight="1.0"
     			android:visibility="invisible"
+    			android:contentDescription="@string/turn_right"
     			/>
 	    </LinearLayout>
 	</FrameLayout>
-	
-	
-	
+
 	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/text_layout"
     	android:orientation="vertical"
@@ -189,14 +190,14 @@
     	android:visibility="gone"
     	>
 		<TableRow>
-		<TextView  
-			android:id="@+id/rpm_label" 
+		<TextView
+			android:id="@+id/rpm_label"
     		android:text="@string/rpm_label"
     		android:padding="3dip"
     		/>
-		<TextView  
+		<TextView
 			android:id="@+id/rpm_field"
-			android:padding="3dip" 
+			android:padding="3dip"
     		/>
 		</TableRow>
 		<TableRow>
@@ -204,15 +205,15 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			>
-			<TextView  
-				android:id="@+id/speed_metric_label" 
+			<TextView
+				android:id="@+id/speed_metric_label"
     			android:text="@string/speed_metric_label"
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
     			android:padding="3dip"
     			/>
-    		<TextView  
-				android:id="@+id/speed_imperial_label" 
+    		<TextView
+				android:id="@+id/speed_imperial_label"
     			android:text="@string/speed_imperial_label"
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
@@ -228,31 +229,31 @@
 				android:id="@+id/speed_metric_field"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:padding="3dip"  
+				android:padding="3dip"
     			/>
     		<TextView
 				android:id="@+id/speed_imperial_field"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:padding="3dip"
-				android:visibility="gone"  
+				android:visibility="gone"
     			/>
-    	</FrameLayout>	
+    	</FrameLayout>
 		</TableRow>
 		<TableRow>
 		<FrameLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			>
-			<TextView  
-				android:id="@+id/enginetemp_metric_label" 
+			<TextView
+				android:id="@+id/enginetemp_metric_label"
     			android:text="@string/enginetemp_metric_label"
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
     			android:padding="3dip"
     			/>
-    		<TextView  
-				android:id="@+id/enginetemp_imperial_label" 
+    		<TextView
+				android:id="@+id/enginetemp_imperial_label"
     			android:text="@string/enginetemp_imperial_label"
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
@@ -268,81 +269,81 @@
 				android:id="@+id/enginetemp_metric_field"
 				android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
-				android:padding="3dip"  
+				android:padding="3dip"
     			/>
     		<TextView
 				android:id="@+id/enginetemp_imperial_field"
 				android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
 				android:padding="3dip"
-				android:visibility="gone"  
+				android:visibility="gone"
     			/>
     	</FrameLayout>
 		</TableRow>
 		<TableRow>
-		<TextView  
-			android:id="@+id/fuelgauge_label" 
+		<TextView
+			android:id="@+id/fuelgauge_label"
     		android:text="@string/fuelgauge_label"
     		android:padding="3dip"
     		/>
 		<TextView
 			android:id="@+id/fuelgauge_field"
-			android:padding="3dip"  
+			android:padding="3dip"
     		/>
 		</TableRow>
 		<TableRow>
-		<TextView  
-			android:id="@+id/turnsignals_label" 
+		<TextView
+			android:id="@+id/turnsignals_label"
     		android:text="@string/turnsignals_label"
 		    android:padding="3dip"
     		/>
 		<TextView
 			android:id="@+id/turnsignals_field"
-			android:padding="3dip"  
+			android:padding="3dip"
     		/>
 		</TableRow>
 		<TableRow>
-		<TextView  
-			android:id="@+id/neutral_label" 
+		<TextView
+			android:id="@+id/neutral_label"
     		android:text="@string/neutral_label"
     		android:padding="3dip"
     		/>
 		<TextView
 			android:id="@+id/neutral_field"
-			android:padding="3dip"  
+			android:padding="3dip"
     		/>
 		</TableRow>
 		<TableRow>
-		<TextView  
-			android:id="@+id/clutch_label" 
+		<TextView
+			android:id="@+id/clutch_label"
     		android:text="@string/clutch_label"
     		android:padding="3dip"
     		/>
 		<TextView
 			android:id="@+id/clutch_field"
-			android:padding="3dip"  
+			android:padding="3dip"
     		/>
 		</TableRow>
 		<TableRow>
-		<TextView  
-			android:id="@+id/gear_label" 
+		<TextView
+			android:id="@+id/gear_label"
 		    android:text="@string/gear_label"
     		android:padding="3dip"
     		/>
 		<TextView
 			android:id="@+id/gear_field"
-			android:padding="3dip"  
+			android:padding="3dip"
     		/>
 		</TableRow>
 		<TableRow>
-		<TextView  
-			android:id="@+id/checkengine_label" 
+		<TextView
+			android:id="@+id/checkengine_label"
     		android:text="@string/checkengine_label"
     		android:padding="3dip"
     		/>
 		<TextView
 			android:id="@+id/checkengine_field"
-			android:padding="3dip"  
+			android:padding="3dip"
     		/>
 		</TableRow>
 		<TableRow>
@@ -350,15 +351,15 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			>
-			<TextView  
-				android:id="@+id/odometer_metric_label" 
+			<TextView
+				android:id="@+id/odometer_metric_label"
     			android:text="@string/odometer_metric_label"
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
 	    		android:padding="3dip"
     			/>
-    		<TextView  
-				android:id="@+id/odometer_imperial_label" 
+    		<TextView
+				android:id="@+id/odometer_imperial_label"
     			android:text="@string/odometer_imperial_label"
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
@@ -374,14 +375,14 @@
 				android:id="@+id/odometer_metric_field"
 				android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
-				android:padding="3dip"  
+				android:padding="3dip"
 		    	/>
 		    <TextView
 				android:id="@+id/odometer_imperial_field"
 				android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
 				android:padding="3dip"
-				android:visibility="gone"  
+				android:visibility="gone"
 		    	/>
 		</FrameLayout>
 		</TableRow>
@@ -390,15 +391,15 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			>
-			<TextView  
-				android:id="@+id/fuel_metric_label" 
+			<TextView
+				android:id="@+id/fuel_metric_label"
     			android:text="@string/fuel_metric_label"
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
     			android:padding="3dip"
     			/>
-    		<TextView  
-				android:id="@+id/fuel_imperial_label" 
+    		<TextView
+				android:id="@+id/fuel_imperial_label"
     			android:text="@string/fuel_imperial_label"
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
@@ -414,16 +415,92 @@
 				android:id="@+id/fuel_metric_field"
 				android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
-				android:padding="3dip"  
+				android:padding="3dip"
     			/>
     		<TextView
 				android:id="@+id/fuel_imperial_field"
 				android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
 				android:padding="3dip"
-				android:visibility="gone"  
+				android:visibility="gone"
     			/>
     	</FrameLayout>
 		</TableRow>
 	</TableLayout>
-</FrameLayout>
+
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/diag_layout"
+    	android:orientation="vertical"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:stretchColumns="1"
+    	android:visibility="gone"
+    	>
+		<TableRow>
+		<TextView
+			android:id="@+id/vin_label"
+    		android:text="@string/vin_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/vin_field"
+			android:padding="3dip"
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView
+			android:id="@+id/ecmpn_label"
+    		android:text="@string/ecmpn_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/ecmpn_field"
+			android:padding="3dip"
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView
+			android:id="@+id/ecmcalid_label"
+    		android:text="@string/ecmcalid_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/ecmcalid_field"
+			android:padding="3dip"
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView
+			android:id="@+id/ecmswlevel_label"
+    		android:text="@string/ecmswlevel_label"
+    		android:padding="3dip"
+    		/>
+		<TextView
+			android:id="@+id/ecmswlevel_field"
+			android:padding="3dip"
+    		/>
+		</TableRow>
+		<TableRow>
+		<TextView
+			android:id="@+id/currentdtc_label"
+    		android:text="@string/currentdtc_label"
+    		android:padding="3dip"
+    		/>
+		<ListView
+		    android:id="@+id/currentdtc_field"
+            >
+		</ListView>
+		</TableRow>
+		<TableRow>
+		<TextView
+			android:id="@+id/historicdtc_label"
+    		android:text="@string/historicdtc_label"
+    		android:padding="3dip"
+    		/>
+		<ListView
+		    android:id="@+id/historicdtc_field"
+      		>
+		</ListView>
+		</TableRow>
+	</TableLayout>
+</merge>

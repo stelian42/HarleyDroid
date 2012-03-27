@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -42,11 +43,13 @@ import android.widget.Toast;
 
 public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnEulaAgreedTo
 {
-	private static final boolean D = false;
+	private static final boolean D = true;
+	private static final boolean DTRACE = true;
 	private static final String TAG = HarleyDroid.class.getSimpleName();
 	public static final boolean EMULATOR = false;
 
 	// Message types sent from HarleyDroidService
+	public static final int STATUS_OK = 0;
 	public static final int STATUS_CONNECTING = 1;
 	public static final int STATUS_CONNECTED = 2;
 	public static final int STATUS_ERROR = 3;
@@ -60,25 +63,29 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 	private SharedPreferences mPrefs;
 	private String mInterfaceType = null;
 	private BluetoothAdapter mBluetoothAdapter = null;
-	private Menu mOptionsMenu = null;
 	private String mBluetoothID = null;
 	private boolean mAutoConnect = false;
 	private boolean mAutoReconnect = false;
 	private String mReconnectDelay;
 	private boolean mLogging = false;
 	private boolean mGPS = false;
+	private boolean mLogRaw = false;
 	private HarleyDroidService mService = null;
-	private boolean mModeText = false;
+	private int mViewMode = HarleyDroidView.VIEW_GRAPHIC;
 	private boolean mUnitMetric = false;
 	private int mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 	private HarleyDroidView mHarleyDroidView;
 	private HarleyData mHD;
+	private HarleyDiagnostics mDiag = null;
+	private boolean startPoll = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		if (D) Log.d(TAG, "onCreate()");
 		super.onCreate(savedInstanceState);
+
+		if (DTRACE) Debug.startMethodTracing("harleydroid");
 
 		mHarleyDroidView = new HarleyDroidView(this);
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -114,6 +121,8 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 	public void onDestroy() {
 		if (D) Log.d(TAG, "onDestroy()");
 		super.onDestroy();
+
+		if (DTRACE) Debug.stopMethodTracing();
 	}
 
 	@Override
@@ -146,23 +155,26 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 				mLogging = true;
 		}
 		mGPS = mPrefs.getBoolean("gps", false);
+		mLogRaw = mPrefs.getBoolean("lograw", false);
 		if (mPrefs.getBoolean("screenon", false))
 			getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		if (mPrefs.getString("unit", "metric").equals("metric"))
 			mUnitMetric = true;
 		else
 			mUnitMetric = false;
-		mModeText = mPrefs.getBoolean("modetext", false);
 
-		mHarleyDroidView.drawAll(mHD, mModeText, mUnitMetric);
+		mViewMode = mPrefs.getInt("viewmode", HarleyDroidView.VIEW_GRAPHIC);
+		mHarleyDroidView.drawAll(mHD, mViewMode, mUnitMetric);
 
 		// bind to the service
 		bindService(new Intent(this, HarleyDroidService.class), this, 0);
 
 		if (mAutoConnect && mService == null) {
 			mAutoConnect = false;
-			startCapture();
+			startPoll();
 		}
+		if (mViewMode == HarleyDroidView.VIEW_DIAGNOSTIC)
+			startDiag();
 	}
 
 	@Override
@@ -170,11 +182,17 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		if (D) Log.d(TAG, "onStop()");
 		super.onStop();
 
-		unbindService(this);
+		stopDiag();
+		if (mService != null && !mService.isPolling()) {
+			unbindService(this);
+			stopService(new Intent(this, HarleyDroidService.class));
+		}
+		else
+			unbindService(this);
 		mService = null;
 
 		SharedPreferences.Editor editor = mPrefs.edit();
-		editor.putBoolean("modetext", mModeText);
+		editor.putInt("viewmode", mViewMode);
 		editor.commit();
 	}
 
@@ -189,37 +207,41 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 				setContentView(R.layout.portrait);
 			else
 				setContentView(R.layout.landscape);
-			mHarleyDroidView.drawAll(mHD, mModeText, mUnitMetric);
+			mHarleyDroidView.drawAll(mHD, mViewMode, mUnitMetric);
 		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		if (D) Log.d(TAG, "onCreateOptionsMenu()");
-
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main_menu, menu);
-		mOptionsMenu = menu;
-		return true;
 	}
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		if (D) Log.d(TAG, "onPrepareOptionsMenu()");
 
-		mOptionsMenu.findItem(R.id.capture_menu).setEnabled(
-				(mBluetoothID == null) ? false : true);
-		if (mService != null && mService.isRunning()) {
-			mOptionsMenu.findItem(R.id.capture_menu).setIcon(R.drawable.ic_menu_stop);
-			mOptionsMenu.findItem(R.id.capture_menu).setTitle(R.string.stopcapture_label);
+		menu.clear();
+		MenuInflater inflater = getMenuInflater();
+
+		if (mViewMode == HarleyDroidView.VIEW_DIAGNOSTIC) {
+			inflater.inflate(R.menu.diagnostics_menu, menu);
 		}
 		else {
-			mOptionsMenu.findItem(R.id.capture_menu).setIcon(R.drawable.ic_menu_play_clip);
-			mOptionsMenu.findItem(R.id.capture_menu).setTitle(R.string.startcapture_label);
+			inflater.inflate(R.menu.main_menu, menu);
+
+			menu.findItem(R.id.capture_menu).setEnabled(
+				(mBluetoothID == null) ? false : true);
+
+			if (mService != null && mService.isPolling()) {
+				menu.findItem(R.id.capture_menu).setIcon(R.drawable.ic_menu_stop);
+				menu.findItem(R.id.capture_menu).setTitle(R.string.stopcapture_label);
+				menu.findItem(R.id.diag_menu).setEnabled(false);
+			}
+			else {
+				menu.findItem(R.id.capture_menu).setIcon(R.drawable.ic_menu_play_clip);
+				menu.findItem(R.id.capture_menu).setTitle(R.string.startcapture_label);
+				menu.findItem(R.id.diag_menu).setEnabled(true);
+			}
+			if (mViewMode == HarleyDroidView.VIEW_GRAPHIC)
+				menu.findItem(R.id.mode_menu).setTitle(R.string.mode_labelraw);
+			else
+				menu.findItem(R.id.mode_menu).setTitle(R.string.mode_labelgr);
 		}
-		if (mModeText)
-			mOptionsMenu.findItem(R.id.mode_menu).setTitle(
-					mModeText ? R.string.mode_labelgr : R.string.mode_labelraw);
 
 		return true;
 	}
@@ -230,25 +252,43 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 
 		switch (item.getItemId()) {
 		case R.id.capture_menu:
-			if (mService != null && mService.isRunning())
-				stopCapture();
+			if (mService != null && mService.isPolling())
+				stopPoll();
 			else
-				startCapture();
+				startPoll();
 			return true;
 		case R.id.mode_menu:
-			mModeText = !mModeText;
-			mHarleyDroidView.drawAll(mHD, mModeText, mUnitMetric);
+			if (mViewMode == HarleyDroidView.VIEW_GRAPHIC)
+				mViewMode = HarleyDroidView.VIEW_TEXT;
+			else
+				mViewMode = HarleyDroidView.VIEW_GRAPHIC;
+			mHarleyDroidView.drawAll(mHD, mViewMode, mUnitMetric);
+			return true;
+		case R.id.diag_menu:
+			mViewMode = HarleyDroidView.VIEW_DIAGNOSTIC;
+			mHarleyDroidView.drawAll(mHD, mViewMode, mUnitMetric);
+			stopPoll();
+			startDiag();
 			return true;
 		case R.id.preferences_menu:
 			Intent settingsActivity = new Intent(getBaseContext(), HarleyDroidSettings.class);
 			startActivity(settingsActivity);
 			return true;
-		case R.id.resetodo_menu:
+		case R.id.reset_menu:
 			if (mHD != null)
-				mHD.resetOdometer();
+				mHD.resetCounters();
 			return true;
 		case R.id.about_menu:
 			About.about(this);
+			return true;
+		case R.id.cleardtc_menu:
+			mHD.resetHistoricDTC();
+			mDiag.clearDTC();
+			return true;
+		case R.id.exitdiag_menu:
+			mViewMode = HarleyDroidView.VIEW_GRAPHIC;
+			mHarleyDroidView.drawAll(mHD, mViewMode, mUnitMetric);
+			stopDiag();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -276,9 +316,9 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		mService.setHandler(mHandler);
 		mHD = mService.getHarleyData();
 		mHD.addHarleyDataListener(mHarleyDroidView);
-		mHarleyDroidView.drawAll(mHD, mModeText, mUnitMetric);
+		mHarleyDroidView.drawAll(mHD, mViewMode, mUnitMetric);
 
-		if (mService.isRunning())
+		if (mService.isConnected())
 			return;
 
 		if (!EMULATOR) {
@@ -286,35 +326,65 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 			// error was somehow reproduced by users.
 			if (mBluetoothID == null)
 				return;
-			mService.startService(mInterfaceType, mBluetoothAdapter.getRemoteDevice(mBluetoothID),
-								  mUnitMetric, mLogging, mGPS, mAutoReconnect,
-								  Integer.parseInt(mReconnectDelay));
+			Log.e(TAG, "**** " + mBluetoothAdapter.getRemoteDevice(mBluetoothID) + " ****");
+			mService.setInterfaceType(mInterfaceType,
+									  mBluetoothAdapter.getRemoteDevice(mBluetoothID));
 		}
 		else
-			mService.startService(mInterfaceType, null,
-								  mUnitMetric, mLogging, mGPS, mAutoReconnect,
-								  Integer.parseInt(mReconnectDelay));
+			mService.setInterfaceType(mInterfaceType, null);
+
+		mService.setLogging(mLogging, mUnitMetric, mGPS, mLogRaw);
+		mService.setAutoReconnect(mAutoReconnect, Integer.parseInt(mReconnectDelay));
+
+		if (startPoll)
+			startPoll();
+		else
+			startDiag();
 	}
 
-	private void startCapture() {
-		if (D) Log.d(TAG, "startCapture()");
+	private void startPoll() {
+		if (D) Log.d(TAG, "startPoll()");
 
-		startService(new Intent(this, HarleyDroidService.class));
-		bindService(new Intent(this, HarleyDroidService.class), this, 0);
+		if (mService == null) {
+			startPoll = true;
+			startService(new Intent(this, HarleyDroidService.class));
+			bindService(new Intent(this, HarleyDroidService.class), this, 0);
+		}
+		else
+			mService.startPoll();
 	}
 
-	private void stopCapture() {
+	private void stopPoll() {
 		if (D) Log.d(TAG, "stopCapture()");
 
 		if (mService == null)
 			return;
-		mService.stopService();
-		unbindService(this);
-		stopService(new Intent(this, HarleyDroidService.class));
-		mService = null;
-		// ugly, but we unbind() in onStop()...
-		bindService(new Intent(this, HarleyDroidService.class), this, 0);
+		mService.stopPoll();
 	}
+
+	private void startDiag() {
+		if (D) Log.d(TAG, "startDiag()");
+
+		if (mService == null) {
+			startPoll = false;
+			startService(new Intent(this, HarleyDroidService.class));
+			bindService(new Intent(this, HarleyDroidService.class), this, 0);
+		}
+		else {
+			stopDiag();
+			mDiag = new HarleyDiagnostics(mService);
+			mDiag.start();
+		}
+	}
+
+	private void stopDiag() {
+		if (D) Log.d(TAG, "stopDiag()");
+
+		if (mDiag != null)
+			mDiag.cancel();
+		mDiag = null;
+	}
+
 
 	@Override
 	public void onServiceDisconnected(ComponentName name) {

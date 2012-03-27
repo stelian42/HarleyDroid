@@ -22,6 +22,8 @@
 
 package org.harleydroid;
 
+import android.util.Log;
+
 public class J1850 {
 
 	public static final int MAXBUF = 1024;
@@ -33,6 +35,10 @@ public class J1850 {
 	private static int fuellast = 0;
 	// accumulated fuel ticks (deals with overflow at 0xffff)
 	private static int fuelaccum = 0;
+
+	private static byte[] vin = new byte[18];
+	private static byte[] ecmPN = new byte[12];
+	private static byte[] ecmCalID = new byte[12];
 
 	static byte[] bytes_to_hex(byte[] in) {
 		byte out[] = new byte[MAXBUF];
@@ -93,6 +99,8 @@ public class J1850 {
 		System.out.println("");
 		 */
 
+		hd.setRaw(buffer);
+
 		if (crc(in) != (byte)0xc4) {
 			hd.setBadCRC(buffer);
 			return false;
@@ -101,12 +109,12 @@ public class J1850 {
 		x = y = 0;
 		if (in.length >= 4)
 			x = ((in[0] << 24) & 0xff000000) |
-			((in[1] << 16) & 0x00ff0000) |
-			((in[2] <<  8) & 0x0000ff00) |
-			(in[3]        & 0x000000ff);
+			    ((in[1] << 16) & 0x00ff0000) |
+			    ((in[2] <<  8) & 0x0000ff00) |
+			     (in[3]        & 0x000000ff);
 		if (in.length >= 6)
 			y = ((in[4] << 8) & 0x0000ff00) |
-			(in[5]       & 0x000000ff);
+			     (in[5]       & 0x000000ff);
 
 		if (x == 0x281b1002)
 			hd.setRPM(y);
@@ -141,14 +149,68 @@ public class J1850 {
 		} else if ((x == 0xa8836112) && ((in[4] & 0xd0) == 0xd0))
 			hd.setFuelGauge(in[4] & 0x0f);
 		else if ((x & 0xffffff5d) == 0x483b4000) {
-			hd.setNeutral((in[3] & 0x20) != 0);
+			if ((in[3] & 0x20) != 0)
+				hd.setNeutral(true);
+			else if ((in[3] & 0x02) != 0)
+				hd.setNeutral(false);
 			hd.setClutch((in[3] & 0x80) != 0);
 		} else if ((x & 0xffffff7f) == 0x68881003) {
 			if ((in[3] & 0x80) != 0)
 				hd.setCheckEngine(true);
 			else
 				hd.setCheckEngine(false);
-		} else
+		} else if (x == 0x0c10f13c) {
+			/* this is the read block command, answers are below... */
+		} else if (x == 0x0cf1107c) {
+			switch (in[4]) {
+			case 0x01:
+				System.arraycopy(in, 5, ecmPN, 0, 6);
+				break;
+			case 0x02:
+				System.arraycopy(in, 5, ecmPN, 6, 6);
+				hd.setECMPN(new String(ecmPN).trim());
+				break;
+			case 0x03:
+				System.arraycopy(in, 5, ecmCalID, 0, 6);
+				break;
+			case 0x04:
+				System.arraycopy(in, 5, ecmCalID, 6, 6);
+				hd.setECMCalID(new String(ecmCalID).trim());
+				break;
+			case 0x0b:
+				hd.setECMSWLevel((int)in[5] & 0xff);
+				break;
+			case 0x0f:
+				System.arraycopy(in, 5, vin, 0, 6);
+				break;
+			case 0x10:
+				System.arraycopy(in, 5, vin, 6, 6);
+				break;
+			case 0x11:
+				System.arraycopy(in, 5, vin, 12, 5);
+				hd.setVIN(new String(vin).trim());
+				break;
+			default:
+				hd.setUnknown(buffer);
+			}
+		} else if (x == 0x6cfef119)
+			/* this is the get DTC command, answers are below... */
+			Log.d("DTC", "DTC start");
+		else if ((x & 0xffff0fff) == 0x6cf10059) {
+			int dtc = (((int)in[4] & 0xff) << 8) | ((int)in[5] & 0xff);
+			if (in[2] == 0x10) {
+				/* historic DTC */
+				Log.d("DTC", "historic DTC: 0x" + Integer.toString(dtc, 16));
+				hd.addHistoricDTC(dtc);
+			} else if (in[2] == 0x40) {
+				/* current DTC */
+				Log.d("DTC", "current DTC: 0x" + Integer.toString(dtc, 16));
+				hd.addCurrentDTC(dtc);
+			} else
+				hd.setUnknown(buffer);
+		} else if (x == 0x6c10f114)
+			Log.d("DTC", "DTC clear");
+		else
 			hd.setUnknown(buffer);
 		return true;
 	}

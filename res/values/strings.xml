@@ -26,11 +26,11 @@
 
 <string name="toast_nobluetooth">Sorry, your device doesn\'t support bluetooth</string>
 <string name="toast_errorenablebluetooth">Unable to enable Bluetooth</string>
-<string name="toast_connecting">Connecting to interface...</string>
+<string name="toast_connecting">Connecting to interface&#8230;</string>
 <string name="toast_errorconnecting">Error connecting to interface</string>
 <string name="toast_connected">Connected to interface</string>
 <string name="toast_nodata">No data from interface</string>
-<string name="toast_toomanyerrors">Too many communication errors, aborting...</string>
+<string name="toast_toomanyerrors">Too many communication errors, aborting&#8230;</string>
 <string name="toast_errorlogging">Unable to write logs to external storage</string>
 <string name="toast_errorat">Error configuring ELM327</string>
 <string name="toast_autorecon">Reconnecting in %s seconds</string>
@@ -38,8 +38,8 @@
 <string name="rpm_label">RPM:</string>
 <string name="speed_imperial_label">Speed (mph):</string>
 <string name="speed_metric_label">Speed (km/h):</string>
-<string name="enginetemp_imperial_label">Engine temperature (F):</string>
-<string name="enginetemp_metric_label">Engine temperature (C):</string>
+<string name="enginetemp_imperial_label">Engine temperature (°F):</string>
+<string name="enginetemp_metric_label">Engine temperature (°C):</string>
 <string name="fuelgauge_label">Fuel gauge:</string>
 <string name="turnsignals_label">Turn signals:</string>
 <string name="neutral_label">Neutral:</string>
@@ -50,17 +50,36 @@
 <string name="odometer_metric_label">Distance (km):</string>
 <string name="fuel_imperial_label">Fuel (fl oz):</string>
 <string name="fuel_metric_label">Fuel (ml):</string>
+<string name="vin_label">VIN:</string>
+<string name="ecmpn_label">ECM P/N:</string>
+<string name="ecmcalid_label">ECM Calibration ID:</string>
+<string name="ecmswlevel_label">ECM Software Level:</string>
+<string name="currentdtc_label">Current DTC:</string>
+<string name="historicdtc_label">Historic DTC:</string>
 
 <string name="startcapture_label">Start capture</string>
 <string name="stopcapture_label">Stop capture</string>
 <string name="preferences_label">Preferences</string>
 <string name="mode_labelraw">Text mode</string>
 <string name="mode_labelgr">Graphic mode</string>
-<string name="resetodo_label">Reset odo</string>
+<string name="diag_label">Diagnostic mode</string>
+<string name="resetcounters_label">Reset</string>
 <string name="about_label">About</string>
 
+<string name="cleardtc_label">Clear historic DTC</string>
+<string name="exitdiag_label">Exit diagnostics</string>
+
 <string name="notification_label">HarleyDroidService</string>
-<string name="notification_start">Receiving data</string>
+<string name="notification_disconnected">Disconnected</string>
+<string name="notification_connecting">Connecting&#8230;</string>
+<string name="notification_connected">Connected</string>
+<string name="notification_startpoll">Starting poll&#8230;</string>
+<string name="notification_polling">Polling</string>
+<string name="notification_stoppoll">Stopping poll&#8230;</string>
+
+<string name="check_engine">Check Engine</string>
+<string name="turn_left">Turn Left</string>
+<string name="turn_right">Turn Right</string>
 
 <string name="pref_interfacetype">Interface type</string>
 <string-array name="pref_interfacetype_names">
@@ -77,6 +96,7 @@
 <string name="pref_reconnectdelay">Delay before reconnect (seconds)</string>
 <string name="pref_logging">Log to external media</string>
 <string name="pref_gps">Add GPS data to log</string>
+<string name="pref_lograw">Add raw J1850 data to log</string>
 <string name="pref_screenon">Keep the screen on</string>
 <string name="pref_unit">Unit system</string>
 <string-array name="pref_unit_names">
@@ -103,7 +123,7 @@
 <string name="eula_accept">Accept</string>
 <string name="eula_refuse">Refuse</string>
 
-<string name="about_copyright">(C)2010-2011 Stelian Pop</string>
+<string name="about_copyright">&#169;2010&#8211;2011 Stelian Pop</string>
 <string name="about_version">Version:</string>
 <string name="about_unknown">unknown</string>
 <string name="about_support">Support:</string>

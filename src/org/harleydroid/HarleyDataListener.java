@@ -39,6 +39,13 @@ public interface HarleyDataListener {
 	public void onOdometerMetricChanged(int odometer);
 	public void onFuelImperialChanged(int fuel);
 	public void onFuelMetricChanged(int fuel);
+	public void onVINChanged(String vin);
+	public void onECMPNChanged(String ecmPN);
+	public void onECMCalIDChanged(String ecmCalID);
+	public void onECMSWLevelChanged(int swLevel);
+	public void onHistoricDTCChanged(int[] dtc);
+	public void onCurrentDTCChanged(int[] dtc);
 	public void onBadCRCChanged(byte[] buffer);
 	public void onUnknownChanged(byte[] buffer);
+	public void onRawChanged(byte[] buffer);
 };
