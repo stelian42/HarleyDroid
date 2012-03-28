@@ -34,7 +34,7 @@ import android.util.Log;
 
 public class HarleyDroidService extends Service
 {
-	private static final boolean D = true;
+	private static final boolean D = false;
 	private static final String TAG = HarleyDroidService.class.getSimpleName();
 
 	private static final int MSG_NONE = 0;
@@ -166,7 +166,7 @@ public class HarleyDroidService extends Service
 	}
 
 	private void stateMachine() {
-		Log.e(TAG, "stateMachine(): transition from " + mCurrentState + " to " + mWantedState);
+		if (D) Log.d(TAG, "stateMachine(): transition from " + mCurrentState + " to " + mWantedState);
 
 		if (mCurrentState == mWantedState)
 			return;
@@ -258,7 +258,7 @@ public class HarleyDroidService extends Service
 			break;
 
 		}
-		Log.e(TAG, "stateMachine(): bad state transition from " + mCurrentState + " to " + mWantedState);
+		if (D) Log.d(TAG, "stateMachine(): bad state transition from " + mCurrentState + " to " + mWantedState);
 	}
 
 	private final Handler mServiceHandler = new Handler() {

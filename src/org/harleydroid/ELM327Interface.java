@@ -26,7 +26,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
+//import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,10 +37,10 @@ import android.util.Log;
 
 public class ELM327Interface implements J1850Interface
 {
-	private static final boolean D = true;
+	private static final boolean D = false;
 	private static final String TAG = ELM327Interface.class.getSimpleName();
 
-	private static final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+	//private static final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 	private static final int AT_TIMEOUT = 2000;
 	private static final int ATZ_TIMEOUT = 5000;
 	private static final int ATMA_TIMEOUT = 10000;
@@ -137,7 +137,7 @@ public class ELM327Interface implements J1850Interface
 	private void writeLine(String line) throws IOException {
 		line += "\r";
 		if (D) Log.d(TAG, "write: " + line);
-		mOut.write(line.getBytes());
+		mOut.write(myGetBytes(line));
 		mOut.flush();
 	}
 
@@ -156,6 +156,18 @@ public class ELM327Interface implements J1850Interface
 		throw new IOException("timeout");
 	}
 
+	static byte[] myGetBytes(String s, int start, int end) {
+		byte[] result = new byte[end - start];
+		for (int i = start; i < end; i++) {
+			result[i] = (byte) s.charAt(i);
+		}
+		return result;
+	}
+
+	static byte[] myGetBytes(String s) {
+		return myGetBytes(s, 0, s.length());
+	}
+
 	private class ConnectThread extends Thread {
 
 		public ConnectThread() {
@@ -165,7 +177,6 @@ public class ELM327Interface implements J1850Interface
 				//tmp = mDevice.createRfcommSocketToServiceRecord(SPP_UUID);
 				Method m = mDevice.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
 				tmp = (BluetoothSocket) m.invoke(mDevice, 1);
-
 			} catch (Exception e) {
 				Log.e(TAG, "createRfcommSocket() failed", e);
 				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
@@ -266,7 +277,7 @@ public class ELM327Interface implements J1850Interface
 					return;
 				}
 
-				if (J1850.parse(line.trim().getBytes(), mHD))
+				if (J1850.parse(myGetBytes(line), mHD))
 					errors = 0;
 				else
 					++errors;
@@ -326,7 +337,7 @@ public class ELM327Interface implements J1850Interface
 			// split into lines
 			String lines[] = recv.split("\n");
 			for (int i = 0; i < lines.length; ++i)
-				J1850.parse(lines[i].trim().getBytes(), mHD);
+				J1850.parse(myGetBytes(lines[i]), mHD);
 
 			mHarleyDroidService.sendDone();
 		}

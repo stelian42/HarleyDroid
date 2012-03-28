@@ -26,7 +26,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
+//import java.util.UUID;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -34,10 +34,10 @@ import android.util.Log;
 
 public class HarleyDroidInterface implements J1850Interface
 {
-	private static final boolean D = true;
+	private static final boolean D = false;
 	private static final String TAG = HarleyDroidInterface.class.getSimpleName();
 
-	private static final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+	//private static final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 	private static final int AT_TIMEOUT = 2000;
 	private static final int ATMA_TIMEOUT = 10000;
 	private static final int MAX_ERRORS = 10;
@@ -141,7 +141,7 @@ public class HarleyDroidInterface implements J1850Interface
 	private void writeLine(String line) throws IOException {
 		line += "\r";
 		if (D) Log.d(TAG, "write: " + line);
-		mOut.write(line.getBytes());
+		mOut.write(myGetBytes(line));
 		mOut.flush();
 	}
 
@@ -158,6 +158,18 @@ public class HarleyDroidInterface implements J1850Interface
 			start = now;
 		}
 		throw new IOException("timeout");
+	}
+
+	static byte[] myGetBytes(String s, int start, int end) {
+		byte[] result = new byte[end - start];
+		for (int i = start; i < end; i++) {
+			result[i] = (byte) s.charAt(i);
+		}
+		return result;
+	}
+
+	static byte[] myGetBytes(String s) {
+		return myGetBytes(s, 0, s.length());
 	}
 
 	private class ConnectThread extends Thread {
@@ -209,7 +221,7 @@ public class HarleyDroidInterface implements J1850Interface
 		private boolean stop = false;
 
 		public void run() {
-			int errors = 0;
+			int errors = 0, idxJ;
 
 			mHarleyDroidService.startedPoll();
 
@@ -225,9 +237,9 @@ public class HarleyDroidInterface implements J1850Interface
 				}
 
 				// strip off timestamp
-				if (line.indexOf('J') != -1) {
-					line = line.substring(line.indexOf('J') + 1).trim();
-					if (J1850.parse(line.getBytes(), mHD))
+				idxJ = line.indexOf('J');
+				if (idxJ != -1) {
+					if (J1850.parse(myGetBytes(line, idxJ + 1, line.length()), mHD))
 						errors = 0;
 					else
 						++errors;
@@ -269,6 +281,7 @@ public class HarleyDroidInterface implements J1850Interface
 
 		public void run() {
 			String recv;
+			int idxJ;
 
 			try {
 				recv = chat(mType + mTA + mSA + mSend, mExpect, AT_TIMEOUT);
@@ -280,9 +293,11 @@ public class HarleyDroidInterface implements J1850Interface
 
 			// split into lines and strip off timestamp
 			String lines[] = recv.split("\n");
-			for (int i = 0; i < lines.length; ++i)
-				if (lines[i].indexOf('J') != -1)
-					J1850.parse(lines[i].substring(lines[i].indexOf('J') + 1).trim().getBytes(), mHD);
+			for (int i = 0; i < lines.length; ++i) {
+				idxJ = lines[i].indexOf('J');
+				if (idxJ != -1)
+					J1850.parse(myGetBytes(lines[i], idxJ + 1, lines[i].length()), mHD);
+			}
 
 			mHarleyDroidService.sendDone();
 		}

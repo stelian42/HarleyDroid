@@ -33,7 +33,7 @@ import android.widget.TextView;
 
 public class HarleyDroidView implements HarleyDataListener
 {
-	private static final boolean D = true;
+	private static final boolean D = false;
 	private static final String TAG = HarleyDroidView.class.getSimpleName();
 
 	public static final int UPDATE_RPM = 1;
@@ -483,15 +483,15 @@ public class HarleyDroidView implements HarleyDataListener
 	}
 
 	public void onBadCRCChanged(byte[] buffer) {
-		Log.d(TAG, "onBadCRC(" + new String(buffer) + ")");
+		if (D) Log.d(TAG, "onBadCRC(" + new String(buffer) + ")");
 	}
 
 	public void onUnknownChanged(byte[] buffer) {
-		Log.d(TAG, "onUnknown(" + new String(buffer) + ")");
+		if (D) Log.d(TAG, "onUnknown(" + new String(buffer) + ")");
 	}
 
 	public void onRawChanged(byte[] buffer) {
-		Log.d(TAG, "onRaw(" + new String(buffer) + ")");
+		if (D) Log.d(TAG, "onRaw(" + new String(buffer) + ")");
 	}
 
 	public void drawAll(HarleyData hd) {
@@ -691,7 +691,7 @@ public class HarleyDroidView implements HarleyDataListener
 	}
 
 	public void drawHistoricDTC(int[] dtc) {
-		Log.d("DTC", "drawHistoric");
+		if (D) Log.d("DTC", "drawHistoric");
 
 		if (mViewHistoricDTC == null)
 			return;
@@ -705,7 +705,7 @@ public class HarleyDroidView implements HarleyDataListener
 	}
 
 	public void drawCurrentDTC(int[] dtc) {
-		Log.d("DTC", "drawCurrent");
+		if (D) Log.d("DTC", "drawCurrent");
 		
 		if (mViewCurrentDTC == null)
 			return;

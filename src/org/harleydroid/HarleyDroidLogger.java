@@ -23,7 +23,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -80,14 +79,16 @@ public class HarleyDroidLogger implements HarleyDataListener
 		return result;
 	}
 
-	public void write(String data) {
+	public void write(String header, byte[] data) {
 		if (D) Log.d(TAG, "write()");
 
 		if (mLog != null) {
 			try {
 				mLog.write(myGetBytes(TIMESTAMP_FORMAT.format(new Date())));
 				mLog.write(',');
-				mLog.write(myGetBytes(data));
+				mLog.write(myGetBytes(header));
+				if (data != null)
+					mLog.write(data);
 				mLog.write(',');
 				if (mGPS != null)
 					mLog.write(myGetBytes(mGPS.getLocation()));
@@ -100,6 +101,15 @@ public class HarleyDroidLogger implements HarleyDataListener
 			}
 		}
 	}
+
+	public void write(String header, String data) {
+		write(header, myGetBytes(data));
+	}
+
+	public void write(String data) {
+		write(data, (byte[]) null);
+	}
+
 
 	public void stop() {
 		if (D) Log.d(TAG, "stop()");
@@ -212,29 +222,26 @@ public class HarleyDroidLogger implements HarleyDataListener
 		String data = "";
 		for (int i = 0; i < dtc.length; i++)
 			data += dtc[i] + ",";
-		write("DTH," + data);
+		write("DTH,", data);
 	}
 
 	public void onCurrentDTCChanged(int[] dtc) {
 		String data = "";
 		for (int i = 0; i < dtc.length; i++)
 			data += dtc[i] + ",";
-		write("DTC," + data);
+		write("DTC,", data);
 	}
 
 	public void onBadCRCChanged(byte[] buffer) {
-		String bad = new String(buffer);
-		if (bad.equals(">ATMA") || bad.equals("SEARCHING..."))
-			return;
-		write("CRC," + bad.trim());
+		write("CRC,", buffer);
 	}
 
 	public void onUnknownChanged(byte[] buffer) {
-		write("UNK," + new String(buffer).trim());
+		write("UNK,", buffer);
 	}
 
 	public void onRawChanged(byte[] buffer) {
 		if (mLogRaw)
-			write("RAW," + new String(buffer).trim());
+			write("RAW,", buffer);
 	}
 }

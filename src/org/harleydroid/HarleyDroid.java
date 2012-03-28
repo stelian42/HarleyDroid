@@ -43,7 +43,7 @@ import android.widget.Toast;
 
 public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnEulaAgreedTo
 {
-	private static final boolean D = true;
+	private static final boolean D = false;
 	private static final boolean DTRACE = false;
 	private static final String TAG = HarleyDroid.class.getSimpleName();
 	public static final boolean EMULATOR = true;
@@ -200,7 +200,6 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		super.onConfigurationChanged(newConfig);
 
 		if (mOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
-			Log.d(TAG, "orientation now " + newConfig.orientation);
 			mHarleyDroidView.changeView(mViewMode, newConfig.orientation == Configuration.ORIENTATION_PORTRAIT, mUnitMetric);
 			mHarleyDroidView.drawAll(mHD);
 		}
@@ -324,7 +323,6 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 			// error was somehow reproduced by users.
 			if (mBluetoothID == null)
 				return;
-			Log.e(TAG, "**** " + mBluetoothAdapter.getRemoteDevice(mBluetoothID) + " ****");
 			mService.setInterfaceType(mInterfaceType,
 									  mBluetoothAdapter.getRemoteDevice(mBluetoothID));
 		}

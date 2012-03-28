@@ -25,6 +25,8 @@ package org.harleydroid;
 import android.util.Log;
 
 public class J1850 {
+	private static final boolean D = false;
+	private static final String TAG = J1850.class.getSimpleName();
 
 	public static final int MAXBUF = 1024;
 	// last reading of odometer ticks
@@ -99,7 +101,7 @@ public class J1850 {
 		System.out.println("");
 		 */
 
-		hd.setRaw(buffer);
+		//hd.setRaw(buffer);
 
 		if (crc(in) != (byte)0xc4) {
 			hd.setBadCRC(buffer);
@@ -149,10 +151,10 @@ public class J1850 {
 		} else if ((x == 0xa8836112) && ((in[4] & 0xd0) == 0xd0))
 			hd.setFuelGauge(in[4] & 0x0f);
 		else if ((x & 0xffffff5d) == 0x483b4000) {
-			if ((in[3] & 0x20) != 0)
-				hd.setNeutral(true);
-			else if ((in[3] & 0x02) != 0)
+			if ((in[3] & 0x20) == 0x20)
 				hd.setNeutral(false);
+			else if ((in[3] & 0xa0) == 0xa0)
+				hd.setNeutral(true);
 			hd.setClutch((in[3] & 0x80) != 0);
 		} else if ((x & 0xffffff7f) == 0x68881003) {
 			if ((in[3] & 0x80) != 0)
@@ -195,21 +197,21 @@ public class J1850 {
 			}
 		} else if (x == 0x6cfef119)
 			/* this is the get DTC command, answers are below... */
-			Log.d("DTC", "DTC start");
+			if (D) Log.d(TAG, "DTC start");
 		else if ((x & 0xffff0fff) == 0x6cf10059) {
 			int dtc = (((int)in[4] & 0xff) << 8) | ((int)in[5] & 0xff);
 			if (in[2] == 0x10) {
 				/* historic DTC */
-				Log.d("DTC", "historic DTC: 0x" + Integer.toString(dtc, 16));
+				if (D) Log.d(TAG, "historic DTC: 0x" + Integer.toString(dtc, 16));
 				hd.addHistoricDTC(dtc);
 			} else if (in[2] == 0x40) {
 				/* current DTC */
-				Log.d("DTC", "current DTC: 0x" + Integer.toString(dtc, 16));
+				if (D) Log.d(TAG, "current DTC: 0x" + Integer.toString(dtc, 16));
 				hd.addCurrentDTC(dtc);
 			} else
 				hd.setUnknown(buffer);
 		} else if (x == 0x6c10f114)
-			Log.d("DTC", "DTC clear");
+			if (D) Log.d(TAG, "DTC clear");
 		else
 			hd.setUnknown(buffer);
 		return true;

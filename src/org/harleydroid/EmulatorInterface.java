@@ -23,7 +23,7 @@ import android.util.Log;
 
 public class EmulatorInterface implements J1850Interface
 {
-	private static final boolean D = true;
+	private static final boolean D = false;
 	private static final String TAG = EmulatorInterface.class.getSimpleName();
 
 	private static final int MAX_ERRORS = 10;

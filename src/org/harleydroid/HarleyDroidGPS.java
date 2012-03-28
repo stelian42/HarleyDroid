@@ -19,8 +19,6 @@
 
 package org.harleydroid;
 
-import java.util.Locale;
-
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -60,10 +58,9 @@ public class HarleyDroidGPS implements LocationListener
 		if (mCurrentBestLocation == null)
 			return ",,";
 
-		return String.format(Locale.US, "%.6f,%.6f,%.1f",
-				mCurrentBestLocation.getLongitude(),
-				mCurrentBestLocation.getLatitude(),
-				mCurrentBestLocation.getAltitude());
+		return Double.toString(mCurrentBestLocation.getLatitude()) + "," +
+			   Double.toString(mCurrentBestLocation.getLongitude()) + "," +
+			   Double.toString(mCurrentBestLocation.getAltitude());
 	}
 
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
