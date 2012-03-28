@@ -150,6 +150,13 @@ public class HarleyDiagnostics
 			if (clearDTC) {
 				if (D) Log.d(TAG, "6C10F114 - ???");
 				mService.send("6C", "10", "F1", "14", "???");
+
+				while (!stop && mService.isBusy()) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+					}
+				}
 			}
 
 			while (!stop) {
@@ -157,9 +164,11 @@ public class HarleyDiagnostics
 					if (D) Log.d(TAG, commands[i] + " - " + expects[i]);
 					mService.send(types[i], tas[i], sas[i], commands[i], expects[i]);
 					/* answer should come in 20 ms or so */
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
+					while (!stop && mService.isBusy()) {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+						}
 					}
 				}
 				try {

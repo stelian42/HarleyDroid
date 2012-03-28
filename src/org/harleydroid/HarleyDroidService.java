@@ -415,4 +415,10 @@ public class HarleyDroidService extends Service
 
 		return (mCurrentState == STATE_POLL);
 	}
+
+	public boolean isBusy() {
+		if (D) Log.d(TAG, "isBusy()");
+
+		return (mCurrentState != STATE_CONNECT && mCurrentState != STATE_DISCONNECT);
+	}
 }
