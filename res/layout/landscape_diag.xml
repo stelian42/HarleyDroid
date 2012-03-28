@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
+
+     Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/diag_layout"
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:layout_gravity="center"
+    	android:weightSum="2.0"
+    	android:baselineAligned="false"
+    	>
+		<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:id="@+id/diag1_layout"
+    		android:orientation="vertical"
+    		android:layout_width="fill_parent"
+    		android:layout_height="fill_parent"
+    		android:layout_weight="1.0"
+    		android:stretchColumns="1"
+    		>
+			<TableRow>
+			<TextView
+				android:id="@+id/vin_label"
+    			android:text="@string/vin_label"
+    			android:padding="3dip"
+    			/>
+			<TextView
+				android:id="@+id/vin_field"
+				android:padding="3dip"
+    			/>
+			</TableRow>
+			<TableRow>
+			<TextView
+				android:id="@+id/ecmpn_label"
+    			android:text="@string/ecmpn_label"
+    			android:padding="3dip"
+    			/>
+			<TextView
+				android:id="@+id/ecmpn_field"
+				android:padding="3dip"
+    			/>
+			</TableRow>
+			<TableRow>
+			<TextView
+				android:id="@+id/currentdtc_label"
+    			android:text="@string/currentdtc_label"
+    			android:padding="3dip"
+    			/>
+			<ListView
+			    android:id="@+id/currentdtc_field"
+    	        >
+			</ListView>
+			</TableRow>
+		</TableLayout>
+		<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:id="@+id/diag2_layout"
+    		android:orientation="vertical"
+    		android:layout_width="fill_parent"
+    		android:layout_height="fill_parent"
+    		android:layout_weight="1.0"
+    		android:stretchColumns="1"
+    		>
+    		<TableRow>
+			<TextView
+				android:id="@+id/ecmcalid_label"
+    			android:text="@string/ecmcalid_label"
+    			android:padding="3dip"
+	    		/>
+			<TextView
+				android:id="@+id/ecmcalid_field"
+				android:padding="3dip"
+    			/>
+			</TableRow>
+			<TableRow>
+			<TextView
+				android:id="@+id/ecmswlevel_label"
+    			android:text="@string/ecmswlevel_label"
+    			android:padding="3dip"
+    			/>
+			<TextView
+				android:id="@+id/ecmswlevel_field"
+				android:padding="3dip"
+    			/>
+			</TableRow>
+			<TableRow>
+			<TextView
+				android:id="@+id/historicdtc_label"
+    			android:text="@string/historicdtc_label"
+    			android:padding="3dip"
+    			/>
+			<ListView
+			    android:id="@+id/historicdtc_field"
+    	  		>
+			</ListView>
+			</TableRow>
+    	</TableLayout>
+	</LinearLayout>

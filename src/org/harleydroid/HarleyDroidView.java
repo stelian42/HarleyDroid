@@ -33,8 +33,8 @@ import android.widget.TextView;
 
 public class HarleyDroidView implements HarleyDataListener
 {
-	private static final boolean D = false;
-	private static final String TAG = HarleyDroid.class.getSimpleName();
+	private static final boolean D = true;
+	private static final String TAG = HarleyDroidView.class.getSimpleName();
 
 	public static final int UPDATE_RPM = 1;
 	public static final int UPDATE_SPEED_IMPERIAL = 2;
@@ -63,12 +63,9 @@ public class HarleyDroidView implements HarleyDataListener
 	public static final int VIEW_DIAGNOSTIC = 3;
 
 	private Activity mActivity;
-
+	
 	// Views references cached for performance
-	private View mViewText;
-	private View mViewGraphic;
-	private View mViewDiagnostic;
-
+	
 	private TextView mViewRpm;
 	private Gauge mGaugeRpm;
 	private TextView mLabelSpeedMetric;
@@ -109,6 +106,205 @@ public class HarleyDroidView implements HarleyDataListener
 		mActivity = activity;
 	}
 
+	public void changeView(int viewMode, boolean portrait, boolean unitMetric) {
+		if (D) Log.d(TAG, "changeView to " + viewMode + " portrait=" + portrait + " metric=" + unitMetric);
+		
+		int view = R.layout.portrait_graphic;
+		
+		switch (viewMode) {
+		case VIEW_GRAPHIC:
+			if (portrait)
+				view = R.layout.portrait_graphic;
+			else
+				view = R.layout.landscape_graphic;
+			mActivity.setContentView(view);
+			
+			mGaugeSpeedMetric = (Gauge) mActivity.findViewById(R.id.speed_metric_meter);
+			mGaugeSpeedImperial = (Gauge) mActivity.findViewById(R.id.speed_imperial_meter);
+			mGaugeRpm = (Gauge) mActivity.findViewById(R.id.rpm_meter);
+			mImageTurnSignalsLeft = (View) mActivity.findViewById(R.id.turn_left);
+			mImageCheckEngine = (View) mActivity.findViewById(R.id.check_engine);
+			mImageTurnSignalsRight = (View) mActivity.findViewById(R.id.turn_right);
+
+			mViewRpm = null;
+			mLabelSpeedMetric = null;
+			mLabelSpeedImperial = null;
+			mViewSpeedMetric = null;
+			mViewSpeedImperial = null;
+			mLabelEngTempMetric = null;
+			mLabelEngTempImperial = null;
+			mViewEngTempMetric = null;
+			mViewEngTempImperial = null;			
+			mViewFuelGauge = null;
+			mViewTurnSignals = null;
+			mViewNeutral = null;
+			mViewClutch = null;
+			mViewGear = null;
+			mViewCheckEngine = null;
+			mLabelOdometerMetric = null;
+			mLabelOdometerImperial = null;
+			mViewOdometerMetric = null;
+			mViewOdometerImperial = null;
+			mLabelFuelMetric = null;
+			mLabelFuelImperial = null;
+			mViewFuelMetric = null;
+			mViewFuelImperial = null;
+
+			mViewVIN = null;
+			mViewECMPN = null;
+			mViewECMCalID = null;
+			mViewECMSWLevel = null;
+			mViewCurrentDTC = null;
+			mViewHistoricDTC = null;
+
+			if (unitMetric) {
+				mGaugeSpeedImperial.setVisibility(View.GONE);
+				mGaugeSpeedMetric.setVisibility(View.VISIBLE);
+			} else {
+				mGaugeSpeedMetric.setVisibility(View.GONE);
+				mGaugeSpeedImperial.setVisibility(View.VISIBLE);
+			}
+			break;
+		case VIEW_TEXT:
+			if (portrait)
+				view = R.layout.portrait_text;
+			else
+				view = R.layout.landscape_text;
+			mActivity.setContentView(view);
+
+			mGaugeSpeedMetric = null;
+			mGaugeSpeedImperial = null;
+			mGaugeRpm = null;
+			mImageTurnSignalsLeft = null;
+			mImageCheckEngine = null;
+			mImageTurnSignalsRight = null;
+
+			mViewRpm = (TextView) mActivity.findViewById(R.id.rpm_field);
+			mLabelSpeedMetric = (TextView) mActivity.findViewById(R.id.speed_metric_label);
+			mLabelSpeedImperial = (TextView) mActivity.findViewById(R.id.speed_imperial_label);
+			mViewSpeedMetric = (TextView) mActivity.findViewById(R.id.speed_metric_field);
+			mViewSpeedImperial = (TextView) mActivity.findViewById(R.id.speed_imperial_field);
+			mLabelEngTempMetric = (TextView) mActivity.findViewById(R.id.enginetemp_metric_label);
+			mLabelEngTempImperial = (TextView) mActivity.findViewById(R.id.enginetemp_imperial_label);
+			mViewEngTempMetric = (TextView) mActivity.findViewById(R.id.enginetemp_metric_field);
+			mViewEngTempImperial = (TextView) mActivity.findViewById(R.id.enginetemp_imperial_field);			
+			mViewFuelGauge = (TextView) mActivity.findViewById(R.id.fuelgauge_field);
+			mViewTurnSignals = (TextView) mActivity.findViewById(R.id.turnsignals_field);
+			mViewNeutral = (TextView) mActivity.findViewById(R.id.neutral_field);
+			mViewClutch = (TextView) mActivity.findViewById(R.id.clutch_field);
+			mViewGear = (TextView) mActivity.findViewById(R.id.gear_field);
+			mViewCheckEngine = (TextView) mActivity.findViewById(R.id.checkengine_field);
+			mLabelOdometerMetric = (TextView) mActivity.findViewById(R.id.odometer_metric_label);
+			mLabelOdometerImperial = (TextView) mActivity.findViewById(R.id.odometer_imperial_label);
+			mViewOdometerMetric = (TextView) mActivity.findViewById(R.id.odometer_metric_field);
+			mViewOdometerImperial = (TextView) mActivity.findViewById(R.id.odometer_imperial_field);
+			mLabelFuelMetric = (TextView) mActivity.findViewById(R.id.fuel_metric_label);
+			mLabelFuelImperial = (TextView) mActivity.findViewById(R.id.fuel_imperial_label);
+			mViewFuelMetric = (TextView) mActivity.findViewById(R.id.fuel_metric_field);
+			mViewFuelImperial = (TextView) mActivity.findViewById(R.id.fuel_imperial_field);
+			
+			if (unitMetric) {
+				mLabelSpeedImperial.setVisibility(View.GONE);
+				mLabelSpeedImperial = null;
+				mLabelSpeedMetric.setVisibility(View.VISIBLE);
+				mViewSpeedImperial.setVisibility(View.GONE);
+				mViewSpeedImperial = null;
+				mViewSpeedMetric.setVisibility(View.VISIBLE);
+				mLabelEngTempImperial.setVisibility(View.GONE);
+				mLabelEngTempImperial = null;
+				mLabelEngTempMetric.setVisibility(View.VISIBLE);
+				mViewEngTempImperial.setVisibility(View.GONE);
+				mViewEngTempImperial = null;
+				mViewEngTempMetric.setVisibility(View.VISIBLE);
+				mLabelOdometerImperial.setVisibility(View.GONE);
+				mLabelOdometerImperial = null;
+				mLabelOdometerMetric.setVisibility(View.VISIBLE);
+				mViewOdometerImperial.setVisibility(View.GONE);
+				mViewOdometerImperial = null;
+				mViewOdometerMetric.setVisibility(View.VISIBLE);
+				mLabelFuelImperial.setVisibility(View.GONE);
+				mLabelFuelImperial = null;
+				mLabelFuelMetric.setVisibility(View.VISIBLE);
+				mViewFuelImperial.setVisibility(View.GONE);
+				mViewFuelImperial = null;
+				mViewFuelMetric.setVisibility(View.VISIBLE);
+			} else {
+				mLabelSpeedMetric.setVisibility(View.GONE);
+				mLabelSpeedMetric = null;
+				mLabelSpeedImperial.setVisibility(View.VISIBLE);
+				mViewSpeedMetric.setVisibility(View.GONE);
+				mViewSpeedMetric = null;
+				mViewSpeedImperial.setVisibility(View.VISIBLE);
+				mLabelEngTempMetric.setVisibility(View.GONE);
+				mLabelEngTempMetric = null;
+				mLabelEngTempImperial.setVisibility(View.VISIBLE);
+				mViewEngTempMetric.setVisibility(View.GONE);
+				mViewEngTempMetric = null;
+				mViewEngTempImperial.setVisibility(View.VISIBLE);
+				mLabelOdometerMetric.setVisibility(View.GONE);
+				mLabelOdometerMetric = null;
+				mLabelOdometerImperial.setVisibility(View.VISIBLE);
+				mViewOdometerMetric.setVisibility(View.GONE);
+				mViewOdometerMetric = null;
+				mViewOdometerImperial.setVisibility(View.VISIBLE);
+				mLabelFuelMetric.setVisibility(View.GONE);
+				mLabelFuelMetric = null;
+				mLabelFuelImperial.setVisibility(View.VISIBLE);
+				mViewFuelMetric.setVisibility(View.GONE);
+				mViewFuelMetric = null;
+				mViewFuelImperial.setVisibility(View.VISIBLE);
+			}
+			
+			break;
+		case VIEW_DIAGNOSTIC:
+			if (portrait)
+				view = R.layout.portrait_diag;
+			else
+				view = R.layout.landscape_diag;
+			mActivity.setContentView(view);
+
+			mGaugeSpeedMetric = null;
+			mGaugeSpeedImperial = null;
+			mGaugeRpm = null;
+			mImageTurnSignalsLeft = null;
+			mImageCheckEngine = null;
+			mImageTurnSignalsRight = null;
+
+			mViewRpm = null;
+			mLabelSpeedMetric = null;
+			mLabelSpeedImperial = null;
+			mViewSpeedMetric = null;
+			mViewSpeedImperial = null;
+			mLabelEngTempMetric = null;
+			mLabelEngTempImperial = null;
+			mViewEngTempMetric = null;
+			mViewEngTempImperial = null;			
+			mViewFuelGauge = null;
+			mViewTurnSignals = null;
+			mViewNeutral = null;
+			mViewClutch = null;
+			mViewGear = null;
+			mViewCheckEngine = null;
+			mLabelOdometerMetric = null;
+			mLabelOdometerImperial = null;
+			mViewOdometerMetric = null;
+			mViewOdometerImperial = null;
+			mLabelFuelMetric = null;
+			mLabelFuelImperial = null;
+			mViewFuelMetric = null;
+			mViewFuelImperial = null;
+
+			mViewVIN = (TextView) mActivity.findViewById(R.id.vin_field);
+			mViewECMPN = (TextView) mActivity.findViewById(R.id.ecmpn_field);
+			mViewECMCalID = (TextView) mActivity.findViewById(R.id.ecmcalid_field);
+			mViewECMSWLevel = (TextView) mActivity.findViewById(R.id.ecmswlevel_field);
+			mViewCurrentDTC = (ListView) mActivity.findViewById(R.id.currentdtc_field);
+			mViewHistoricDTC = (ListView) mActivity.findViewById(R.id.historicdtc_field);
+
+			break;
+		}
+	}
+	
 	private final Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -298,103 +494,7 @@ public class HarleyDroidView implements HarleyDataListener
 		Log.d(TAG, "onRaw(" + new String(buffer) + ")");
 	}
 
-	public void drawAll(HarleyData hd, int viewMode, boolean unitMetric) {
-
-		mViewGraphic = mActivity.findViewById(R.id.graphic_layout);
-		mViewText = mActivity.findViewById(R.id.text_layout);
-		mViewDiagnostic = mActivity.findViewById(R.id.diag_layout);
-
-		mViewRpm = (TextView) mActivity.findViewById(R.id.rpm_field);
-		mGaugeRpm = (Gauge) mActivity.findViewById(R.id.rpm_meter);
-		mLabelSpeedMetric = (TextView) mActivity.findViewById(R.id.speed_metric_label);
-		mLabelSpeedImperial = (TextView) mActivity.findViewById(R.id.speed_imperial_label);
-		mViewSpeedMetric = (TextView) mActivity.findViewById(R.id.speed_metric_field);
-		mViewSpeedImperial = (TextView) mActivity.findViewById(R.id.speed_imperial_field);
-		mGaugeSpeedMetric = (Gauge) mActivity.findViewById(R.id.speed_metric_meter);
-		mGaugeSpeedImperial = (Gauge) mActivity.findViewById(R.id.speed_imperial_meter);
-		mLabelEngTempMetric = (TextView) mActivity.findViewById(R.id.enginetemp_metric_label);
-		mLabelEngTempImperial = (TextView) mActivity.findViewById(R.id.enginetemp_imperial_label);
-		mViewEngTempMetric = (TextView) mActivity.findViewById(R.id.enginetemp_metric_field);
-		mViewEngTempImperial = (TextView) mActivity.findViewById(R.id.enginetemp_imperial_field);
-		mViewFuelGauge = (TextView) mActivity.findViewById(R.id.fuelgauge_field);
-		mImageTurnSignalsLeft = (View) mActivity.findViewById(R.id.turn_left);
-		mImageTurnSignalsRight = (View) mActivity.findViewById(R.id.turn_right);
-		mViewTurnSignals = (TextView) mActivity.findViewById(R.id.turnsignals_field);
-		mViewNeutral = (TextView) mActivity.findViewById(R.id.neutral_field);
-		mViewClutch = (TextView) mActivity.findViewById(R.id.clutch_field);
-		mViewGear = (TextView) mActivity.findViewById(R.id.gear_field);
-		mViewCheckEngine = (TextView) mActivity.findViewById(R.id.checkengine_field);
-		mImageCheckEngine = (View) mActivity.findViewById(R.id.check_engine);
-		mLabelOdometerMetric = (TextView) mActivity.findViewById(R.id.odometer_metric_label);
-		mLabelOdometerImperial = (TextView) mActivity.findViewById(R.id.odometer_imperial_label);
-		mViewOdometerMetric = (TextView) mActivity.findViewById(R.id.odometer_metric_field);
-		mViewOdometerImperial = (TextView) mActivity.findViewById(R.id.odometer_imperial_field);
-		mLabelFuelMetric = (TextView) mActivity.findViewById(R.id.fuel_metric_label);
-		mLabelFuelImperial = (TextView) mActivity.findViewById(R.id.fuel_imperial_label);
-		mViewFuelMetric = (TextView) mActivity.findViewById(R.id.fuel_metric_field);
-		mViewFuelImperial = (TextView) mActivity.findViewById(R.id.fuel_imperial_field);
-		mViewVIN = (TextView) mActivity.findViewById(R.id.vin_field);
-		mViewECMPN = (TextView) mActivity.findViewById(R.id.ecmpn_field);
-		mViewECMCalID = (TextView) mActivity.findViewById(R.id.ecmcalid_field);
-		mViewECMSWLevel = (TextView) mActivity.findViewById(R.id.ecmswlevel_field);
-		mViewCurrentDTC = (ListView) mActivity.findViewById(R.id.currentdtc_field);
-		mViewHistoricDTC = (ListView) mActivity.findViewById(R.id.historicdtc_field);
-
-		if (viewMode == VIEW_TEXT) {
-			mViewGraphic.setVisibility(View.GONE);
-			mViewDiagnostic.setVisibility(View.GONE);
-			mViewText.setVisibility(View.VISIBLE);
-		}
-		else if (viewMode == VIEW_GRAPHIC) {
-			mViewText.setVisibility(View.GONE);
-			mViewDiagnostic.setVisibility(View.GONE);
-			mViewGraphic.setVisibility(View.VISIBLE);
-		}
-		else if (viewMode == VIEW_DIAGNOSTIC) {
-			mViewGraphic.setVisibility(View.GONE);
-			mViewText.setVisibility(View.GONE);
-			mViewDiagnostic.setVisibility(View.VISIBLE);
-		}
-
-		if (unitMetric) {
-			mGaugeSpeedImperial.setVisibility(View.GONE);
-			mGaugeSpeedMetric.setVisibility(View.VISIBLE);
-			mLabelSpeedImperial.setVisibility(View.GONE);
-			mLabelSpeedMetric.setVisibility(View.VISIBLE);
-			mViewSpeedImperial.setVisibility(View.GONE);
-			mViewSpeedMetric.setVisibility(View.VISIBLE);
-			mLabelEngTempImperial.setVisibility(View.GONE);
-			mLabelEngTempMetric.setVisibility(View.VISIBLE);
-			mViewEngTempImperial.setVisibility(View.GONE);
-			mViewEngTempMetric.setVisibility(View.VISIBLE);
-			mLabelOdometerImperial.setVisibility(View.GONE);
-			mLabelOdometerMetric.setVisibility(View.VISIBLE);
-			mViewOdometerImperial.setVisibility(View.GONE);
-			mViewOdometerMetric.setVisibility(View.VISIBLE);
-			mLabelFuelImperial.setVisibility(View.GONE);
-			mLabelFuelMetric.setVisibility(View.VISIBLE);
-			mViewFuelImperial.setVisibility(View.GONE);
-			mViewFuelMetric.setVisibility(View.VISIBLE);
-		} else {
-			mGaugeSpeedMetric.setVisibility(View.GONE);
-			mGaugeSpeedImperial.setVisibility(View.VISIBLE);
-			mLabelSpeedMetric.setVisibility(View.GONE);
-			mLabelSpeedImperial.setVisibility(View.VISIBLE);
-			mViewSpeedMetric.setVisibility(View.GONE);
-			mViewSpeedImperial.setVisibility(View.VISIBLE);
-			mLabelEngTempMetric.setVisibility(View.GONE);
-			mLabelEngTempImperial.setVisibility(View.VISIBLE);
-			mViewEngTempMetric.setVisibility(View.GONE);
-			mViewEngTempImperial.setVisibility(View.VISIBLE);
-			mLabelOdometerMetric.setVisibility(View.GONE);
-			mLabelOdometerImperial.setVisibility(View.VISIBLE);
-			mViewOdometerMetric.setVisibility(View.GONE);
-			mViewOdometerImperial.setVisibility(View.VISIBLE);
-			mLabelFuelMetric.setVisibility(View.GONE);
-			mLabelFuelImperial.setVisibility(View.VISIBLE);
-			mViewFuelMetric.setVisibility(View.GONE);
-			mViewFuelImperial.setVisibility(View.VISIBLE);
-		}
+	public void drawAll(HarleyData hd) {
 
 		if (hd != null) {
 			drawRPM(hd.getRPM());
@@ -444,119 +544,158 @@ public class HarleyDroidView implements HarleyDataListener
 	}
 
 	public void drawRPM(int value) {
-		mViewRpm.setText(Integer.toString(value));
-		mGaugeRpm.setValue(value / 100);
+		if (mViewRpm != null)
+			mViewRpm.setText(Integer.toString(value));
+		if (mGaugeRpm != null)
+			mGaugeRpm.setValue(value / 100);
 	}
 
 	public void drawSpeedImperial(int value) {
 		// value is in mph
-		mViewSpeedImperial.setText(Integer.toString(value));
-		mGaugeSpeedImperial.setValue(value);
+		if (mViewSpeedImperial != null)
+			mViewSpeedImperial.setText(Integer.toString(value));
+		if (mGaugeSpeedImperial != null)
+			mGaugeSpeedImperial.setValue(value);
 	}
 
 	public void drawSpeedMetric(int value) {
 		// value is in km/h
-		mViewSpeedMetric.setText(Integer.toString(value));
-		mGaugeSpeedMetric.setValue(value);
+		if (mViewSpeedMetric != null)
+			mViewSpeedMetric.setText(Integer.toString(value));
+		if (mGaugeSpeedMetric != null)
+			mGaugeSpeedMetric.setValue(value);
 	}
 
 	public void drawEngineTempImperial(int value) {
 		// value is in F
-		mViewEngTempImperial.setText(Integer.toString(value));
+		if (mViewEngTempImperial != null)
+			mViewEngTempImperial.setText(Integer.toString(value));
 	}
 
 	public void drawEngineTempMetric(int value) {
 		// value is in C
-		mViewEngTempMetric.setText(Integer.toString(value));
+		if (mViewEngTempMetric != null)
+			mViewEngTempMetric.setText(Integer.toString(value));
 	}
 
 	public void drawFuelGauge(int value) {
-		mViewFuelGauge.setText(Integer.toString(value));
+		if (mViewFuelGauge != null)
+			mViewFuelGauge.setText(Integer.toString(value));
 	}
 
 	public void drawTurnSignals(int value) {
 		if ((value & 0x03) == 0x03) {
-			mImageTurnSignalsLeft.setVisibility(View.VISIBLE);
-			mImageTurnSignalsRight.setVisibility(View.VISIBLE);
-			mViewTurnSignals.setText("W");
+			if (mImageTurnSignalsLeft != null)
+				mImageTurnSignalsLeft.setVisibility(View.VISIBLE);
+			if (mImageTurnSignalsRight != null)
+				mImageTurnSignalsRight.setVisibility(View.VISIBLE);
+			if (mViewTurnSignals != null)
+				mViewTurnSignals.setText("W");
 		}
 		else if ((value & 0x01) == 0x01) {
-			mImageTurnSignalsLeft.setVisibility(View.INVISIBLE);
-			mImageTurnSignalsRight.setVisibility(View.VISIBLE);
-			mViewTurnSignals.setText("R");
+			if (mImageTurnSignalsLeft != null)
+				mImageTurnSignalsLeft.setVisibility(View.INVISIBLE);
+			if (mImageTurnSignalsRight != null)
+				mImageTurnSignalsRight.setVisibility(View.VISIBLE);
+			if (mViewTurnSignals != null)
+				mViewTurnSignals.setText("R");
 		}
 		else if ((value & 0x02) == 0x02) {
-			mImageTurnSignalsLeft.setVisibility(View.VISIBLE);
-			mImageTurnSignalsRight.setVisibility(View.INVISIBLE);
-			mViewTurnSignals.setText("L");
+			if (mImageTurnSignalsLeft != null)
+				mImageTurnSignalsLeft.setVisibility(View.VISIBLE);
+			if (mImageTurnSignalsRight != null)
+				mImageTurnSignalsRight.setVisibility(View.INVISIBLE);
+			if (mViewTurnSignals != null)
+				mViewTurnSignals.setText("L");
 		}
 		else {
-			mImageTurnSignalsLeft.setVisibility(View.INVISIBLE);
-			mImageTurnSignalsRight.setVisibility(View.INVISIBLE);
-			mViewTurnSignals.setText("");
+			if (mImageTurnSignalsLeft != null)
+				mImageTurnSignalsLeft.setVisibility(View.INVISIBLE);
+			if (mImageTurnSignalsRight != null)
+				mImageTurnSignalsRight.setVisibility(View.INVISIBLE);
+			if (mViewTurnSignals != null)
+				mViewTurnSignals.setText("");
 		}
 	}
 
 	public void drawNeutral(int value) {
-		mViewNeutral.setText(Integer.toString(value));
+		if (mViewNeutral != null)
+			mViewNeutral.setText(Integer.toString(value));
 	}
 
 	public void drawClutch(int value) {
-		mViewClutch.setText(Integer.toString(value));
+		if (mViewClutch != null)
+			mViewClutch.setText(Integer.toString(value));
 	}
 
 	public void drawGear(int value) {
-		mViewGear.setText(Integer.toString(value));
+		if (mViewGear != null)
+			mViewGear.setText(Integer.toString(value));
 	}
 
 	public void drawCheckEngine(int value) {
-		mImageCheckEngine.setVisibility(value == 0 ? View.INVISIBLE : View.VISIBLE);
-		mViewCheckEngine.setText(Integer.toString(value));
+		if (mImageCheckEngine != null)
+			mImageCheckEngine.setVisibility(value == 0 ? View.INVISIBLE : View.VISIBLE);
+		if (mViewCheckEngine != null)
+			mViewCheckEngine.setText(Integer.toString(value));
 	}
 
 	public void drawOdometerImperial(int value) {
 		// value is miles * 100
 		float miles = value / 100f;
-		mViewOdometerImperial.setText(String.format("%.2f", miles));
-		mGaugeSpeedImperial.setOdoValue(miles);
+		if (mViewOdometerImperial != null)
+			mViewOdometerImperial.setText(String.format("%.2f", miles));
+		if (mGaugeSpeedImperial != null)
+			mGaugeSpeedImperial.setOdoValue(miles);
 	}
 
 	public void drawOdometerMetric(int value) {
 		// value is km * 100
 		float km = value / 100f;
-		mViewOdometerMetric.setText(String.format("%4.2f", km));
-		mGaugeSpeedMetric.setOdoValue(km);
+		if (mViewOdometerMetric != null)
+			mViewOdometerMetric.setText(String.format("%4.2f", km));
+		if (mGaugeSpeedMetric != null)
+			mGaugeSpeedMetric.setOdoValue(km);
 	}
 
 	public void drawFuelImperial(int value) {
 		// value is in fl oz
-		mViewFuelImperial.setText(Float.toString(value));
+		if (mViewFuelImperial != null)
+			mViewFuelImperial.setText(Float.toString(value));
 	}
 
 	public void drawFuelMetric(int value) {
 		// value is in milliliters
-		mViewFuelMetric.setText(Integer.toString(value));
+		if (mViewFuelMetric != null)
+			mViewFuelMetric.setText(Integer.toString(value));
 	}
 
 	public void drawVIN(String value) {
-		mViewVIN.setText(value);
+		if (mViewVIN != null)
+			mViewVIN.setText(value);
 	}
 
 	public void drawECMPN(String value) {
-		mViewECMPN.setText(value);
+		if (mViewECMPN != null)
+			mViewECMPN.setText(value);
 	}
 
 	public void drawECMCalID(String value) {
-		mViewECMCalID.setText(value);
+		if (mViewECMCalID != null)
+			mViewECMCalID.setText(value);
 	}
 
 	public void drawECMSWLevel(int value) {
-		mViewECMSWLevel.setText("0x" + Integer.toString(value, 16));
+		if (mViewECMSWLevel != null)
+			mViewECMSWLevel.setText("0x" + Integer.toString(value, 16));
 	}
 
 	public void drawHistoricDTC(int[] dtc) {
 		Log.d("DTC", "drawHistoric");
 
+		if (mViewHistoricDTC == null)
+			return;
+		
 		// arrayAdapter.notifyDataSetChanged();
 		ArrayList<Integer> items = new ArrayList<Integer>();
 		if (dtc != null)
@@ -567,8 +706,11 @@ public class HarleyDroidView implements HarleyDataListener
 
 	public void drawCurrentDTC(int[] dtc) {
 		Log.d("DTC", "drawCurrent");
+		
+		if (mViewCurrentDTC == null)
+			return;
+		
 		ArrayList<Integer> items = new ArrayList<Integer>();
-
 		if (dtc != null)
 			for (int i = 0; i < dtc.length; i++)
 				items.add(new Integer(dtc[i]));

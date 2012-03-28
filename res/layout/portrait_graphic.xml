@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
+
+     Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+    <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:id="@+id/graphic_layout"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    >
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="fill_parent"
+	    	android:layout_height="fill_parent"
+    		android:layout_gravity="center"
+    		android:weightSum="2.0">
+			>
+			<FrameLayout
+				android:layout_weight="1.0"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				>
+				<org.harleydroid.Gauge
+					xmlns:atswidget="http://schemas.android.com/apk/res/org.harleydroid"
+					android:id="@+id/speed_metric_meter"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:layout_margin="2dp"
+					atswidget:totalNotches="300"
+					atswidget:incrementPerLargeNotch="10"
+					atswidget:incrementPerSmallNotch="1"
+					atswidget:scaleCenterValue="110"
+					atswidget:scaleColor="0x9f004d0f"
+					atswidget:scaleMinValue="0"
+    				atswidget:scaleMaxValue="220"
+    				atswidget:rangeOkColor="0x9f00ff00"
+	    			atswidget:rangeOkMinValue="0"
+    				atswidget:rangeOkMaxValue="220"
+    				atswidget:rangeWarningColor="0x9fff8800"
+    				atswidget:rangeWarningMinValue="220"
+    				atswidget:rangeWarningMaxValue="220"
+	    			atswidget:rangeErrorColor="0x9fff0000"
+    				atswidget:rangeErrorMinValue="220"
+    				atswidget:rangeErrorMaxValue="220"
+    				atswidget:unitTitle="km/h"
+    				atswidget:lowerTitle="HarleyDroid"
+	    			atswidget:upperTitle=""
+    				atswidget:showGauge = "false"
+    				atswidget:showHand="true"
+    				atswidget:showRange="false"
+	    			atswidget:showOdo="true"
+    				atswidget:odoColor="0xff00ff00"
+    				atswidget:odoBackgroundColor="0xff000000"
+					/>
+				<org.harleydroid.Gauge
+					xmlns:atswidget="http://schemas.android.com/apk/res/org.harleydroid"
+					android:id="@+id/speed_imperial_meter"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:layout_margin="2dp"
+					android:visibility="gone"
+					atswidget:totalNotches="160"
+					atswidget:incrementPerLargeNotch="10"
+					atswidget:incrementPerSmallNotch="1"
+					atswidget:scaleCenterValue="60"
+					atswidget:scaleColor="0x9f004d0f"
+					atswidget:scaleMinValue="0"
+    				atswidget:scaleMaxValue="120"
+	    			atswidget:rangeOkColor="0x9f00ff00"
+    				atswidget:rangeOkMinValue="0"
+    				atswidget:rangeOkMaxValue="120"
+    				atswidget:rangeWarningColor="0x9fff8800"
+    				atswidget:rangeWarningMinValue="120"
+	    			atswidget:rangeWarningMaxValue="120"
+    				atswidget:rangeErrorColor="0x9fff0000"
+    				atswidget:rangeErrorMinValue="120"
+    				atswidget:rangeErrorMaxValue="120"
+    				atswidget:unitTitle="mph"
+	    			atswidget:lowerTitle="HarleyDroid"
+    				atswidget:upperTitle=""
+    				atswidget:showGauge = "false"
+    				atswidget:showHand="true"
+    				atswidget:showRange="false"
+	    			atswidget:showOdo="true"
+    				atswidget:odoColor="0xff00ff00"
+    				atswidget:odoBackgroundColor="0xff000000"
+					/>
+			</FrameLayout>
+			<org.harleydroid.Gauge
+				xmlns:atswidget="http://schemas.android.com/apk/res/org.harleydroid"
+				android:id="@+id/rpm_meter"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:layout_margin="2dp"
+				android:layout_weight="1.0"
+				atswidget:totalNotches="120"
+				atswidget:incrementPerLargeNotch="10"
+				atswidget:incrementPerSmallNotch="1"
+				atswidget:scaleCenterValue="40"
+				atswidget:scaleColor="0x9f004d0f"
+				atswidget:scaleMinValue="0"
+    			atswidget:scaleMaxValue="80"
+    			atswidget:rangeOkColor="0x9f00ff00"
+    			atswidget:rangeOkMinValue="0"
+	    		atswidget:rangeOkMaxValue="55"
+    			atswidget:rangeWarningColor="0x9fff8800"
+    			atswidget:rangeWarningMinValue="55"
+    			atswidget:rangeWarningMaxValue="55"
+	    		atswidget:rangeErrorColor="0x9fff0000"
+    			atswidget:rangeErrorMinValue="55"
+    			atswidget:rangeErrorMaxValue="80"
+    			atswidget:unitTitle="RPM x 100"
+	    		atswidget:lowerTitle="HarleyDroid"
+    			atswidget:upperTitle=""
+    			atswidget:showGauge = "false"
+    			atswidget:showHand="true"
+	    		atswidget:showRange="true"
+    			atswidget:showOdo="false"
+				/>
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/lights_layout"
+    		android:orientation="horizontal"
+	    	android:layout_width="fill_parent"
+    		android:layout_height="wrap_content"
+    		android:weightSum="3.0"
+    		>
+	    	<ImageView
+    			android:id="@+id/turn_left"
+    			android:src="@drawable/turn_left"
+    			android:layout_width="fill_parent"
+	    		android:layout_height="wrap_content"
+    			android:scaleType="fitStart"
+    			android:layout_weight="1.0"
+    			android:visibility="invisible"
+    			android:contentDescription="@string/turn_left"
+	    		/>
+    		<ImageView
+    			android:id="@+id/check_engine"
+    			android:src="@drawable/check_engine"
+	    		android:layout_width="fill_parent"
+    			android:layout_height="wrap_content"
+    			android:scaleType="fitCenter"
+    			android:layout_weight="1.0"
+	    		android:visibility="invisible"
+	    		android:contentDescription="@string/check_engine"
+    			/>
+    		<ImageView
+    			android:id="@+id/turn_right"
+	    		android:src="@drawable/turn_right"
+    			android:layout_width="fill_parent"
+    			android:layout_height="wrap_content"
+    			android:scaleType="fitEnd"
+	    		android:layout_weight="1.0"
+    			android:visibility="invisible"
+    			android:contentDescription="@string/turn_right"
+    			/>
+	    </LinearLayout>
+	</merge>
+

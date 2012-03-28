@@ -44,9 +44,9 @@ import android.widget.Toast;
 public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnEulaAgreedTo
 {
 	private static final boolean D = true;
-	private static final boolean DTRACE = true;
+	private static final boolean DTRACE = false;
 	private static final String TAG = HarleyDroid.class.getSimpleName();
-	public static final boolean EMULATOR = false;
+	public static final boolean EMULATOR = true;
 
 	// Message types sent from HarleyDroidService
 	public static final int STATUS_OK = 0;
@@ -88,13 +88,9 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		if (DTRACE) Debug.startMethodTracing("harleydroid");
 
 		mHarleyDroidView = new HarleyDroidView(this);
+		mHarleyDroidView.changeView(mViewMode, getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT, mUnitMetric);
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
-		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-			setContentView(R.layout.portrait);
-		else
-			setContentView(R.layout.landscape);
-
+			
 		mAutoConnect = true;
 
 		if (Eula.show(this, false))
@@ -140,11 +136,9 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 			mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 		else if (mPrefs.getString("orientation", "auto").equals("portrait")) {
 			mOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-			setContentView(R.layout.portrait);
 		}
 		else if (mPrefs.getString("orientation", "auto").equals("landscape")) {
 			mOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-			setContentView(R.layout.landscape);
 		}
 		this.setRequestedOrientation(mOrientation);
 		mLogging = false;
@@ -164,7 +158,11 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 			mUnitMetric = false;
 
 		mViewMode = mPrefs.getInt("viewmode", HarleyDroidView.VIEW_GRAPHIC);
-		mHarleyDroidView.drawAll(mHD, mViewMode, mUnitMetric);
+		mHarleyDroidView.changeView(mViewMode, 
+				mOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED ? getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT
+																			: mOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT ? true : false,
+				mUnitMetric);
+		mHarleyDroidView.drawAll(mHD);
 
 		// bind to the service
 		bindService(new Intent(this, HarleyDroidService.class), this, 0);
@@ -203,11 +201,8 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 
 		if (mOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
 			Log.d(TAG, "orientation now " + newConfig.orientation);
-			if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
-				setContentView(R.layout.portrait);
-			else
-				setContentView(R.layout.landscape);
-			mHarleyDroidView.drawAll(mHD, mViewMode, mUnitMetric);
+			mHarleyDroidView.changeView(mViewMode, newConfig.orientation == Configuration.ORIENTATION_PORTRAIT, mUnitMetric);
+			mHarleyDroidView.drawAll(mHD);
 		}
 	}
 
@@ -262,11 +257,13 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 				mViewMode = HarleyDroidView.VIEW_TEXT;
 			else
 				mViewMode = HarleyDroidView.VIEW_GRAPHIC;
-			mHarleyDroidView.drawAll(mHD, mViewMode, mUnitMetric);
+			mHarleyDroidView.changeView(mViewMode, getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT, mUnitMetric);
+			mHarleyDroidView.drawAll(mHD);
 			return true;
 		case R.id.diag_menu:
 			mViewMode = HarleyDroidView.VIEW_DIAGNOSTIC;
-			mHarleyDroidView.drawAll(mHD, mViewMode, mUnitMetric);
+			mHarleyDroidView.changeView(mViewMode, getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT, mUnitMetric);
+			mHarleyDroidView.drawAll(mHD);
 			stopPoll();
 			startDiag();
 			return true;
@@ -287,7 +284,8 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 			return true;
 		case R.id.exitdiag_menu:
 			mViewMode = HarleyDroidView.VIEW_GRAPHIC;
-			mHarleyDroidView.drawAll(mHD, mViewMode, mUnitMetric);
+			mHarleyDroidView.changeView(mViewMode, getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT, mUnitMetric);
+			mHarleyDroidView.drawAll(mHD);
 			stopDiag();
 			return true;
 		default:
@@ -316,7 +314,7 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		mService.setHandler(mHandler);
 		mHD = mService.getHarleyData();
 		mHD.addHarleyDataListener(mHarleyDroidView);
-		mHarleyDroidView.drawAll(mHD, mViewMode, mUnitMetric);
+		mHarleyDroidView.drawAll(mHD);
 
 		if (mService.isConnected())
 			return;
