@@ -101,7 +101,7 @@ public class J1850 {
 		System.out.println("");
 		 */
 
-		//hd.setRaw(buffer);
+		hd.setRaw(buffer);
 
 		if (crc(in) != (byte)0xc4) {
 			hd.setBadCRC(buffer);
@@ -195,10 +195,10 @@ public class J1850 {
 			default:
 				hd.setUnknown(buffer);
 			}
-		} else if (x == 0x6cfef119)
+		} else if (x == 0x6cfef119) {
 			/* this is the get DTC command, answers are below... */
 			if (D) Log.d(TAG, "DTC start");
-		else if ((x & 0xffff0fff) == 0x6cf10059) {
+		} else if ((x & 0xffff0fff) == 0x6cf10059) {
 			int dtc = (((int)in[4] & 0xff) << 8) | ((int)in[5] & 0xff);
 			if (in[2] == 0x10) {
 				/* historic DTC */
