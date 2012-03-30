@@ -1,7 +1,7 @@
 //
 // HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 //
-// Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+// Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 // Based on various sources, especially:
 //	minigpsd by Tom Zerucha <tz@execpc.com>
 //	AVR J1850 VPW Interface by Michael Wolf <webmaster@mictronics.de>

@@ -1,7 +1,7 @@
 //
 // HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 //
-// Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+// Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -76,15 +76,20 @@ public class HarleyDroidInterface implements J1850Interface
 			mConnectThread.cancel();
 			mConnectThread = null;
 		}
-		mHarleyDroidService.disconnected(HarleyDroid.STATUS_OK);
+		if (mPollThread != null) {
+			mPollThread.cancel();
+			mPollThread = null;
+		}
+		if (mSendThread != null) {
+			mSendThread.cancel();
+			mSendThread = null;
+		}
 	}
 
 	public void send(String type, String ta, String sa,
 			 		 String command, String expect) {
 		if (D) Log.d(TAG, "send: " + type + "-" + ta + "-" +
 					 sa + "-" + command + "-" + expect);
-
-		stopPoll();
 
 		byte[] data = new byte[3 + command.length() / 2];
 		data[0] = (byte)Integer.parseInt(type, 16);
@@ -97,6 +102,13 @@ public class HarleyDroidInterface implements J1850Interface
 		if (D) Log.d(TAG, "send: " + type + "-" + ta + "-" +
 				 sa + "-" + command + "-" + expect);
 
+		if (mPollThread != null) {
+			mPollThread.cancel();
+			mPollThread = null;
+		}
+		if (mSendThread != null) {
+			mSendThread.cancel();
+		}
 		mSendThread = new SendThread(type, ta, sa, command, expect);
 		mSendThread.start();
 	}
@@ -104,18 +116,15 @@ public class HarleyDroidInterface implements J1850Interface
 	public void startPoll() {
 		if (D) Log.d(TAG, "startPoll");
 
-		stopPoll();
-		mPollThread = new PollThread();
-		mPollThread.start();
-	}
-
-	public void stopPoll() {
-		if (D) Log.d(TAG, "stopPoll");
-
+		if (mSendThread != null) {
+			mSendThread.cancel();
+			mSendThread = null;
+		}
 		if (mPollThread != null) {
 			mPollThread.cancel();
-			mPollThread = null;
 		}
+		mPollThread = new PollThread();
+		mPollThread.start();
 	}
 
 	private class CancelTimer extends TimerTask {
@@ -177,6 +186,7 @@ public class HarleyDroidInterface implements J1850Interface
 		public ConnectThread() {
 			BluetoothSocket tmp = null;
 
+			setName("HarleyDroidInterface: ConnectThread");
 			try {
 				//tmp = mDevice.createRfcommSocketToServiceRecord(SPP_UUID);
 				Method m = mDevice.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
@@ -223,6 +233,7 @@ public class HarleyDroidInterface implements J1850Interface
 		public void run() {
 			int errors = 0, idxJ;
 
+			setName("HarleyDroidInterface: PollThread");
 			mHarleyDroidService.startedPoll();
 
 			while (!stop) {
@@ -260,7 +271,6 @@ public class HarleyDroidInterface implements J1850Interface
 				mSock.close();
 			} catch (IOException e2) {
 			}
-			mHarleyDroidService.stoppedPoll();
 		}
 
 		public void cancel() {
@@ -269,9 +279,11 @@ public class HarleyDroidInterface implements J1850Interface
 	}
 
 	private class SendThread extends Thread {
+		private boolean stop = false;
 		private String mType, mTA, mSA, mSend, mExpect;
 
 		public SendThread(String type, String ta, String sa, String send, String expect) {
+			setName("HarleyDroidInterface: SendThread");
 			mType = type;
 			mTA = ta;
 			mSA = sa;
@@ -292,14 +304,20 @@ public class HarleyDroidInterface implements J1850Interface
 			}
 
 			// split into lines and strip off timestamp
-			String lines[] = recv.split("\n");
-			for (int i = 0; i < lines.length; ++i) {
-				idxJ = lines[i].indexOf('J');
-				if (idxJ != -1)
-					J1850.parse(myGetBytes(lines[i], idxJ + 1, lines[i].length()), mHD);
-			}
+			if (!stop) {
+				String lines[] = recv.split("\n");
+				for (int i = 0; i < lines.length; ++i) {
+					idxJ = lines[i].indexOf('J');
+					if (idxJ != -1)
+						J1850.parse(myGetBytes(lines[i], idxJ + 1, lines[i].length()), mHD);
+				}
 
-			mHarleyDroidService.sendDone();
+				mHarleyDroidService.sendDone();
+			}
+		}
+
+		public void cancel() {
+			stop = true;
 		}
 	}
 }

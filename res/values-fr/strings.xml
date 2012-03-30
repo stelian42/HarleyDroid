@@ -2,7 +2,7 @@
 
 <!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 
-     Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+     Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 
      This program is free software: you can redistribute it and/or modify
      it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
 
 <resources>
     
-<string name="app_name">HarleyDroid</string>
-
+<string name="dashboard_name">Tableau de bord HarleyDroid</string>
+<string name="diagnostics_name">Diagnostics HarleyDroid</string>
 <string name="settings_name">Préférences de HarleyDroid</string>
 
 <string name="toast_nobluetooth">Désolé, votre appareil ne supporte pas le Bluetooth</string>
@@ -55,25 +55,24 @@
 <string name="currentdtc_label">Erreurs courantes:</string>
 <string name="historicdtc_label">Erreurs historiques:</string>
 
-<string name="startcapture_label">Démarrer</string>
-<string name="stopcapture_label">Arrêter</string>
+<string name="connect_label">Connexion</string>
+<string name="disconnect_label">Déconnexion</string>
 <string name="preferences_label">Préférences</string>
 <string name="mode_labelraw">Mode text</string>
 <string name="mode_labelgr">Mode graphique</string>
-<string name="diag_label">Mode diagnostique</string>
+<string name="dash_label">Mode tableau de bord</string>
+<string name="diag_label">Mode diagnostic</string>
 <string name="resetcounters_label">RAZ</string>
 <string name="about_label">A propos</string>
 
 <string name="cleardtc_label">Effacer erreurs historiques</string>
-<string name="exitdiag_label">Sortir du mode diagnostique</string>
 
 <string name="notification_label">HarleyDroidService</string>
-<string name="notification_disconnected">Déconnecté</string>
 <string name="notification_connecting">Connexion en cours&#8230;</string>
 <string name="notification_connected">Connecté</string>
-<string name="notification_startpoll">Lancement de la capture&#8230;</string>
-<string name="notification_polling">Capture en cours</string>
-<string name="notification_stoppoll">Arrêt capture en cours&#8230;</string>
+<string name="notification_polling">Capture en cours&#8230;</string>
+<string name="notification_diagnostics">Réception des données de diagnostic en cours&#8230;</string>
+<string name="notification_autorecon">Reconnexion automatique dans quelques secondes&#8230;</string>
 
 <string name="pref_interfacetype">Type d\'interface</string>
 <string name="pref_bluetoothdev">Périphérique Bluetooth</string>
@@ -104,7 +103,7 @@
 <string name="about_unknown">inconnue</string>
 <string name="about_support">Support:</string>
 <string name="about_notendorsed">HarleyDroid n\'est pas approuvé ou certifié par Harley-Davidson Motor Company.</string>
-<string name="about_needelm327">Cette application nécessite une interface spécifique connectée au bus de diagnostique de la moto.</string>
+<string name="about_needelm327">Cette application nécessite une interface spécifique connectée au bus de diagnostic de la moto.</string>
 <string name="about_ok">OK</string>
 <string name="about_license">Licence</string>
 

@@ -2,7 +2,7 @@
 
 <!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 
-     Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+     Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 
      This program is free software: you can redistribute it and/or modify
      it under the terms of the GNU General Public License as published by
@@ -19,9 +19,10 @@
 -->
 
 <resources>
-    
-<string name="app_name">HarleyDroid</string>
 
+<string name="app_name">HarleyDroid</string>
+<string name="dashboard_name">HarleyDroid Dashboard</string>
+<string name="diagnostics_name">HarleyDroid Diagnostics</string>
 <string name="settings_name">HarleyDroid Settings</string>
 
 <string name="toast_nobluetooth">Sorry, your device doesn\'t support bluetooth</string>
@@ -57,25 +58,24 @@
 <string name="currentdtc_label">Current DTC:</string>
 <string name="historicdtc_label">Historic DTC:</string>
 
-<string name="startcapture_label">Start capture</string>
-<string name="stopcapture_label">Stop capture</string>
+<string name="connect_label">Start capture</string>
+<string name="disconnect_label">Stop capture</string>
 <string name="preferences_label">Preferences</string>
 <string name="mode_labelraw">Text mode</string>
 <string name="mode_labelgr">Graphic mode</string>
+<string name="dash_label">Dashboard mode</string>
 <string name="diag_label">Diagnostic mode</string>
 <string name="resetcounters_label">Reset</string>
 <string name="about_label">About</string>
 
 <string name="cleardtc_label">Clear historic DTC</string>
-<string name="exitdiag_label">Exit diagnostics</string>
 
 <string name="notification_label">HarleyDroidService</string>
-<string name="notification_disconnected">Disconnected</string>
 <string name="notification_connecting">Connecting&#8230;</string>
 <string name="notification_connected">Connected</string>
-<string name="notification_startpoll">Starting poll&#8230;</string>
-<string name="notification_polling">Polling</string>
-<string name="notification_stoppoll">Stopping poll&#8230;</string>
+<string name="notification_polling">Polling&#8230;</string>
+<string name="notification_diagnostics">Receiving diagnostic data&#8230;</string>
+<string name="notification_autorecon">Reconnecting in a few seconds&#8230;</string>
 
 <string name="check_engine">Check Engine</string>
 <string name="turn_left">Turn Left</string>
@@ -123,7 +123,7 @@
 <string name="eula_accept">Accept</string>
 <string name="eula_refuse">Refuse</string>
 
-<string name="about_copyright">&#169;2010&#8211;2011 Stelian Pop</string>
+<string name="about_copyright">&#169;2010-2012 Stelian Pop</string>
 <string name="about_version">Version:</string>
 <string name="about_unknown">unknown</string>
 <string name="about_support">Support:</string>

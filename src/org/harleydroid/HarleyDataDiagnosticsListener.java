@@ -19,18 +19,12 @@
 
 package org.harleydroid;
 
-public interface J1850Interface {
+public interface HarleyDataDiagnosticsListener {
 
-	// Connects to the J1850 bus. HarleyDroidService.connected()
-	// will be called upon completion.
-	public void connect(HarleyData hd);
-	// Disconnects immediately from the J1850 bus.
-	public void disconnect();
-	// Sends a command on the J1850 bus. HarleyDroidService.sendDone()
-	// will be called upon completion.
-	public void send(String type, String ta, String sa,
-					 String command, String expect);
-	// Starts polling the J1850 bus. HarleyDroidService.startedPoll()
-	// will be called.
-	public void startPoll();
+	public void onVINChanged(String vin);
+	public void onECMPNChanged(String ecmPN);
+	public void onECMCalIDChanged(String ecmCalID);
+	public void onECMSWLevelChanged(int swLevel);
+	public void onHistoricDTCChanged(int[] dtc);
+	public void onCurrentDTCChanged(int[] dtc);
 };

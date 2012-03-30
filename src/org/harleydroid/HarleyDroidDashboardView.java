@@ -1,7 +1,7 @@
 //
 // HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 //
-// Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+// Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,22 +19,17 @@
 
 package org.harleydroid;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
-public class HarleyDroidView implements HarleyDataListener
+public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 {
 	private static final boolean D = false;
-	private static final String TAG = HarleyDroidView.class.getSimpleName();
+	private static final String TAG = HarleyDroidDashboardView.class.getSimpleName();
 
 	public static final int UPDATE_RPM = 1;
 	public static final int UPDATE_SPEED_IMPERIAL = 2;
@@ -51,21 +46,13 @@ public class HarleyDroidView implements HarleyDataListener
 	public static final int UPDATE_ODOMETER_METRIC = 13;
 	public static final int UPDATE_FUEL_IMPERIAL = 14;
 	public static final int UPDATE_FUEL_METRIC = 15;
-	public static final int UPDATE_VIN = 16;
-	public static final int UPDATE_ECMPN = 17;
-	public static final int UPDATE_ECMCALID = 18;
-	public static final int UPDATE_ECMSWLEVEL = 19;
-	public static final int UPDATE_HISTORICDTC = 20;
-	public static final int UPDATE_CURRENTDTC = 21;
 
 	public static final int VIEW_GRAPHIC = 1;
 	public static final int VIEW_TEXT = 2;
-	public static final int VIEW_DIAGNOSTIC = 3;
 
 	private Activity mActivity;
-	
+
 	// Views references cached for performance
-	
 	private TextView mViewRpm;
 	private Gauge mGaugeRpm;
 	private TextView mLabelSpeedMetric;
@@ -95,22 +82,16 @@ public class HarleyDroidView implements HarleyDataListener
 	private TextView mLabelFuelImperial;
 	private TextView mViewFuelMetric;
 	private TextView mViewFuelImperial;
-	private TextView mViewVIN;
-	private TextView mViewECMPN;
-	private TextView mViewECMCalID;
-	private TextView mViewECMSWLevel;
-	private ListView mViewCurrentDTC;
-	private ListView mViewHistoricDTC;
 
-	public HarleyDroidView(Activity activity) {
+	public HarleyDroidDashboardView(Activity activity) {
 		mActivity = activity;
 	}
 
 	public void changeView(int viewMode, boolean portrait, boolean unitMetric) {
 		if (D) Log.d(TAG, "changeView to " + viewMode + " portrait=" + portrait + " metric=" + unitMetric);
-		
+
 		int view = R.layout.portrait_graphic;
-		
+
 		switch (viewMode) {
 		case VIEW_GRAPHIC:
 			if (portrait)
@@ -118,7 +99,7 @@ public class HarleyDroidView implements HarleyDataListener
 			else
 				view = R.layout.landscape_graphic;
 			mActivity.setContentView(view);
-			
+
 			mGaugeSpeedMetric = (Gauge) mActivity.findViewById(R.id.speed_metric_meter);
 			mGaugeSpeedImperial = (Gauge) mActivity.findViewById(R.id.speed_imperial_meter);
 			mGaugeRpm = (Gauge) mActivity.findViewById(R.id.rpm_meter);
@@ -134,7 +115,7 @@ public class HarleyDroidView implements HarleyDataListener
 			mLabelEngTempMetric = null;
 			mLabelEngTempImperial = null;
 			mViewEngTempMetric = null;
-			mViewEngTempImperial = null;			
+			mViewEngTempImperial = null;
 			mViewFuelGauge = null;
 			mViewTurnSignals = null;
 			mViewNeutral = null;
@@ -149,13 +130,6 @@ public class HarleyDroidView implements HarleyDataListener
 			mLabelFuelImperial = null;
 			mViewFuelMetric = null;
 			mViewFuelImperial = null;
-
-			mViewVIN = null;
-			mViewECMPN = null;
-			mViewECMCalID = null;
-			mViewECMSWLevel = null;
-			mViewCurrentDTC = null;
-			mViewHistoricDTC = null;
 
 			if (unitMetric) {
 				mGaugeSpeedImperial.setVisibility(View.GONE);
@@ -187,7 +161,7 @@ public class HarleyDroidView implements HarleyDataListener
 			mLabelEngTempMetric = (TextView) mActivity.findViewById(R.id.enginetemp_metric_label);
 			mLabelEngTempImperial = (TextView) mActivity.findViewById(R.id.enginetemp_imperial_label);
 			mViewEngTempMetric = (TextView) mActivity.findViewById(R.id.enginetemp_metric_field);
-			mViewEngTempImperial = (TextView) mActivity.findViewById(R.id.enginetemp_imperial_field);			
+			mViewEngTempImperial = (TextView) mActivity.findViewById(R.id.enginetemp_imperial_field);
 			mViewFuelGauge = (TextView) mActivity.findViewById(R.id.fuelgauge_field);
 			mViewTurnSignals = (TextView) mActivity.findViewById(R.id.turnsignals_field);
 			mViewNeutral = (TextView) mActivity.findViewById(R.id.neutral_field);
@@ -202,7 +176,7 @@ public class HarleyDroidView implements HarleyDataListener
 			mLabelFuelImperial = (TextView) mActivity.findViewById(R.id.fuel_imperial_label);
 			mViewFuelMetric = (TextView) mActivity.findViewById(R.id.fuel_metric_field);
 			mViewFuelImperial = (TextView) mActivity.findViewById(R.id.fuel_imperial_field);
-			
+
 			if (unitMetric) {
 				mLabelSpeedImperial.setVisibility(View.GONE);
 				mLabelSpeedImperial = null;
@@ -254,57 +228,11 @@ public class HarleyDroidView implements HarleyDataListener
 				mViewFuelMetric = null;
 				mViewFuelImperial.setVisibility(View.VISIBLE);
 			}
-			
-			break;
-		case VIEW_DIAGNOSTIC:
-			if (portrait)
-				view = R.layout.portrait_diag;
-			else
-				view = R.layout.landscape_diag;
-			mActivity.setContentView(view);
-
-			mGaugeSpeedMetric = null;
-			mGaugeSpeedImperial = null;
-			mGaugeRpm = null;
-			mImageTurnSignalsLeft = null;
-			mImageCheckEngine = null;
-			mImageTurnSignalsRight = null;
-
-			mViewRpm = null;
-			mLabelSpeedMetric = null;
-			mLabelSpeedImperial = null;
-			mViewSpeedMetric = null;
-			mViewSpeedImperial = null;
-			mLabelEngTempMetric = null;
-			mLabelEngTempImperial = null;
-			mViewEngTempMetric = null;
-			mViewEngTempImperial = null;			
-			mViewFuelGauge = null;
-			mViewTurnSignals = null;
-			mViewNeutral = null;
-			mViewClutch = null;
-			mViewGear = null;
-			mViewCheckEngine = null;
-			mLabelOdometerMetric = null;
-			mLabelOdometerImperial = null;
-			mViewOdometerMetric = null;
-			mViewOdometerImperial = null;
-			mLabelFuelMetric = null;
-			mLabelFuelImperial = null;
-			mViewFuelMetric = null;
-			mViewFuelImperial = null;
-
-			mViewVIN = (TextView) mActivity.findViewById(R.id.vin_field);
-			mViewECMPN = (TextView) mActivity.findViewById(R.id.ecmpn_field);
-			mViewECMCalID = (TextView) mActivity.findViewById(R.id.ecmcalid_field);
-			mViewECMSWLevel = (TextView) mActivity.findViewById(R.id.ecmswlevel_field);
-			mViewCurrentDTC = (ListView) mActivity.findViewById(R.id.currentdtc_field);
-			mViewHistoricDTC = (ListView) mActivity.findViewById(R.id.historicdtc_field);
 
 			break;
 		}
 	}
-	
+
 	private final Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -356,142 +284,68 @@ public class HarleyDroidView implements HarleyDataListener
 			case UPDATE_FUEL_METRIC:
 				drawFuelMetric(msg.arg1);
 				break;
-			case UPDATE_VIN:
-				drawVIN((String)msg.getData().get("vin"));
-				break;
-			case UPDATE_ECMPN:
-				drawECMPN((String)msg.getData().get("ecmpn"));
-				break;
-			case UPDATE_ECMCALID:
-				drawECMCalID((String)msg.getData().get("ecmcalid"));
-				break;
-			case UPDATE_ECMSWLEVEL:
-				drawECMSWLevel(msg.arg1);
-				break;
-			case UPDATE_HISTORICDTC:
-				drawHistoricDTC((int[])msg.getData().get("historicdtc"));
-				break;
-			case UPDATE_CURRENTDTC:
-				drawCurrentDTC((int[])msg.getData().get("currentdtc"));
-				break;
 			}
 		}
 	};
 
 	public void onRPMChanged(int rpm) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_RPM, rpm, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_RPM, rpm, -1).sendToTarget();
 	}
 
 	public void onSpeedImperialChanged(int speed) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_SPEED_IMPERIAL, speed, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_SPEED_IMPERIAL, speed, -1).sendToTarget();
 	}
 
 	public void onSpeedMetricChanged(int speed) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_SPEED_METRIC, speed, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_SPEED_METRIC, speed, -1).sendToTarget();
 	}
 
 	public void onEngineTempImperialChanged(int engineTemp) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_ENGINETEMP_IMPERIAL, engineTemp, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_ENGINETEMP_IMPERIAL, engineTemp, -1).sendToTarget();
 	}
 
 	public void onEngineTempMetricChanged(int engineTemp) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_ENGINETEMP_METRIC, engineTemp, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_ENGINETEMP_METRIC, engineTemp, -1).sendToTarget();
 	}
 
 	public void onFuelGaugeChanged(int full) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_FUELGAUGE, full, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_FUELGAUGE, full, -1).sendToTarget();
 	}
 
 	public void onTurnSignalsChanged(int turnSignals) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_TURNSIGNALS, turnSignals, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_TURNSIGNALS, turnSignals, -1).sendToTarget();
 	}
 
 	public void onNeutralChanged(boolean neutral) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_NEUTRAL, neutral ? 1 : 0, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_NEUTRAL, neutral ? 1 : 0, -1).sendToTarget();
 	}
 
 	public void onClutchChanged(boolean clutch) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_CLUTCH, clutch ? 1 : 0, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_CLUTCH, clutch ? 1 : 0, -1).sendToTarget();
 	}
 
 	public void onGearChanged(int gear) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_GEAR, gear, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_GEAR, gear, -1).sendToTarget();
 	}
 
 	public void onCheckEngineChanged(boolean checkEngine) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_CHECKENGINE, checkEngine ? 1 : 0, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_CHECKENGINE, checkEngine ? 1 : 0, -1).sendToTarget();
 	}
 
 	public void onOdometerImperialChanged(int odometer) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_ODOMETER_IMPERIAL, odometer, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_ODOMETER_IMPERIAL, odometer, -1).sendToTarget();
 	}
 
 	public void onOdometerMetricChanged(int odometer) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_ODOMETER_METRIC, odometer, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_ODOMETER_METRIC, odometer, -1).sendToTarget();
 	}
 
 	public void onFuelImperialChanged(int fuel) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_FUEL_IMPERIAL, fuel, -1).sendToTarget();
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_FUEL_IMPERIAL, fuel, -1).sendToTarget();
 	}
 
 	public void onFuelMetricChanged(int fuel) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_FUEL_METRIC, fuel, -1).sendToTarget();
-	}
-
-	public void onVINChanged(String vin) {
-		Message m = mHandler.obtainMessage(HarleyDroidView.UPDATE_VIN);
-		Bundle b = new Bundle();
-		b.putString("vin", vin);
-		m.setData(b);
-		m.sendToTarget();
-	}
-
-	public void onECMPNChanged(String ecmPN) {
-		Message m = mHandler.obtainMessage(HarleyDroidView.UPDATE_ECMPN);
-		Bundle b = new Bundle();
-		b.putString("ecmpn", ecmPN);
-		m.setData(b);
-		m.sendToTarget();
-	}
-
-	public void onECMCalIDChanged(String ecmCalID) {
-		Message m = mHandler.obtainMessage(HarleyDroidView.UPDATE_ECMCALID);
-		Bundle b = new Bundle();
-		b.putString("ecmcalid", ecmCalID);
-		m.setData(b);
-		m.sendToTarget();
-	}
-
-	public void onECMSWLevelChanged(int ecmSWLevel) {
-		mHandler.obtainMessage(HarleyDroidView.UPDATE_ECMSWLEVEL, ecmSWLevel, -1).sendToTarget();
-	}
-
-	public void onHistoricDTCChanged(int[] dtc) {
-		Message m = mHandler.obtainMessage(HarleyDroidView.UPDATE_HISTORICDTC);
-		Bundle b = new Bundle();
-		b.putIntArray("historicdtc", dtc);
-		m.setData(b);
-		m.sendToTarget();
-	}
-
-	public void onCurrentDTCChanged(int[] dtc) {
-		Message m = mHandler.obtainMessage(HarleyDroidView.UPDATE_CURRENTDTC);
-		Bundle b = new Bundle();
-		b.putIntArray("currentdtc", dtc);
-		m.setData(b);
-		m.sendToTarget();
-	}
-
-	public void onBadCRCChanged(byte[] buffer) {
-		if (D) Log.d(TAG, "onBadCRC(" + new String(buffer) + ")");
-	}
-
-	public void onUnknownChanged(byte[] buffer) {
-		if (D) Log.d(TAG, "onUnknown(" + new String(buffer) + ")");
-	}
-
-	public void onRawChanged(byte[] buffer) {
-		if (D) Log.d(TAG, "onRaw(" + new String(buffer) + ")");
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_FUEL_METRIC, fuel, -1).sendToTarget();
 	}
 
 	public void drawAll(HarleyData hd) {
@@ -512,12 +366,6 @@ public class HarleyDroidView implements HarleyDataListener
 			drawOdometerMetric(hd.getOdometerMetric());
 			drawFuelImperial(hd.getFuelImperial());
 			drawFuelMetric(hd.getFuelMetric());
-			drawVIN(hd.getVIN());
-			drawECMPN(hd.getECMPN());
-			drawECMCalID(hd.getECMCalID());
-			drawECMSWLevel(hd.getECMSWLevel());
-			drawHistoricDTC(hd.getHistoricDTC());
-			drawCurrentDTC(hd.getCurrentDTC());
 		} else {
 			drawRPM(0);
 			drawSpeedImperial(0);
@@ -534,12 +382,6 @@ public class HarleyDroidView implements HarleyDataListener
 			drawOdometerMetric(0);
 			drawFuelImperial(0);
 			drawFuelMetric(0);
-			drawVIN("N/A");
-			drawECMPN("N/A");
-			drawECMCalID("N/A");
-			drawECMSWLevel(0);
-			drawHistoricDTC(null);
-			drawCurrentDTC(null);
 		}
 	}
 
@@ -668,52 +510,5 @@ public class HarleyDroidView implements HarleyDataListener
 		// value is in milliliters
 		if (mViewFuelMetric != null)
 			mViewFuelMetric.setText(Integer.toString(value));
-	}
-
-	public void drawVIN(String value) {
-		if (mViewVIN != null)
-			mViewVIN.setText(value);
-	}
-
-	public void drawECMPN(String value) {
-		if (mViewECMPN != null)
-			mViewECMPN.setText(value);
-	}
-
-	public void drawECMCalID(String value) {
-		if (mViewECMCalID != null)
-			mViewECMCalID.setText(value);
-	}
-
-	public void drawECMSWLevel(int value) {
-		if (mViewECMSWLevel != null)
-			mViewECMSWLevel.setText("0x" + Integer.toString(value, 16));
-	}
-
-	public void drawHistoricDTC(int[] dtc) {
-		if (D) Log.d("DTC", "drawHistoric");
-
-		if (mViewHistoricDTC == null)
-			return;
-		
-		// arrayAdapter.notifyDataSetChanged();
-		ArrayList<Integer> items = new ArrayList<Integer>();
-		if (dtc != null)
-			for (int i = 0; i < dtc.length; i++)
-				items.add(new Integer(dtc[i]));
-		mViewHistoricDTC.setAdapter(new ArrayAdapter<Integer>(mActivity, R.layout.dtc_item, items));
-	}
-
-	public void drawCurrentDTC(int[] dtc) {
-		if (D) Log.d("DTC", "drawCurrent");
-		
-		if (mViewCurrentDTC == null)
-			return;
-		
-		ArrayList<Integer> items = new ArrayList<Integer>();
-		if (dtc != null)
-			for (int i = 0; i < dtc.length; i++)
-				items.add(new Integer(dtc[i]));
-		mViewCurrentDTC.setAdapter(new ArrayAdapter<Integer>(mActivity, R.layout.dtc_item, items));
 	}
 }

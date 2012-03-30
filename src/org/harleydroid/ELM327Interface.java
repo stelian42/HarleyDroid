@@ -1,7 +1,7 @@
 //
 // HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 //
-// Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+// Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -80,7 +80,14 @@ public class ELM327Interface implements J1850Interface
 			mConnectThread.cancel();
 			mConnectThread = null;
 		}
-		mHarleyDroidService.disconnected(HarleyDroid.STATUS_OK);
+		if (mPollThread != null) {
+			mPollThread.cancel();
+			mPollThread = null;
+		}
+		if (mSendThread != null) {
+			mSendThread.cancel();
+			mSendThread = null;
+		}
 	}
 
 	public void send(String type, String ta, String sa,
@@ -88,7 +95,13 @@ public class ELM327Interface implements J1850Interface
 		if (D) Log.d(TAG, "send: " + type + "-" + ta + "-" +
 				  sa + "-" + command + "-" + expect);
 
-		stopPoll();
+		if (mPollThread != null) {
+			mPollThread.cancel();
+			mPollThread = null;
+		}
+		if (mSendThread != null) {
+			mSendThread.cancel();
+		}
 		mSendThread = new SendThread(type, ta, sa, command, expect);
 		mSendThread.start();
 	}
@@ -96,18 +109,15 @@ public class ELM327Interface implements J1850Interface
 	public void startPoll() {
 		if (D) Log.d(TAG, "startPoll");
 
-		stopPoll();
-		mPollThread = new PollThread();
-		mPollThread.start();
-	}
-
-	public void stopPoll() {
-		if (D) Log.d(TAG, "stopPoll");
-
+		if (mSendThread != null) {
+			mSendThread.cancel();
+			mSendThread = null;
+		}
 		if (mPollThread != null) {
 			mPollThread.cancel();
-			mPollThread = null;
 		}
+		mPollThread = new PollThread();
+		mPollThread.start();
 	}
 
 	private class CancelTimer extends TimerTask {
@@ -173,6 +183,7 @@ public class ELM327Interface implements J1850Interface
 		public ConnectThread() {
 			BluetoothSocket tmp = null;
 
+			setName("ELM327Interface: ConnectThread");
 			try {
 				//tmp = mDevice.createRfcommSocketToServiceRecord(SPP_UUID);
 				Method m = mDevice.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
@@ -255,6 +266,7 @@ public class ELM327Interface implements J1850Interface
 		public void run() {
 			int errors = 0;
 
+			setName("ELM327Interface: PollThread");
 			try {
 				// Monitor All
 				chat("ATMA", "", AT_TIMEOUT);
@@ -303,7 +315,6 @@ public class ELM327Interface implements J1850Interface
 				mSock.close();
 			} catch (IOException e2) {
 			}
-			mHarleyDroidService.stoppedPoll();
 		}
 
 		public void cancel() {
@@ -312,9 +323,11 @@ public class ELM327Interface implements J1850Interface
 	}
 
 	private class SendThread extends Thread {
+		private boolean stop = false;
 		private String mType, mTA, mSA, mSend, mExpect;
 
 		public SendThread(String type, String ta, String sa, String send, String expect) {
+			setName("ELM327Interface: SendThread");
 			mType = type;
 			mTA = ta;
 			mSA = sa;
@@ -335,11 +348,17 @@ public class ELM327Interface implements J1850Interface
 			}
 
 			// split into lines
-			String lines[] = recv.split("\n");
-			for (int i = 0; i < lines.length; ++i)
-				J1850.parse(myGetBytes(lines[i]), mHD);
+			if (!stop) {
+				String lines[] = recv.split("\n");
+				for (int i = 0; i < lines.length; ++i)
+					J1850.parse(myGetBytes(lines[i]), mHD);
 
-			mHarleyDroidService.sendDone();
+				mHarleyDroidService.sendDone();
+			}
+		}
+
+		public void cancel() {
+			stop = true;
 		}
 	}
 }

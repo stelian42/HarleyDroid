@@ -1,6 +1,6 @@
 <!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 
-     Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+     Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 
      This program is free software: you can redistribute it and/or modify
      it under the terms of the GNU General Public License as published by
@@ -17,10 +17,19 @@
 -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/startstop_menu"
+          android:icon="@drawable/ic_menu_play_clip"
+          android:title="@string/connect_label" />
     <item android:id="@+id/cleardtc_menu"
           android:icon="@drawable/ic_menu_clear_playlist"
           android:title="@string/cleardtc_label" />
-    <item android:id="@+id/exitdiag_menu"
-          android:icon="@drawable/ic_menu_revert"
-          android:title="@string/exitdiag_label" />
+    <item android:id="@+id/dash_menu"
+          android:icon="@drawable/ic_menu_recent_history"
+          android:title="@string/dash_label" />
+    <item android:id="@+id/preferences_menu"
+          android:icon="@drawable/ic_menu_preferences"
+          android:title="@string/preferences_label" />
+    <item android:id="@+id/about_menu"
+          android:icon="@drawable/ic_menu_help"
+          android:title="@string/about_label" />
 </menu>

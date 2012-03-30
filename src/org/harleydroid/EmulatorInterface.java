@@ -1,7 +1,7 @@
 //
 // HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 //
-// Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+// Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -46,13 +46,21 @@ public class EmulatorInterface implements J1850Interface
 	public void disconnect() {
 		if (D) Log.d(TAG, "disconnect");
 
-		mHarleyDroidService.disconnected(HarleyDroid.STATUS_OK);
+		if (mPollThread != null) {
+			mPollThread.cancel();
+			mPollThread = null;
+		}
 	}
 
 	public void send(String type, String ta, String sa,
 			 		 String command, String expect) {
 		if (D) Log.d(TAG, "send: " + type + "-" + ta + "-" +
 				  sa + "-" + command + "-" + expect);
+
+		if (mPollThread != null) {
+			mPollThread.cancel();
+			mPollThread = null;
+		}
 
 		byte[] data = new byte[3 + command.length() / 2];
 		data[0] = (byte)Integer.parseInt(type, 16);
@@ -77,18 +85,10 @@ public class EmulatorInterface implements J1850Interface
 	public void startPoll() {
 		if (D) Log.d(TAG, "startPoll");
 
-		stopPoll();
+		if (mPollThread != null)
+			mPollThread.cancel();
 		mPollThread = new PollThread();
 		mPollThread.start();
-	}
-
-	public void stopPoll() {
-		if (D) Log.d(TAG, "stopPoll");
-
-		if (mPollThread != null) {
-			mPollThread.cancel();
-			mPollThread = null;
-		}
 	}
 
 	private class PollThread extends Thread {
@@ -98,6 +98,7 @@ public class EmulatorInterface implements J1850Interface
 			int cnt = 0;
 			int errors = 0;
 
+			setName("EmulatorInterface: PollThread");
 			mHarleyDroidService.startedPoll();
 
 			while (!stop) {
@@ -141,7 +142,6 @@ public class EmulatorInterface implements J1850Interface
 					stop = true;
 				}
 			}
-			mHarleyDroidService.stoppedPoll();
 		}
 
 		public void cancel() {

@@ -1,7 +1,7 @@
 //
 // HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 //
-// Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+// Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -58,8 +58,8 @@ public class HarleyDroidGPS implements LocationListener
 		if (mCurrentBestLocation == null)
 			return ",,";
 
-		return Double.toString(mCurrentBestLocation.getLatitude()) + "," +
-			   Double.toString(mCurrentBestLocation.getLongitude()) + "," +
+		return Double.toString(mCurrentBestLocation.getLongitude()) + "," +
+			   Double.toString(mCurrentBestLocation.getLatitude()) + "," +
 			   Double.toString(mCurrentBestLocation.getAltitude());
 	}
 

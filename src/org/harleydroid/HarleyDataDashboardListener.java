@@ -1,10 +1,7 @@
 //
 // HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 //
-// Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
-// Based on various sources, especially:
-//	minigpsd by Tom Zerucha <tz@execpc.com>
-//	AVR J1850 VPW Interface by Michael Wolf <webmaster@mictronics.de>
+// Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,7 +19,7 @@
 
 package org.harleydroid;
 
-public interface HarleyDataListener {
+public interface HarleyDataDashboardListener {
 
 	public void onRPMChanged(int rpm);
 	public void onSpeedImperialChanged(int speed);
@@ -39,13 +36,4 @@ public interface HarleyDataListener {
 	public void onOdometerMetricChanged(int odometer);
 	public void onFuelImperialChanged(int fuel);
 	public void onFuelMetricChanged(int fuel);
-	public void onVINChanged(String vin);
-	public void onECMPNChanged(String ecmPN);
-	public void onECMCalIDChanged(String ecmCalID);
-	public void onECMSWLevelChanged(int swLevel);
-	public void onHistoricDTCChanged(int[] dtc);
-	public void onCurrentDTCChanged(int[] dtc);
-	public void onBadCRCChanged(byte[] buffer);
-	public void onUnknownChanged(byte[] buffer);
-	public void onRawChanged(byte[] buffer);
 };

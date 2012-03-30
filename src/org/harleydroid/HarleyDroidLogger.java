@@ -1,7 +1,7 @@
 //
 // HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 //
-// Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+// Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
-public class HarleyDroidLogger implements HarleyDataListener
+public class HarleyDroidLogger implements HarleyDataDashboardListener, HarleyDataDiagnosticsListener, HarleyDataRawListener
 {
 	private static final boolean D = false;
 	private static final String TAG = HarleyDroidLogger.class.getSimpleName();

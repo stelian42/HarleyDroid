@@ -1,7 +1,7 @@
 //
 // HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 //
-// Copyright (C) 2010,2011 Stelian Pop <stelian@popies.net>
+// Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 // Based on various sources, especially:
 //	minigpsd by Tom Zerucha <tz@execpc.com>
 //	AVR J1850 VPW Interface by Michael Wolf <webmaster@mictronics.de>
@@ -33,9 +33,9 @@ public class HarleyData {
 	private int mFuelGauge = 0;				// fuel gauge: 0 (empty) to 6 (full)
 	private int mTurnSignals = 0;			// turn signals bitmap: 0x1=right, 0x2=left
 	private boolean mNeutral = false;		// XXX boolean: in neutral
-	private boolean mClutch = false;		// XXX boolean: clutch engaged
-	private int mGear = 0;					// XXX current gear: 1 to 6
-	private boolean mCheckEngine = false;	// XXX boolean: check engine
+	private boolean mClutch = false;		// boolean: clutch engaged
+	private int mGear = 0;					// current gear: -1 or 1 to 6
+	private boolean mCheckEngine = false;	// boolean: check engine
 	private int mOdometer = 0;				// odometer tick (1 tick = 0.4 meters)
 	private int mFuel = 0;					// fuel consumption tick (1 tick = 0.000040 liters)
 	private String mVIN = "N/A";			// VIN
@@ -48,21 +48,43 @@ public class HarleyData {
 	private int mResetOdometer = 0;
 	private int mResetFuel = 0;
 
-	private CopyOnWriteArrayList<HarleyDataListener> mListeners;
+	private CopyOnWriteArrayList<HarleyDataDashboardListener> mDashboardListeners;
+	private CopyOnWriteArrayList<HarleyDataDiagnosticsListener> mDiagnosticsListeners;
+	private CopyOnWriteArrayList<HarleyDataRawListener> mRawListeners;
 
 	public HarleyData() {
-		mListeners = new CopyOnWriteArrayList<HarleyDataListener>();
+		mDashboardListeners = new CopyOnWriteArrayList<HarleyDataDashboardListener>();
+		mDiagnosticsListeners = new CopyOnWriteArrayList<HarleyDataDiagnosticsListener>();
+		mRawListeners = new CopyOnWriteArrayList<HarleyDataRawListener>();
+
 		mHistoricDTC = new CopyOnWriteArrayList<Integer>();
 		mCurrentDTC = new CopyOnWriteArrayList<Integer>();
 	}
 
-	public void addHarleyDataListener(HarleyDataListener l) {
-		mListeners.add(l);
+	public void addHarleyDataDashboardListener(HarleyDataDashboardListener l) {
+		mDashboardListeners.add(l);
 	}
 
-	public void removeHarleyDataListener(HarleyDataListener l) {
-		mListeners.remove(l);
+	public void removeHarleyDataDashboardListener(HarleyDataDashboardListener l) {
+		mDashboardListeners.remove(l);
 	}
+
+	public void addHarleyDataDiagnosticsListener(HarleyDataDiagnosticsListener l) {
+		mDiagnosticsListeners.add(l);
+	}
+
+	public void removeHarleyDataDiagnosticsListener(HarleyDataDiagnosticsListener l) {
+		mDiagnosticsListeners.remove(l);
+	}
+
+	public void addHarleyDataRawListener(HarleyDataRawListener l) {
+		mRawListeners.add(l);
+	}
+
+	public void removeHarleyDataRawListener(HarleyDataRawListener l) {
+		mRawListeners.remove(l);
+	}
+
 
 	// returns the rotations per minute
 	public int getRPM() {
@@ -72,7 +94,7 @@ public class HarleyData {
 	public void setRPM(int rpm) {
 		if (mRPM != rpm) {
 			mRPM = rpm;
-			for (HarleyDataListener l : mListeners)
+			for (HarleyDataDashboardListener l : mDashboardListeners)
 				l.onRPMChanged(mRPM / 4);
 		}
 	}
@@ -90,7 +112,7 @@ public class HarleyData {
 	public void setSpeed(int speed) {
 		if (mSpeed != speed) {
 			mSpeed = speed;
-			for (HarleyDataListener l : mListeners) {
+			for (HarleyDataDashboardListener l : mDashboardListeners) {
 				l.onSpeedImperialChanged((mSpeed * 125) / (16 * 1609));
 				l.onSpeedMetricChanged(mSpeed / 128);
 			}
@@ -110,7 +132,7 @@ public class HarleyData {
 	public void setEngineTemp(int engineTemp) {
 		if (mEngineTemp != engineTemp) {
 			mEngineTemp = engineTemp;
-			for (HarleyDataListener l : mListeners) {
+			for (HarleyDataDashboardListener l : mDashboardListeners) {
 				l.onEngineTempImperialChanged(mEngineTemp);
 				l.onEngineTempMetricChanged((mEngineTemp - 32) * 5 / 9);
 			}
@@ -125,7 +147,7 @@ public class HarleyData {
 	public void setFuelGauge(int fuelGauge) {
 		if (mFuelGauge != fuelGauge) {
 			mFuelGauge = fuelGauge;
-			for (HarleyDataListener l : mListeners)
+			for (HarleyDataDashboardListener l : mDashboardListeners)
 				l.onFuelGaugeChanged(mFuelGauge);
 		}
 	}
@@ -138,7 +160,7 @@ public class HarleyData {
 	public void setTurnSignals(int turnSignals) {
 		if (mTurnSignals != turnSignals) {
 			mTurnSignals = turnSignals;
-			for (HarleyDataListener l : mListeners)
+			for (HarleyDataDashboardListener l : mDashboardListeners)
 				l.onTurnSignalsChanged(mTurnSignals);
 		}
 	}
@@ -151,7 +173,7 @@ public class HarleyData {
 	public void setNeutral(boolean neutral) {
 		if (mNeutral != neutral) {
 			mNeutral = neutral;
-			for (HarleyDataListener l : mListeners)
+			for (HarleyDataDashboardListener l : mDashboardListeners)
 				l.onNeutralChanged(mNeutral);
 		}
 	}
@@ -164,7 +186,7 @@ public class HarleyData {
 	public void setClutch(boolean clutch) {
 		if (mClutch != clutch) {
 			mClutch = clutch;
-			for (HarleyDataListener l : mListeners)
+			for (HarleyDataDashboardListener l : mDashboardListeners)
 				l.onClutchChanged(mClutch);
 		}
 	}
@@ -177,7 +199,7 @@ public class HarleyData {
 	public void setGear(int gear) {
 		if (mGear != gear) {
 			mGear = gear;
-			for (HarleyDataListener l : mListeners)
+			for (HarleyDataDashboardListener l : mDashboardListeners)
 				l.onGearChanged(mGear);
 		}
 	}
@@ -190,7 +212,7 @@ public class HarleyData {
 	public void setCheckEngine(boolean checkEngine) {
 		if (mCheckEngine != checkEngine) {
 			mCheckEngine = checkEngine;
-			for (HarleyDataListener l : mListeners)
+			for (HarleyDataDashboardListener l : mDashboardListeners)
 				l.onCheckEngineChanged(mCheckEngine);
 		}
 	}
@@ -208,7 +230,7 @@ public class HarleyData {
 	public void setOdometer(int odometer) {
 		if (mOdometer != odometer) {
 			mOdometer = odometer;
-			for (HarleyDataListener l : mListeners) {
+			for (HarleyDataDashboardListener l : mDashboardListeners) {
 				int o = mOdometer - mResetOdometer;
 				l.onOdometerImperialChanged((o * 40) / 1609);
 				l.onOdometerMetricChanged(o / 25);
@@ -229,7 +251,7 @@ public class HarleyData {
 	public void setFuel(int fuel) {
 		if (mFuel != fuel) {
 			mFuel = fuel;
-			for (HarleyDataListener l : mListeners) {
+			for (HarleyDataDashboardListener l : mDashboardListeners) {
 				int f = mFuel - mResetFuel;
 				l.onFuelImperialChanged((f * 338) / 250000);
 				l.onFuelMetricChanged(f / 25);
@@ -240,7 +262,7 @@ public class HarleyData {
 	public void resetCounters() {
 		mResetOdometer = mOdometer;
 		mResetFuel = mFuel;
-		for (HarleyDataListener l : mListeners) {
+		for (HarleyDataDashboardListener l : mDashboardListeners) {
 			l.onOdometerImperialChanged(0);
 			l.onOdometerMetricChanged(0);
 			l.onFuelImperialChanged(0);
@@ -254,7 +276,7 @@ public class HarleyData {
 
 	public void setVIN(String vin) {
 		mVIN = vin;
-		for (HarleyDataListener l : mListeners)
+		for (HarleyDataDiagnosticsListener l : mDiagnosticsListeners)
 			l.onVINChanged(mVIN);
 	}
 
@@ -264,7 +286,7 @@ public class HarleyData {
 
 	public void setECMPN(String ecmPN) {
 		mECMPN = ecmPN;
-		for (HarleyDataListener l : mListeners)
+		for (HarleyDataDiagnosticsListener l : mDiagnosticsListeners)
 			l.onECMPNChanged(mECMPN);
 	}
 
@@ -274,7 +296,7 @@ public class HarleyData {
 
 	public void setECMCalID(String ecmCalID) {
 		mECMCalID = ecmCalID;
-		for (HarleyDataListener l : mListeners)
+		for (HarleyDataDiagnosticsListener l : mDiagnosticsListeners)
 			l.onECMCalIDChanged(mECMCalID);
 	}
 
@@ -284,7 +306,7 @@ public class HarleyData {
 
 	public void setECMSWLevel(int ecmSWLevel) {
 		mECMSWLevel = ecmSWLevel;
-		for (HarleyDataListener l : mListeners)
+		for (HarleyDataDiagnosticsListener l : mDiagnosticsListeners)
 			l.onECMSWLevelChanged(mECMSWLevel);
 	}
 
@@ -308,7 +330,7 @@ public class HarleyData {
 		int i = 0;
 		for (Integer n : mHistoricDTC)
 			dtclist[i++] = n;
-		for (HarleyDataListener l : mListeners)
+		for (HarleyDataDiagnosticsListener l : mDiagnosticsListeners)
 			l.onHistoricDTCChanged(dtclist);
 	}
 
@@ -332,22 +354,22 @@ public class HarleyData {
 		int i = 0;
 		for (Integer n : mCurrentDTC)
 			dtclist[i++] = n;
-		for (HarleyDataListener l : mListeners)
+		for (HarleyDataDiagnosticsListener l : mDiagnosticsListeners)
 			l.onCurrentDTCChanged(dtclist);
 	}
 
 	public void setBadCRC(byte[] buffer) {
-		for (HarleyDataListener l : mListeners)
+		for (HarleyDataRawListener l : mRawListeners)
 			l.onBadCRCChanged(buffer);
 	}
 
 	public void setUnknown(byte[] buffer) {
-		for (HarleyDataListener l : mListeners)
+		for (HarleyDataRawListener l : mRawListeners)
 			l.onUnknownChanged(buffer);
 	}
 
 	public void setRaw(byte[] buffer) {
-		for (HarleyDataListener l : mListeners)
+		for (HarleyDataRawListener l : mRawListeners)
 			l.onRawChanged(buffer);
 	}
 
