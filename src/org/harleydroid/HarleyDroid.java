@@ -45,7 +45,6 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 	public static final boolean EMULATOR = false;
 
 	// Message types sent from HarleyDroidService
-	public static final int STATUS_OK = 0;
 	public static final int STATUS_CONNECTING = 1;
 	public static final int STATUS_CONNECTED = 2;
 	public static final int STATUS_ERROR = 3;

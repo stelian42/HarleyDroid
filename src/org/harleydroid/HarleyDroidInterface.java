@@ -48,21 +48,23 @@ public class HarleyDroidInterface implements J1850Interface
 	private PollThread mPollThread;
 	private SendThread mSendThread;
 	private BluetoothDevice mDevice;
-	private BluetoothSocket mSock;
+	private BluetoothSocket mSock = null;
 	private BufferedReader mIn;
 	private OutputStream mOut;
-	private Timer mTimer;
+	private Timer mTimer = null;
 
 	public HarleyDroidInterface(HarleyDroidService harleyDroidService, BluetoothDevice device) {
 		mHarleyDroidService = harleyDroidService;
 		mDevice = device;
-		mTimer = new Timer();
 	}
 
 	public void connect(HarleyData hd) {
 		if (D) Log.d(TAG, "connect");
 
 		mHD = hd;
+		if (mTimer != null)
+			mTimer.cancel();
+		mTimer = new Timer();
 		if (mConnectThread != null)
 			mConnectThread.cancel();
 		mConnectThread = new ConnectThread();
@@ -83,6 +85,17 @@ public class HarleyDroidInterface implements J1850Interface
 		if (mSendThread != null) {
 			mSendThread.cancel();
 			mSendThread = null;
+		}
+		if (mTimer != null) {
+			mTimer.cancel();
+			mTimer = null;
+		}
+		if (mSock != null) {
+			try {
+				mSock.close();
+			} catch (IOException e) {
+				Log.e(TAG, "close() of socket failed", e);
+			}
 		}
 	}
 
@@ -211,6 +224,7 @@ public class HarleyDroidInterface implements J1850Interface
 				} catch (IOException e2) {
 					Log.e(TAG, "close() of connect socket failed", e2);
 				}
+				mSock = null;
 				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
 				return;
 			}
@@ -220,10 +234,12 @@ public class HarleyDroidInterface implements J1850Interface
 
 		public void cancel() {
 			try {
-				mSock.close();
+				if (mSock != null)
+					mSock.close();
 			} catch (IOException e) {
 				Log.e(TAG, "close() of connect socket failed", e);
 			}
+			mSock = null;
 		}
 	}
 
@@ -242,8 +258,10 @@ public class HarleyDroidInterface implements J1850Interface
 				try {
 					line = readLine(ATMA_TIMEOUT);
 				} catch (IOException e1) {
-					mHarleyDroidService.disconnected(HarleyDroid.STATUS_NODATA);
+					if (!stop)
+						mHarleyDroidService.disconnected(HarleyDroid.STATUS_NODATA);
 					// socket is already closed...
+					mSock = null;
 					return;
 				}
 
@@ -263,13 +281,10 @@ public class HarleyDroidInterface implements J1850Interface
 						mSock.close();
 					} catch (IOException e2) {
 					}
+					mSock = null;
 					mHarleyDroidService.disconnected(HarleyDroid.STATUS_TOOMANYERRORS);
 					return;
 				}
-			}
-			try {
-				mSock.close();
-			} catch (IOException e2) {
 			}
 		}
 
@@ -298,8 +313,9 @@ public class HarleyDroidInterface implements J1850Interface
 			try {
 				recv = chat(mType + mTA + mSA + mSend, mExpect, AT_TIMEOUT);
 			} catch (IOException e1) {
-				mHarleyDroidService.disconnected(HarleyDroid.STATUS_NODATA);
+				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
 				// socket is already closed...
+				mSock = null;
 				return;
 			}
 

@@ -52,21 +52,23 @@ public class ELM327Interface implements J1850Interface
 	private PollThread mPollThread;
 	private SendThread mSendThread;
 	private BluetoothDevice mDevice;
-	private BluetoothSocket mSock;
+	private BluetoothSocket mSock = null;
 	private BufferedReader mIn;
 	private OutputStream mOut;
-	private Timer mTimer;
+	private Timer mTimer = null;
 
 	public ELM327Interface(HarleyDroidService harleyDroidService, BluetoothDevice device) {
 		mHarleyDroidService = harleyDroidService;
 		mDevice = device;
-		mTimer = new Timer();
 	}
 
 	public void connect(HarleyData hd) {
 		if (D) Log.d(TAG, "connect");
 
 		mHD = hd;
+		if (mTimer != null)
+			mTimer.cancel();
+		mTimer = new Timer();
 		if (mConnectThread != null)
 			mConnectThread.cancel();
 		mConnectThread = new ConnectThread();
@@ -87,6 +89,23 @@ public class ELM327Interface implements J1850Interface
 		if (mSendThread != null) {
 			mSendThread.cancel();
 			mSendThread = null;
+		}
+		// if the ELM327 is polling, we need to get it out of ATMA
+		// or it will be left unusable (blocked in poll mode)
+		try {
+			writeLine("");
+		} catch (Exception e) {
+		}
+		if (mTimer != null) {
+			mTimer.cancel();
+			mTimer = null;
+		}
+		if (mSock != null) {
+			try {
+				mSock.close();
+			} catch (IOException e) {
+				Log.e(TAG, "close() of socket failed", e);
+			}
 		}
 	}
 
@@ -212,6 +231,7 @@ public class ELM327Interface implements J1850Interface
 				} catch (IOException e2) {
 					Log.e(TAG, "close() of connect socket failed", e2);
 				}
+				mSock = null;
 				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
 				return;
 			}
@@ -237,6 +257,8 @@ public class ELM327Interface implements J1850Interface
 				chat("ATE1", "OK", AT_TIMEOUT);
 				// Headers ON
 				chat("ATH1", "OK", AT_TIMEOUT);
+				// Allow long (>7 bytes) messages
+				chat("ATAL", "OK", AT_TIMEOUT);
 				// Spaces OFF
 				if (elmVersionMajor >= 1 && elmVersionMinor >= 3)
 					chat("ATS0", "OK", AT_TIMEOUT);
@@ -245,6 +267,7 @@ public class ELM327Interface implements J1850Interface
 			} catch (IOException e1) {
 				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERRORAT);
 				// socket is already closed...
+				mSock = null;
 				return;
 			}
 
@@ -253,10 +276,12 @@ public class ELM327Interface implements J1850Interface
 
 		public void cancel() {
 			try {
-				mSock.close();
+				if (mSock != null)
+					mSock.close();
 			} catch (IOException e) {
 				Log.e(TAG, "close() of connect socket failed", e);
 			}
+			mSock = null;
 		}
 	}
 
@@ -273,6 +298,7 @@ public class ELM327Interface implements J1850Interface
 			} catch (IOException e1) {
 				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERRORAT);
 				// socket is already closed...
+				mSock = null;
 				return;
 			}
 
@@ -284,8 +310,10 @@ public class ELM327Interface implements J1850Interface
 				try {
 					line = readLine(ATMA_TIMEOUT);
 				} catch (IOException e1) {
-					mHarleyDroidService.disconnected(HarleyDroid.STATUS_NODATA);
+					if (!stop)
+						mHarleyDroidService.disconnected(HarleyDroid.STATUS_NODATA);
 					// socket is already closed...
+					mSock = null;
 					return;
 				}
 
@@ -303,6 +331,7 @@ public class ELM327Interface implements J1850Interface
 						mSock.close();
 					} catch (IOException e2) {
 					}
+					mSock = null;
 					mHarleyDroidService.disconnected(HarleyDroid.STATUS_TOOMANYERRORS);
 					return;
 				}
@@ -310,10 +339,6 @@ public class ELM327Interface implements J1850Interface
 			try {
 				writeLine("");
 			} catch (IOException e1) {
-			}
-			try {
-				mSock.close();
-			} catch (IOException e2) {
 			}
 		}
 
@@ -342,8 +367,9 @@ public class ELM327Interface implements J1850Interface
 				chat("ATSH" + mType + mTA + mSA, "OK", AT_TIMEOUT);
 				recv = chat(mSend, mExpect, AT_TIMEOUT);
 			} catch (IOException e) {
-				mHarleyDroidService.disconnected(HarleyDroid.STATUS_NODATA);
+				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
 				// socket is already closed...
+				mSock = null;
 				return;
 			}
 
