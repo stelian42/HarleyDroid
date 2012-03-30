@@ -106,6 +106,8 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			mImageTurnSignalsLeft = (View) mActivity.findViewById(R.id.turn_left);
 			mImageCheckEngine = (View) mActivity.findViewById(R.id.check_engine);
 			mImageTurnSignalsRight = (View) mActivity.findViewById(R.id.turn_right);
+			mViewNeutral = (TextView) mActivity.findViewById(R.id.neutral);
+			mViewGear = (TextView) mActivity.findViewById(R.id.gear);
 
 			mViewRpm = null;
 			mLabelSpeedMetric = null;
@@ -118,9 +120,7 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			mViewEngTempImperial = null;
 			mViewFuelGauge = null;
 			mViewTurnSignals = null;
-			mViewNeutral = null;
 			mViewClutch = null;
-			mViewGear = null;
 			mViewCheckEngine = null;
 			mLabelOdometerMetric = null;
 			mLabelOdometerImperial = null;
@@ -471,8 +471,12 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 	}
 
 	public void drawGear(int value) {
-		if (mViewGear != null)
-			mViewGear.setText(Integer.toString(value));
+		if (mViewGear != null) {
+			if (value == -1)
+				mViewGear.setText("-");
+			else
+				mViewGear.setText(Integer.toString(value));
+		}
 	}
 
 	public void drawCheckEngine(int value) {

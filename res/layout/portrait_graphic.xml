@@ -138,7 +138,7 @@
 				/>
 		</LinearLayout>
 		<LinearLayout
-			android:id="@+id/lights_layout"
+			android:id="@+id/top_layout"
     		android:orientation="horizontal"
 	    	android:layout_width="fill_parent"
     		android:layout_height="wrap_content"
@@ -175,5 +175,46 @@
     			android:contentDescription="@string/turn_right"
     			/>
 	    </LinearLayout>
+
+    	<LinearLayout
+    	    android:id="@+id/bottom_layout"
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="wrap_content"
+    	    android:layout_gravity="bottom"
+    	    android:orientation="horizontal"
+    	    android:weightSum="3.0" >
+
+    	    <TextView
+    	        android:id="@+id/gear"
+    	        android:layout_width="fill_parent"
+    	        android:layout_height="wrap_content"
+    	        android:layout_weight="1.0"
+    	        android:gravity="left"
+    	        android:padding="3dip"
+    	        android:scaleType="fitStart"
+    	        android:textColor="#9f00ff00"
+    	        android:textSize="40dp" />
+    	    <TextView
+				android:id="@+id/whatever"
+				android:layout_width="fill_parent"
+    			android:layout_height="wrap_content"
+    			android:layout_weight="1.0"
+    			android:gravity="center"
+    			android:padding="3dip"
+    			android:scaleType="fitCenter"
+    			android:textColor="#9f00ff00"
+	    		android:textSize="40dp" />
+    	    <TextView
+				android:id="@+id/neutral"
+				android:layout_width="fill_parent"
+    			android:layout_height="wrap_content"
+    			android:layout_weight="1.0"
+    			android:gravity="right"
+    			android:padding="3dip"
+    			android:scaleType="fitEnd"
+    			android:textColor="#9f00ff00"
+    			android:textSize="40dp" />
+    	</LinearLayout>
+
 	</merge>
 
