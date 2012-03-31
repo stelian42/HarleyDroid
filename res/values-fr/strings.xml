@@ -20,7 +20,7 @@
 
 <resources>
     
-<string name="dashboard_name">Tableau de bord HarleyDroid</string>
+<string name="dashboard_name">HarleyDroid</string>
 <string name="diagnostics_name">Diagnostics HarleyDroid</string>
 <string name="settings_name">Préférences de HarleyDroid</string>
 

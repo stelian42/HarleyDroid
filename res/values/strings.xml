@@ -21,7 +21,7 @@
 <resources>
 
 <string name="app_name">HarleyDroid</string>
-<string name="dashboard_name">HarleyDroid Dashboard</string>
+<string name="dashboard_name">HarleyDroid</string>
 <string name="diagnostics_name">HarleyDroid Diagnostics</string>
 <string name="settings_name">HarleyDroid Settings</string>
 
@@ -123,7 +123,7 @@
 <string name="eula_accept">Accept</string>
 <string name="eula_refuse">Refuse</string>
 
-<string name="about_copyright">&#169;2010-2012 Stelian Pop</string>
+<string name="about_copyright">&#169;2010&#8211;2012 Stelian Pop</string>
 <string name="about_version">Version:</string>
 <string name="about_unknown">unknown</string>
 <string name="about_support">Support:</string>
