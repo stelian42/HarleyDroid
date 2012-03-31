@@ -54,6 +54,9 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		if (D) Log.d(TAG, "onStart()");
 		super.onStart();
 
+		mHarleyDroidDiagnosticsView.changeView(
+				mOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED ? getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT
+																			: mOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT ? true : false);
 		mHarleyDroidDiagnosticsView.drawAll(mHD);
 	}
 
