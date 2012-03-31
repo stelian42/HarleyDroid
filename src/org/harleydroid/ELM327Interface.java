@@ -34,7 +34,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
-
 public class ELM327Interface implements J1850Interface
 {
 	private static final boolean D = false;
@@ -109,8 +108,8 @@ public class ELM327Interface implements J1850Interface
 		}
 	}
 
-	public void send(String type, String ta, String sa,
-					 String command, String expect) {
+	public void startSend(String type[], String ta[], String sa[],
+						  String command[], String expect[], int delay) {
 		if (D) Log.d(TAG, "send: " + type + "-" + ta + "-" +
 				  sa + "-" + command + "-" + expect);
 
@@ -121,8 +120,16 @@ public class ELM327Interface implements J1850Interface
 		if (mSendThread != null) {
 			mSendThread.cancel();
 		}
-		mSendThread = new SendThread(type, ta, sa, command, expect);
+		mSendThread = new SendThread(type, ta, sa, command, expect, delay);
 		mSendThread.start();
+	}
+
+	public void setSendData(String type[], String ta[], String sa[],
+							String command[], String expect[], int delay) {
+		if (D) Log.d(TAG, "setSendData");
+
+		if (mSendThread != null)
+			mSendThread.setData(type, ta, sa, command, expect, delay);
 	}
 
 	public void startPoll() {
@@ -349,37 +356,75 @@ public class ELM327Interface implements J1850Interface
 
 	private class SendThread extends Thread {
 		private boolean stop = false;
-		private String mType, mTA, mSA, mSend, mExpect;
+		private boolean newData = false;
+		private String mType[], mTA[], mSA[], mCommand[], mExpect[];
+		private String mNewType[], mNewTA[], mNewSA[], mNewCommand[], mNewExpect[];
+		private int mDelay, mNewDelay;
 
-		public SendThread(String type, String ta, String sa, String send, String expect) {
+		public SendThread(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
 			setName("ELM327Interface: SendThread");
 			mType = type;
 			mTA = ta;
 			mSA = sa;
-			mSend = send;
+			mCommand = command;
 			mExpect = expect;
+			mDelay = delay;
+		}
+
+		public void setData(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
+			synchronized (this) {
+				mNewType = type;
+				mNewTA = ta;
+				mNewSA = sa;
+				mNewCommand = command;
+				mNewExpect = expect;
+				mNewDelay = delay;
+				newData = true;
+			}
 		}
 
 		public void run() {
 			String recv;
 
-			try {
-				chat("ATSH" + mType + mTA + mSA, "OK", AT_TIMEOUT);
-				recv = chat(mSend, mExpect, AT_TIMEOUT);
-			} catch (IOException e) {
-				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
-				// socket is already closed...
-				mSock = null;
-				return;
-			}
+			mHarleyDroidService.startedSend();
 
-			// split into lines
-			if (!stop) {
-				String lines[] = recv.split("\n");
-				for (int i = 0; i < lines.length; ++i)
-					J1850.parse(myGetBytes(lines[i]), mHD);
+			while (!stop) {
 
-				mHarleyDroidService.sendDone();
+				synchronized (this) {
+					if (newData) {
+						mType = mNewType;
+						mTA = mNewTA;
+						mSA = mNewSA;
+						mCommand = mNewCommand;
+						mExpect = mNewExpect;
+						mDelay = mNewDelay;
+						newData = false;
+					}
+				}
+
+				for (int i = 0; !stop && i < mCommand.length; i++) {
+					try {
+						chat("ATSH" + mType[i] + mTA[i] + mSA[i], "OK", AT_TIMEOUT);
+						recv = chat(mCommand[i], mExpect[i], AT_TIMEOUT);
+					} catch (IOException e) {
+						mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
+						// socket is already closed...
+						mSock = null;
+						return;
+					}
+
+					// split into lines
+					if (!stop) {
+						String lines[] = recv.split("\n");
+						for (int j = 0; j < lines.length; ++j)
+							J1850.parse(myGetBytes(lines[j]), mHD);
+					}
+
+					try {
+						Thread.sleep(mDelay);
+					} catch (InterruptedException e) {
+					}
+				}
 			}
 		}
 

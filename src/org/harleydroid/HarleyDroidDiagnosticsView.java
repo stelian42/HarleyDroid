@@ -82,22 +82,22 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 
 			switch (msg.what) {
 			case UPDATE_VIN:
-				drawVIN((String)msg.getData().get("vin"));
+				drawVIN(msg.getData().getString("vin"));
 				break;
 			case UPDATE_ECMPN:
-				drawECMPN((String)msg.getData().get("ecmpn"));
+				drawECMPN(msg.getData().getString("ecmpn"));
 				break;
 			case UPDATE_ECMCALID:
-				drawECMCalID((String)msg.getData().get("ecmcalid"));
+				drawECMCalID(msg.getData().getString("ecmcalid"));
 				break;
 			case UPDATE_ECMSWLEVEL:
 				drawECMSWLevel(msg.arg1);
 				break;
 			case UPDATE_HISTORICDTC:
-				drawHistoricDTC((int[])msg.getData().get("historicdtc"));
+				drawHistoricDTC(msg.getData().getIntArray("historicdtc"));
 				break;
 			case UPDATE_CURRENTDTC:
-				drawCurrentDTC((int[])msg.getData().get("currentdtc"));
+				drawCurrentDTC(msg.getData().getIntArray("currentdtc"));
 				break;
 			}
 		}

@@ -42,9 +42,10 @@ public class HarleyDroidService extends Service
 	private static final int MSG_DISCONNECTED = 2;
 	private static final int MSG_START_POLL = 3;
 	private static final int MSG_STARTED_POLL = 4;
-	private static final int MSG_SEND = 5;
-	private static final int MSG_SEND_DONE = 6;
-	private static final int MSG_DISCONNECT = 7;
+	private static final int MSG_START_SEND = 5;
+	private static final int MSG_STARTED_SEND = 6;
+	private static final int MSG_SET_SEND = 7;
+	private static final int MSG_DISCONNECT = 8;
 
 	private static final int STATE_DISCONNECT = 1;
 	private static final int STATE_TO_DISCONNECT = 2;
@@ -72,11 +73,12 @@ public class HarleyDroidService extends Service
 	private int mReconnectDelay = 0;
 	private int mCurrentState = STATE_DISCONNECT;
 	private int mWantedState = STATE_DISCONNECT;
-	private String mSendType;
-	private String mSendTA;
-	private String mSendSA;
-	private String mSendCommand;
-	private String mSendExpect;
+	private String mSendType[];
+	private String mSendTA[];
+	private String mSendSA[];
+	private String mSendCommand[];
+	private String mSendExpect[];
+	private int mSendDelay;
 
 	@Override
 	public void onCreate() {
@@ -244,7 +246,7 @@ public class HarleyDroidService extends Service
 			case STATE_CONNECT:
 			case STATE_POLL:
 				mCurrentState = STATE_TO_SEND;
-				mInterface.send(mSendType, mSendTA, mSendSA, mSendCommand, mSendExpect);
+				mInterface.startSend(mSendType, mSendTA, mSendSA, mSendCommand, mSendExpect, mSendDelay);
 				return;
 			case STATE_TO_DISCONNECT:
 			case STATE_TO_CONNECT:
@@ -332,19 +334,26 @@ public class HarleyDroidService extends Service
 				HarleyDroidService.this.notify(R.string.notification_polling);
 				mCurrentState = STATE_POLL;
 				break;
-			case MSG_SEND:
-				HarleyDroidService.this.notify(R.string.notification_diagnostics);
+			case MSG_START_SEND:
 				mWantedState = STATE_SEND;
-				mSendType = (String)msg.getData().get("type");
-				mSendTA = (String)msg.getData().get("ta");
-				mSendSA = (String)msg.getData().get("sa");
-				mSendCommand = (String)msg.getData().get("command");
-				mSendExpect = (String)msg.getData().get("expect");
+				mSendType = msg.getData().getStringArray("type");
+				mSendTA = msg.getData().getStringArray("ta");
+				mSendSA = msg.getData().getStringArray("sa");
+				mSendCommand = msg.getData().getStringArray("command");
+				mSendExpect = msg.getData().getStringArray("expect");
+				mSendDelay = msg.getData().getInt("delay");
 				break;
-			case MSG_SEND_DONE:
-				mCurrentState = STATE_CONNECT;
-				mWantedState = STATE_CONNECT;
+			case MSG_STARTED_SEND:
+				HarleyDroidService.this.notify(R.string.notification_diagnostics);
+				mCurrentState = STATE_SEND;
 				break;
+			case MSG_SET_SEND:
+				mInterface.setSendData(msg.getData().getStringArray("type"),
+									   msg.getData().getStringArray("ta"),
+									   msg.getData().getStringArray("sa"),
+									   msg.getData().getStringArray("command"),
+									   msg.getData().getStringArray("expect"),
+									   msg.getData().getInt("delay"));
 			}
 			stateMachine();
 		}
@@ -380,24 +389,40 @@ public class HarleyDroidService extends Service
 		mServiceHandler.obtainMessage(MSG_STARTED_POLL, -1, -1).sendToTarget();
 	}
 
-	public void send(String type, String ta, String sa, String command, String expect) {
+	public void startSend(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
 		if (D) Log.d(TAG, "send()");
-		Message m = mServiceHandler.obtainMessage(MSG_SEND);
+		Message m = mServiceHandler.obtainMessage(MSG_START_SEND);
 		Bundle b = new Bundle();
-		b.putString("type", type);
-		b.putString("ta", ta);
-		b.putString("sa", sa);
-		b.putString("command", command);
-		b.putString("expect", expect);
+		b.putStringArray("type", type);
+		b.putStringArray("ta", ta);
+		b.putStringArray("sa", sa);
+		b.putStringArray("command", command);
+		b.putStringArray("expect", expect);
+		b.putInt("delay", delay);
 		m.setData(b);
 		//mServiceHandler.removeCallbacksAndMessages(null);
 		m.sendToTarget();
 	}
 
-	public void sendDone() {
+	public void startedSend() {
 		if (D) Log.d(TAG, "sendDone()");
 		//mServiceHandler.removeCallbacksAndMessages(null);
-		mServiceHandler.obtainMessage(MSG_SEND_DONE, -1, -1).sendToTarget();
+		mServiceHandler.obtainMessage(MSG_STARTED_SEND, -1, -1).sendToTarget();
+	}
+
+	public void setSendData(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
+		if (D) Log.d(TAG, "setSendData()");
+		Message m = mServiceHandler.obtainMessage(MSG_SET_SEND);
+		Bundle b = new Bundle();
+		b.putStringArray("type", type);
+		b.putStringArray("ta", ta);
+		b.putStringArray("sa", sa);
+		b.putStringArray("command", command);
+		b.putStringArray("expect", expect);
+		b.putInt("delay", delay);
+		m.setData(b);
+		//mServiceHandler.removeCallbacksAndMessages(null);
+		m.sendToTarget();
 	}
 
 	public boolean isPolling() {
@@ -406,9 +431,9 @@ public class HarleyDroidService extends Service
 		return (mCurrentState == STATE_POLL);
 	}
 
-	public boolean isBusy() {
-		if (D) Log.d(TAG, "isBusy()");
+	public boolean isSending() {
+		if (D) Log.d(TAG, "isSending()");
 
-		return (mCurrentState != STATE_CONNECT);
+		return (mCurrentState == STATE_SEND);
 	}
 }

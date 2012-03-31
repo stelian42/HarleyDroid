@@ -99,21 +99,10 @@ public class HarleyDroidInterface implements J1850Interface
 		}
 	}
 
-	public void send(String type, String ta, String sa,
-			 		 String command, String expect) {
+	public void startSend(String type[], String ta[], String sa[],
+			 			  String command[], String expect[], int delay) {
 		if (D) Log.d(TAG, "send: " + type + "-" + ta + "-" +
 					 sa + "-" + command + "-" + expect);
-
-		byte[] data = new byte[3 + command.length() / 2];
-		data[0] = (byte)Integer.parseInt(type, 16);
-		data[1] = (byte)Integer.parseInt(ta, 16);
-		data[2] = (byte)Integer.parseInt(sa, 16);
-		for (int i = 0; i < command.length() / 2; i++)
-			data[i + 3] = (byte)Integer.parseInt(command.substring(2 * i, 2 * i + 2), 16);
-		command += String.format("%02X", ((int)~J1850.crc(data)) & 0xff);
-
-		if (D) Log.d(TAG, "send: " + type + "-" + ta + "-" +
-				 sa + "-" + command + "-" + expect);
 
 		if (mPollThread != null) {
 			mPollThread.cancel();
@@ -122,8 +111,16 @@ public class HarleyDroidInterface implements J1850Interface
 		if (mSendThread != null) {
 			mSendThread.cancel();
 		}
-		mSendThread = new SendThread(type, ta, sa, command, expect);
+		mSendThread = new SendThread(type, ta, sa, command, expect, delay);
 		mSendThread.start();
+	}
+
+	public void setSendData(String type[], String ta[], String sa[],
+							String command[], String expect[], int delay) {
+		if (D) Log.d(TAG, "setSendData");
+
+		if (mSendThread != null)
+			mSendThread.setData(type, ta, sa, command, expect, delay);
 	}
 
 	public void startPoll() {
@@ -295,40 +292,91 @@ public class HarleyDroidInterface implements J1850Interface
 
 	private class SendThread extends Thread {
 		private boolean stop = false;
-		private String mType, mTA, mSA, mSend, mExpect;
+		private boolean newData = false;
+		private String mType[], mTA[], mSA[], mCommand[], mExpect[];
+		private String mNewType[], mNewTA[], mNewSA[], mNewCommand[], mNewExpect[];
+		private int mDelay, mNewDelay;
 
-		public SendThread(String type, String ta, String sa, String send, String expect) {
-			setName("HarleyDroidInterface: SendThread");
+		public SendThread(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
+			setName("ELM327Interface: SendThread");
 			mType = type;
 			mTA = ta;
 			mSA = sa;
-			mSend = send;
+			mCommand = command;
 			mExpect = expect;
+			mDelay = delay;
+		}
+
+		public void setData(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
+			synchronized (this) {
+				mNewType = type;
+				mNewTA = ta;
+				mNewSA = sa;
+				mNewCommand = command;
+				mNewExpect = expect;
+				mNewDelay = delay;
+				newData = true;
+			}
 		}
 
 		public void run() {
 			String recv;
 			int idxJ;
 
-			try {
-				recv = chat(mType + mTA + mSA + mSend, mExpect, AT_TIMEOUT);
-			} catch (IOException e1) {
-				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
-				// socket is already closed...
-				mSock = null;
-				return;
-			}
+			mHarleyDroidService.startedSend();
 
-			// split into lines and strip off timestamp
-			if (!stop) {
-				String lines[] = recv.split("\n");
-				for (int i = 0; i < lines.length; ++i) {
-					idxJ = lines[i].indexOf('J');
-					if (idxJ != -1)
-						J1850.parse(myGetBytes(lines[i], idxJ + 1, lines[i].length()), mHD);
+			while (!stop) {
+
+				synchronized (this) {
+					if (newData) {
+						mType = mNewType;
+						mTA = mNewTA;
+						mSA = mNewSA;
+						mCommand = mNewCommand;
+						mExpect = mNewExpect;
+						mDelay = mNewDelay;
+						newData = false;
+					}
 				}
 
-				mHarleyDroidService.sendDone();
+				for (int i = 0; !stop && i < mCommand.length; i++) {
+
+					byte[] data = new byte[3 + mCommand[i].length() / 2];
+					data[0] = (byte)Integer.parseInt(mType[i], 16);
+					data[1] = (byte)Integer.parseInt(mTA[i], 16);
+					data[2] = (byte)Integer.parseInt(mSA[i], 16);
+					for (int j = 0; j < mCommand[i].length() / 2; j++)
+						data[j + 3] = (byte)Integer.parseInt(mCommand[i].substring(2 * j, 2 * j + 2), 16);
+
+					String command = mCommand[i] + String.format("%02X", ((int)~J1850.crc(data)) & 0xff);
+
+					if (D) Log.d(TAG, "send: " + mType[i] + "-" + mTA[i] + "-" +
+							 mSA[i] + "-" + command + "-" + mExpect[i]);
+
+					try {
+						recv = chat(mType[i] + mTA[i] + mSA[i] + mCommand[i], mExpect[i], AT_TIMEOUT);
+					} catch (IOException e) {
+						mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
+						// socket is already closed...
+						mSock = null;
+						return;
+					}
+
+					// split into lines and strip off timestamp
+					if (!stop) {
+						String lines[] = recv.split("\n");
+						for (int j = 0; j < lines.length; ++j) {
+							idxJ = lines[j].indexOf('J');
+							if (idxJ != -1)
+								J1850.parse(myGetBytes(lines[j], idxJ + 1, lines[j].length()), mHD);
+						}
+					}
+
+					try {
+						Thread.sleep(mDelay);
+					} catch (InterruptedException e) {
+					}
+				}
 			}
 		}
 

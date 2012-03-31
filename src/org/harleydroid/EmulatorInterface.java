@@ -31,6 +31,7 @@ public class EmulatorInterface implements J1850Interface
 	private HarleyDroidService mHarleyDroidService;
 	private HarleyData mHD;
 	private PollThread mPollThread = null;
+	private SendThread mSendThread = null;
 
 	public EmulatorInterface(HarleyDroidService harleyDroidService) {
 		mHarleyDroidService = harleyDroidService;
@@ -50,36 +51,33 @@ public class EmulatorInterface implements J1850Interface
 			mPollThread.cancel();
 			mPollThread = null;
 		}
+		if (mSendThread != null) {
+			mSendThread.cancel();
+			mSendThread = null;
+		}
 	}
 
-	public void send(String type, String ta, String sa,
-			 		 String command, String expect) {
+	public void startSend(String type[], String ta[], String sa[],
+						  String command[], String expect[], int delay) {
 		if (D) Log.d(TAG, "send: " + type + "-" + ta + "-" +
-				  sa + "-" + command + "-" + expect);
+					 sa + "-" + command + "-" + expect);
 
 		if (mPollThread != null) {
 			mPollThread.cancel();
 			mPollThread = null;
 		}
+		if (mSendThread != null)
+			mSendThread.cancel();
+		mSendThread = new SendThread(type, ta, sa, command, expect, delay);
+		mSendThread.start();
+	}
 
-		byte[] data = new byte[3 + command.length() / 2];
-		data[0] = (byte)Integer.parseInt(type, 16);
-		data[1] = (byte)Integer.parseInt(ta, 16);
-		data[2] = (byte)Integer.parseInt(sa, 16);
-		for (int i = 0; i < command.length() / 2; i++)
-			data[i + 3] = (byte)Integer.parseInt(command.substring(2 * i, 2 * i + 2), 16);
-		command += String.format("%02X", ((int)~J1850.crc(data)) & 0xff);
+	public void setSendData(String type[], String ta[], String sa[],
+							String command[], String expect[], int delay) {
+		if (D) Log.d(TAG, "setSendData");
 
-		if (D) Log.d(TAG, "send: " + type + "-" + ta + "-" +
-				 sa + "-" + command + "-" + expect);
-
-		// fake some answer...
-		//String line = "J0CF1107C11303138393045";
-		String line = "6CF11059ABCD20";
-
-		J1850.parse(line.getBytes(), mHD);
-
-		mHarleyDroidService.sendDone();
+		if (mSendThread != null)
+			mSendThread.setData(type, ta, sa, command, expect, delay);
 	}
 
 	public void startPoll() {
@@ -140,6 +138,86 @@ public class EmulatorInterface implements J1850Interface
 				if (errors > MAX_ERRORS) {
 					mHarleyDroidService.disconnected(HarleyDroid.STATUS_TOOMANYERRORS);
 					stop = true;
+				}
+			}
+		}
+
+		public void cancel() {
+			stop = true;
+		}
+	}
+
+	private class SendThread extends Thread {
+		private boolean stop = false;
+		private boolean newData = false;
+		private String mType[], mTA[], mSA[], mCommand[], mExpect[];
+		private String mNewType[], mNewTA[], mNewSA[], mNewCommand[], mNewExpect[];
+		private int mDelay, mNewDelay;
+
+		public SendThread(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
+			setName("EmulatorInterface: SendThread");
+			mType = type;
+			mTA = ta;
+			mSA = sa;
+			mCommand = command;
+			mExpect = expect;
+			mDelay = delay;
+		}
+
+		public void setData(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
+			synchronized (this) {
+				mNewType = type;
+				mNewTA = ta;
+				mNewSA = sa;
+				mNewCommand = command;
+				mNewExpect = expect;
+				mNewDelay = delay;
+				newData = true;
+			}
+		}
+
+		public void run() {
+
+			mHarleyDroidService.startedSend();
+
+			while (!stop) {
+
+				synchronized (this) {
+					if (newData) {
+						mType = mNewType;
+						mTA = mNewTA;
+						mSA = mNewSA;
+						mCommand = mNewCommand;
+						mExpect = mNewExpect;
+						mDelay = mNewDelay;
+						newData = false;
+					}
+				}
+
+				for (int i = 0; !stop && i < mCommand.length; i++) {
+
+					byte[] data = new byte[3 + mCommand[i].length() / 2];
+					data[0] = (byte)Integer.parseInt(mType[i], 16);
+					data[1] = (byte)Integer.parseInt(mTA[i], 16);
+					data[2] = (byte)Integer.parseInt(mSA[i], 16);
+					for (int j = 0; j < mCommand[i].length() / 2; j++)
+						data[j + 3] = (byte)Integer.parseInt(mCommand[i].substring(2 * j, 2 * j + 2), 16);
+
+					String command = mCommand[i] + String.format("%02X", ((int)~J1850.crc(data)) & 0xff);
+
+					if (D) Log.d(TAG, "send: " + mType[i] + "-" + mTA[i] + "-" +
+							 mSA[i] + "-" + command + "-" + mExpect[i]);
+
+					// fake some answer...
+					//String line = "J0CF1107C11303138393045";
+					String line = "6CF11059ABCD20";
+
+					J1850.parse(line.getBytes(), mHD);
+
+					try {
+						Thread.sleep(mDelay);
+					} catch (InterruptedException e) {
+					}
 				}
 			}
 		}

@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
@@ -36,8 +37,7 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 	private static final String TAG = HarleyDroidDiagnostics.class.getSimpleName();
 
 	private HarleyDroidDiagnosticsView mHarleyDroidDiagnosticsView;
-
-	private DiagnosticsThread dThread = null;
+	private Handler mHandler = new Handler();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -50,15 +50,11 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 	}
 
 	@Override
-	public void onStop()
-	{
-		if (D) Log.d(TAG, "onStop()");
-		super.onStop();
+	public void onStart() {
+		if (D) Log.d(TAG, "onStart()");
+		super.onStart();
 
-		if (dThread != null) {
-			dThread.cancel();
-			dThread = null;
-		}
+		mHarleyDroidDiagnosticsView.drawAll(mHD);
 	}
 
 	@Override
@@ -140,10 +136,8 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		if (D) Log.d(TAG, "onServiceConnected()");
 		super.onServiceConnected(name, service);
 
-		if (dThread != null)
-			dThread.cancel();
-		dThread = new DiagnosticsThread(false);
-		dThread.start();
+		if (!mService.isSending())
+			mService.startSend(types, tas, sas, commands, expects, COMMAND_DELAY);
 
 		mHD.addHarleyDataDiagnosticsListener(mHarleyDroidDiagnosticsView);
 		mHarleyDroidDiagnosticsView.drawAll(mHD);
@@ -153,146 +147,109 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		if (D) Log.d(TAG, "onServiceDisconnected()");
 		super.onServiceDisconnected(name);
 
-		if (dThread != null) {
-			dThread.cancel();
-			dThread = null;
-		}
-
 		mHD.removeHarleyDataDiagnosticsListener(mHarleyDroidDiagnosticsView);
 	}
+
+	private static final int COMMAND_DELAY = 100;
+	private static final int DTC_DONE_DELAY = 1000;
 
 	public void clearDTC() {
 		if (D) Log.d(TAG, "clearDTC()");
 
-		if (dThread != null)
-			dThread.cancel();
-		dThread = new DiagnosticsThread(true);
-		dThread.start();
+		String[] cTypes =		{ "6C" };
+		String[] cTas =			{ "10" };
+		String[] cSas =			{ "F1" };
+		String[] cCommands =	{ "14" };
+		String[] cExpects =		{ "???" };
+
+		mService.setSendData(cTypes, cTas, cSas, cCommands, cExpects, COMMAND_DELAY);
+
+		mHandler.postDelayed(mRestartTask, DTC_DONE_DELAY);
 	}
 
-	private class DiagnosticsThread extends Thread {
-		private boolean clearDTC = false;
-		private boolean stop = false;
-
-		private String[] types = {
-				// Get VIN, ECM info etc...
-				"0C",
-				"0C",
-				"0C",
-				"0C",
-				"0C",
-				"0C",
-				"0C",
-				"0C",
-				"0C",
-				"0C",
-				// Get DTC
-				"6C",
-		};
-		private String[] tas = {
-				// Get VIN, ECM info etc...
-				"10",
-				"10",
-				"10",
-				"10",
-				"10",
-				"10",
-				"10",
-				"10",
-				//"10",
-				//"10",
-				// Get DTC
-				"FE",
-		};
-		private String[] sas = {
-				// Get VIN, ECM info etc...
-				"F1",
-				"F1",
-				"F1",
-				"F1",
-				"F1",
-				"F1",
-				"F1",
-				"F1",
-				//"F1",
-				//"F1",
-				// Get DTC
-				"F1",
-		};
-		private String[] commands = {
-				// Get VIN, ECM info etc...
-				"3C01",
-				"3C02",
-				"3C03",
-				"3C04",
-				"3C0B",
-				"3C0F",
-				"3C10",
-				"3C11",
-				//"3C12", unknown
-				//"3C19", unknown
-				// Get DTC
-				"1912FF00",
-		};
-		private String[] expects = {
-				// Get VIN, ECM info etc...
-				"0CF1107C01",
-				"0CF1107C02",
-				"0CF1107C03",
-				"0CF1107C04",
-				"0CF1107C0B",
-				"0CF1107C0F",
-				"0CF1107C10",
-				"0CF1107C11",
-				//"0CF1107C12",
-				//"0CF1107C19",
-				// Get DTC
-				"6CF11059"
-		};
-
-		public DiagnosticsThread(boolean cDTC) {
-			setName("HarleyDroidDiagnostics");
-			clearDTC = cDTC;
-		}
-
-		public void cancel() {
-			if (D) Log.d(TAG, "cancel()");
-
-			stop = true;
-		}
-
+	private Runnable mRestartTask = new Runnable() {
 		public void run() {
-			if (D) Log.d(TAG, "run(clearDTC=" + clearDTC + ")");
-
-			if (clearDTC) {
-				if (D) Log.d(TAG, "6C10F114 - ???");
-				mService.send("6C", "10", "F1", "14", "???");
-
-				while (!stop && mService.isBusy()) {
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-					}
-				}
-			}
-
-			while (!stop) {
-				for (int i = 0; !stop && i < commands.length; i++) {
-					if (D) Log.d(TAG, commands[i] + " - " + expects[i]);
-					mService.send(types[i], tas[i], sas[i], commands[i], expects[i]);
-					/* answer should come in 20 ms or so */
-					while (!stop && mService.isBusy()) {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-						}
-					}
-				}
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-				}
-			}
+			mService.setSendData(types, tas, sas, commands, expects, COMMAND_DELAY);
 		}
-	}
+	};
+
+	private String[] types = {
+		// Get VIN, ECM info etc...
+		"0C",
+		"0C",
+		"0C",
+		"0C",
+		"0C",
+		"0C",
+		"0C",
+		"0C",
+		//"0C",
+		//"0C",
+		// Get DTC
+		"6C",
+	};
+
+	private String[] tas = {
+		// Get VIN, ECM info etc...
+		"10",
+		"10",
+		"10",
+		"10",
+		"10",
+		"10",
+		"10",
+		"10",
+		//"10",
+		//"10",
+		// Get DTC
+		"FE",
+	};
+
+	private String[] sas = {
+		// Get VIN, ECM info etc...
+		"F1",
+		"F1",
+		"F1",
+		"F1",
+		"F1",
+		"F1",
+		"F1",
+		"F1",
+		//"F1",
+		//"F1",
+		// Get DTC
+		"F1",
+	};
+
+	private String[] commands = {
+		// Get VIN, ECM info etc...
+		"3C01",
+		"3C02",
+		"3C03",
+		"3C04",
+		"3C0B",
+		"3C0F",
+		"3C10",
+		"3C11",
+		//"3C12", unknown
+		//"3C19", unknown
+		// Get DTC
+		"1912FF00",
+	};
+
+	private String[] expects = {
+		// Get VIN, ECM info etc...
+		"0CF1107C01",
+		"0CF1107C02",
+		"0CF1107C03",
+		"0CF1107C04",
+		"0CF1107C0B",
+		"0CF1107C0F",
+		"0CF1107C10",
+		"0CF1107C11",
+		//"0CF1107C12",
+		//"0CF1107C19",
+		// Get DTC
+		"6CF110" /* 6CF11059 / 6CF1107F XXX BAD ??? */
+	};
 }

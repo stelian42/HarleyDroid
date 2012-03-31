@@ -24,13 +24,21 @@ public interface J1850Interface {
 	// Connects to the J1850 bus. HarleyDroidService.connected()
 	// will be called upon completion.
 	public void connect(HarleyData hd);
+
 	// Disconnects immediately from the J1850 bus.
 	public void disconnect();
-	// Sends a command on the J1850 bus. HarleyDroidService.sendDone()
-	// will be called upon completion.
-	public void send(String type, String ta, String sa,
-					 String command, String expect);
+
 	// Starts polling the J1850 bus. HarleyDroidService.startedPoll()
-	// will be called.
+	// will be called when polling begins.
 	public void startPoll();
+
+	// Starts sending a list of commands on the J1850 bus.
+	// HarleyDroidService.startedSend() will be called when send begins.
+	// will be called upon completion.
+	public void startSend(String type[], String ta[], String sa[],
+						  String command[], String expect[], int delay);
+
+	// Changes the data to be used in the send thread.
+	public void setSendData(String type[], String ta[], String sa[],
+							String command[], String expect[], int delay);
 };
