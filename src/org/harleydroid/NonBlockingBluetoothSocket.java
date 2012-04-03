@@ -47,7 +47,7 @@ public class NonBlockingBluetoothSocket extends Thread
 	private LinkedBlockingQueue<String> queue;
 
 	public void connect(BluetoothDevice device) throws IOException {
-		if (D) Log.d(TAG, "connect");
+		if (D) Log.d(TAG, "" + System.currentTimeMillis() + " connect");
 
 		BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
 
@@ -74,6 +74,8 @@ public class NonBlockingBluetoothSocket extends Thread
 	}
 
 	public void close() {
+		if (D) Log.d(TAG, "" + System.currentTimeMillis() + " close()");
+
 		if (mSock != null) {
 			try {
 				mSock.close();
@@ -90,19 +92,19 @@ public class NonBlockingBluetoothSocket extends Thread
 			line = queue.poll(timeout, TimeUnit.MILLISECONDS);
 		}
 		catch (InterruptedException e) {
-			if (D) Log.e(TAG, "readLine() interrupted: " + e);
+			if (D) Log.e(TAG, "" + System.currentTimeMillis() + " readLine() interrupted: " + e);
 		}
 		if (line == null) {
-			if (D) Log.d(TAG, "readLine() timeout");
+			if (D) Log.d(TAG, "" + System.currentTimeMillis() + " readLine() timeout");
 			throw new TimeoutException("timeout");
 		}
-		if (D) Log.d(TAG, "readLine (" + line.length() + "): " + line);
+		if (D) Log.d(TAG, "" + System.currentTimeMillis() + " readLine (" + line.length() + "): " + line);
 		return line;
 	}
 
 	public void writeLine(String line) throws IOException {
 		line += "\r";
-		if (D) Log.d(TAG, "writeLine: " + line);
+		if (D) Log.d(TAG, "" + System.currentTimeMillis() + " writeLine: " + line);
 		mOut.write(myGetBytes(line));
 		mOut.flush();
 	}
@@ -145,7 +147,7 @@ public class NonBlockingBluetoothSocket extends Thread
 			}
 		}
 		catch (IOException e) {
-			if (D) Log.e(TAG, "mReadThread exception: " + e);
+			if (D) Log.e(TAG, "" + System.currentTimeMillis() + " mReadThread exception: " + e);
 		}
 	}
 }
