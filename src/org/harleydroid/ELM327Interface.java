@@ -19,19 +19,13 @@
 
 package org.harleydroid;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.lang.reflect.Method;
-import java.util.Timer;
-import java.util.TimerTask;
 //import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
 public class ELM327Interface implements J1850Interface
@@ -51,10 +45,7 @@ public class ELM327Interface implements J1850Interface
 	private PollThread mPollThread;
 	private SendThread mSendThread;
 	private BluetoothDevice mDevice;
-	private BluetoothSocket mSock = null;
-	private BufferedReader mIn;
-	private OutputStream mOut;
-	private Timer mTimer = null;
+	private NonBlockingBluetoothSocket mSock = null;
 
 	public ELM327Interface(HarleyDroidService harleyDroidService, BluetoothDevice device) {
 		mHarleyDroidService = harleyDroidService;
@@ -65,9 +56,6 @@ public class ELM327Interface implements J1850Interface
 		if (D) Log.d(TAG, "connect");
 
 		mHD = hd;
-		if (mTimer != null)
-			mTimer.cancel();
-		mTimer = new Timer();
 		if (mConnectThread != null)
 			mConnectThread.cancel();
 		mConnectThread = new ConnectThread();
@@ -89,27 +77,21 @@ public class ELM327Interface implements J1850Interface
 			mSendThread.cancel();
 			mSendThread = null;
 		}
-		// if the ELM327 is polling, we need to get it out of ATMA
-		// or it will be left unusable (blocked in poll mode)
-		try {
-			writeLine("");
-		} catch (Exception e) {
-		}
-		if (mTimer != null) {
-			mTimer.cancel();
-			mTimer = null;
-		}
 		if (mSock != null) {
+			// if the ELM327 is polling, we need to get it out of ATMA
+			// or it will be left unusable (blocked in poll mode)
 			try {
-				mSock.close();
-			} catch (IOException e) {
-				Log.e(TAG, "close() of socket failed", e);
+				mSock.writeLine("");
+			} catch (Exception e) {
 			}
+			mSock.close();
+			mSock = null;
 		}
 	}
 
 	public void startSend(String type[], String ta[], String sa[],
-						  String command[], String expect[], int delay) {
+						  String command[], String expect[],
+						  int timeout[], int delay) {
 		if (D) Log.d(TAG, "send: " + type + "-" + ta + "-" +
 				  sa + "-" + command + "-" + expect);
 
@@ -120,16 +102,17 @@ public class ELM327Interface implements J1850Interface
 		if (mSendThread != null) {
 			mSendThread.cancel();
 		}
-		mSendThread = new SendThread(type, ta, sa, command, expect, delay);
+		mSendThread = new SendThread(type, ta, sa, command, expect, timeout, delay);
 		mSendThread.start();
 	}
 
 	public void setSendData(String type[], String ta[], String sa[],
-							String command[], String expect[], int delay) {
+							String command[], String expect[],
+							int timeout[], int delay) {
 		if (D) Log.d(TAG, "setSendData");
 
 		if (mSendThread != null)
-			mSendThread.setData(type, ta, sa, command, expect, delay);
+			mSendThread.setData(type, ta, sa, command, expect, timeout, delay);
 	}
 
 	public void startPoll() {
@@ -146,52 +129,6 @@ public class ELM327Interface implements J1850Interface
 		mPollThread.start();
 	}
 
-	private class CancelTimer extends TimerTask {
-		public void run() {
-			if (D) Log.d(TAG, "CANCEL AT " + System.currentTimeMillis());
-			try {
-				writeLine("");
-			} catch (IOException e) {
-			}
-			try {
-				mSock.close();
-			} catch (IOException e) {
-			}
-		}
-	};
-
-	private String readLine(long timeout) throws IOException {
-		CancelTimer t = new CancelTimer();
-		mTimer.schedule(t, timeout);
-		if (D) Log.d(TAG, "READLINE AT " + System.currentTimeMillis());
-		String line = mIn.readLine();
-		t.cancel();
-		if (D) Log.d(TAG, "read (" + line.length() + "): " + line);
-		return line;
-	}
-
-	private void writeLine(String line) throws IOException {
-		line += "\r";
-		if (D) Log.d(TAG, "write: " + line);
-		mOut.write(myGetBytes(line));
-		mOut.flush();
-	}
-
-	private String chat(String send, String expect, long timeout) throws IOException {
-		StringBuilder line = new StringBuilder();
-		writeLine(send);
-		long start = System.currentTimeMillis();
-		while (timeout > 0) {
-			line.append(readLine(timeout) + "\n");
-			long now = System.currentTimeMillis();
-			if (line.indexOf(expect) != -1)
-				return line.toString();
-			timeout -= (now - start);
-			start = now;
-		}
-		throw new IOException("timeout");
-	}
-
 	static byte[] myGetBytes(String s, int start, int end) {
 		byte[] result = new byte[end - start];
 		for (int i = start; i < end; i++) {
@@ -206,51 +143,33 @@ public class ELM327Interface implements J1850Interface
 
 	private class ConnectThread extends Thread {
 
-		public ConnectThread() {
-			BluetoothSocket tmp = null;
-
-			setName("ELM327Interface: ConnectThread");
-			try {
-				//tmp = mDevice.createRfcommSocketToServiceRecord(SPP_UUID);
-				Method m = mDevice.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
-				tmp = (BluetoothSocket) m.invoke(mDevice, 1);
-			} catch (Exception e) {
-				Log.e(TAG, "createRfcommSocket() failed", e);
-				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
-			}
-			mSock = tmp;
-		}
-
-		 public void run() {
+		public void run() {
 			int elmVersionMajor = 0;
 			int elmVersionMinor = 0;
 			@SuppressWarnings("unused")
 			int elmVersionRelease = 0;
 
+			setName("ELM327Interface: ConnectThread");
+
 			try {
-				mSock.connect();
-				mIn = new BufferedReader(new InputStreamReader(mSock.getInputStream()), 128);
-				mOut = mSock.getOutputStream();
+				mSock = new NonBlockingBluetoothSocket();
+				mSock.connect(mDevice);
 			} catch (IOException e1) {
 				Log.e(TAG, "connect() socket failed", e1);
-				try {
-					mSock.close();
-				} catch (IOException e2) {
-					Log.e(TAG, "close() of connect socket failed", e2);
-				}
+				mSock.close();
 				mSock = null;
 				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
 				return;
 			}
 
 			try {
-				chat("AT", "", AT_TIMEOUT);
+				mSock.chat("AT", "", AT_TIMEOUT);
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e2) {
 				}
 				// Warm Start
-				String reply = chat("ATWS", "ELM327", ATZ_TIMEOUT);
+				String reply = mSock.chat("ATWS", "ELM327", ATZ_TIMEOUT);
 				// parse reply to extract version information
 				Pattern p = Pattern.compile("(?s)^.*ELM327 v(\\d+)\\.(\\d+)(\\w?).*$");
 				Matcher m = p.matcher(reply);
@@ -261,19 +180,19 @@ public class ELM327Interface implements J1850Interface
 						elmVersionRelease = m.group(3).charAt(0);
 				}
 				// Echo ON
-				chat("ATE1", "OK", AT_TIMEOUT);
+				mSock.chat("ATE1", "OK", AT_TIMEOUT);
 				// Headers ON
-				chat("ATH1", "OK", AT_TIMEOUT);
+				mSock.chat("ATH1", "OK", AT_TIMEOUT);
 				// Allow long (>7 bytes) messages
-				chat("ATAL", "OK", AT_TIMEOUT);
+				mSock.chat("ATAL", "OK", AT_TIMEOUT);
 				// Spaces OFF
 				if (elmVersionMajor >= 1 && elmVersionMinor >= 3)
-					chat("ATS0", "OK", AT_TIMEOUT);
+					mSock.chat("ATS0", "OK", AT_TIMEOUT);
 				// Select Protocol SAE J1850 VPW (10.4 kbaud)
-				chat("ATSP2", "OK", AT_TIMEOUT);
-			} catch (IOException e1) {
+				mSock.chat("ATSP2", "OK", AT_TIMEOUT);
+			} catch (Exception e1) {
 				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERRORAT);
-				// socket is already closed...
+				mSock.close();
 				mSock = null;
 				return;
 			}
@@ -282,13 +201,6 @@ public class ELM327Interface implements J1850Interface
 		}
 
 		public void cancel() {
-			try {
-				if (mSock != null)
-					mSock.close();
-			} catch (IOException e) {
-				Log.e(TAG, "close() of connect socket failed", e);
-			}
-			mSock = null;
 		}
 	}
 
@@ -301,10 +213,10 @@ public class ELM327Interface implements J1850Interface
 			setName("ELM327Interface: PollThread");
 			try {
 				// Monitor All
-				chat("ATMA", "", AT_TIMEOUT);
-			} catch (IOException e1) {
+				mSock.chat("ATMA", "", AT_TIMEOUT);
+			} catch (Exception e1) {
 				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERRORAT);
-				// socket is already closed...
+				mSock.close();
 				mSock = null;
 				return;
 			}
@@ -315,11 +227,11 @@ public class ELM327Interface implements J1850Interface
 				String line;
 
 				try {
-					line = readLine(ATMA_TIMEOUT);
-				} catch (IOException e1) {
+					line = mSock.readLine(ATMA_TIMEOUT);
+				} catch (TimeoutException e1) {
 					if (!stop)
 						mHarleyDroidService.disconnected(HarleyDroid.STATUS_NODATA);
-					// socket is already closed...
+					mSock.close();
 					mSock = null;
 					return;
 				}
@@ -331,20 +243,17 @@ public class ELM327Interface implements J1850Interface
 
 				if (errors > MAX_ERRORS) {
 					try {
-						writeLine("");
+						mSock.writeLine("");
 					} catch (IOException e1) {
 					}
-					try {
-						mSock.close();
-					} catch (IOException e2) {
-					}
+					mSock.close();
 					mSock = null;
 					mHarleyDroidService.disconnected(HarleyDroid.STATUS_TOOMANYERRORS);
 					return;
 				}
 			}
 			try {
-				writeLine("");
+				mSock.writeLine("");
 			} catch (IOException e1) {
 			}
 		}
@@ -358,32 +267,37 @@ public class ELM327Interface implements J1850Interface
 		private boolean stop = false;
 		private boolean newData = false;
 		private String mType[], mTA[], mSA[], mCommand[], mExpect[];
+		private int mTimeout[];
 		private String mNewType[], mNewTA[], mNewSA[], mNewCommand[], mNewExpect[];
+		private int mNewTimeout[];
 		private int mDelay, mNewDelay;
 
-		public SendThread(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
+		public SendThread(String type[], String ta[], String sa[], String command[], String expect[], int timeout[], int delay) {
 			setName("ELM327Interface: SendThread");
 			mType = type;
 			mTA = ta;
 			mSA = sa;
 			mCommand = command;
 			mExpect = expect;
+			mTimeout = timeout;
 			mDelay = delay;
 		}
 
-		public void setData(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
+		public void setData(String type[], String ta[], String sa[], String command[], String expect[], int timeout[], int delay) {
 			synchronized (this) {
 				mNewType = type;
 				mNewTA = ta;
 				mNewSA = sa;
 				mNewCommand = command;
 				mNewExpect = expect;
+				mNewTimeout = timeout;
 				mNewDelay = delay;
 				newData = true;
 			}
 		}
 
 		public void run() {
+			int errors = 0;
 			String recv;
 
 			mHarleyDroidService.startedSend();
@@ -397,6 +311,7 @@ public class ELM327Interface implements J1850Interface
 						mSA = mNewSA;
 						mCommand = mNewCommand;
 						mExpect = mNewExpect;
+						mTimeout = mNewTimeout;
 						mDelay = mNewDelay;
 						newData = false;
 					}
@@ -404,26 +319,40 @@ public class ELM327Interface implements J1850Interface
 
 				for (int i = 0; !stop && i < mCommand.length; i++) {
 					try {
-						chat("ATSH" + mType[i] + mTA[i] + mSA[i], "OK", AT_TIMEOUT);
-						recv = chat(mCommand[i], mExpect[i], AT_TIMEOUT);
-					} catch (IOException e) {
-						mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
-						// socket is already closed...
-						mSock = null;
-						return;
-					}
+						mSock.chat("ATSH" + mType[i] + mTA[i] + mSA[i], "OK", AT_TIMEOUT);
+						recv = mSock.chat(mCommand[i], mExpect[i], mTimeout[i]);
+						// split into lines
+						if (stop)
+							break;
 
-					// split into lines
-					if (!stop) {
 						String lines[] = recv.split("\n");
 						for (int j = 0; j < lines.length; ++j)
 							J1850.parse(myGetBytes(lines[j]), mHD);
+						errors = 0;
+					} catch (IOException e) {
+						mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
+						mSock.close();
+						mSock = null;
+						return;
+					} catch (TimeoutException e) {
+						++errors;
+						if (errors > MAX_ERRORS) {
+							mHarleyDroidService.disconnected(HarleyDroid.STATUS_TOOMANYERRORS);
+							mSock.close();
+							mSock = null;
+							return;
+						}
 					}
 
 					try {
-						Thread.sleep(mDelay);
+						Thread.sleep(mTimeout[i]);
 					} catch (InterruptedException e) {
 					}
+				}
+
+				try {
+					Thread.sleep(mDelay);
+				} catch (InterruptedException e) {
 				}
 			}
 		}

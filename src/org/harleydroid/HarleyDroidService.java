@@ -78,6 +78,7 @@ public class HarleyDroidService extends Service
 	private String mSendSA[];
 	private String mSendCommand[];
 	private String mSendExpect[];
+	private int mSendTimeout[];
 	private int mSendDelay;
 
 	@Override
@@ -246,7 +247,7 @@ public class HarleyDroidService extends Service
 			case STATE_CONNECT:
 			case STATE_POLL:
 				mCurrentState = STATE_TO_SEND;
-				mInterface.startSend(mSendType, mSendTA, mSendSA, mSendCommand, mSendExpect, mSendDelay);
+				mInterface.startSend(mSendType, mSendTA, mSendSA, mSendCommand, mSendExpect, mSendTimeout, mSendDelay);
 				return;
 			case STATE_TO_DISCONNECT:
 			case STATE_TO_CONNECT:
@@ -341,6 +342,7 @@ public class HarleyDroidService extends Service
 				mSendSA = msg.getData().getStringArray("sa");
 				mSendCommand = msg.getData().getStringArray("command");
 				mSendExpect = msg.getData().getStringArray("expect");
+				mSendTimeout = msg.getData().getIntArray("timeout");
 				mSendDelay = msg.getData().getInt("delay");
 				break;
 			case MSG_STARTED_SEND:
@@ -353,6 +355,7 @@ public class HarleyDroidService extends Service
 									   msg.getData().getStringArray("sa"),
 									   msg.getData().getStringArray("command"),
 									   msg.getData().getStringArray("expect"),
+									   msg.getData().getIntArray("timeout"),
 									   msg.getData().getInt("delay"));
 			}
 			stateMachine();
@@ -389,7 +392,7 @@ public class HarleyDroidService extends Service
 		mServiceHandler.obtainMessage(MSG_STARTED_POLL, -1, -1).sendToTarget();
 	}
 
-	public void startSend(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
+	public void startSend(String type[], String ta[], String sa[], String command[], String expect[], int timeout[], int delay) {
 		if (D) Log.d(TAG, "send()");
 		Message m = mServiceHandler.obtainMessage(MSG_START_SEND);
 		Bundle b = new Bundle();
@@ -398,6 +401,7 @@ public class HarleyDroidService extends Service
 		b.putStringArray("sa", sa);
 		b.putStringArray("command", command);
 		b.putStringArray("expect", expect);
+		b.putIntArray("timeout", timeout);
 		b.putInt("delay", delay);
 		m.setData(b);
 		//mServiceHandler.removeCallbacksAndMessages(null);
@@ -410,7 +414,7 @@ public class HarleyDroidService extends Service
 		mServiceHandler.obtainMessage(MSG_STARTED_SEND, -1, -1).sendToTarget();
 	}
 
-	public void setSendData(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
+	public void setSendData(String type[], String ta[], String sa[], String command[], String expect[], int timeout[], int delay) {
 		if (D) Log.d(TAG, "setSendData()");
 		Message m = mServiceHandler.obtainMessage(MSG_SET_SEND);
 		Bundle b = new Bundle();
@@ -419,6 +423,7 @@ public class HarleyDroidService extends Service
 		b.putStringArray("sa", sa);
 		b.putStringArray("command", command);
 		b.putStringArray("expect", expect);
+		b.putIntArray("timeout", timeout);
 		b.putInt("delay", delay);
 		m.setData(b);
 		//mServiceHandler.removeCallbacksAndMessages(null);

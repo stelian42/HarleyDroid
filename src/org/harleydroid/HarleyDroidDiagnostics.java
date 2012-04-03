@@ -140,7 +140,7 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		super.onServiceConnected(name, service);
 
 		if (!mService.isSending())
-			mService.startSend(types, tas, sas, commands, expects, COMMAND_DELAY);
+			mService.startSend(types, tas, sas, commands, expects, timeouts, COMMAND_DELAY);
 
 		mHD.addHarleyDataDiagnosticsListener(mHarleyDroidDiagnosticsView);
 		mHarleyDroidDiagnosticsView.drawAll(mHD);
@@ -153,8 +153,12 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		mHD.removeHarleyDataDiagnosticsListener(mHarleyDroidDiagnosticsView);
 	}
 
-	private static final int COMMAND_DELAY = 100;
-	private static final int DTC_DONE_DELAY = 1000;
+	private static final int COMMAND_TIMEOUT = 1000;
+	private static final int GET_DTC_TIMEOUT = 3000;
+	private static final int CLEAR_DTC_TIMEOUT = 1000;
+
+	private static final int COMMAND_DELAY = 2000;
+	private static final int CLEAR_DTC_DELAY = 5000;
 
 	public void clearDTC() {
 		if (D) Log.d(TAG, "clearDTC()");
@@ -163,16 +167,18 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		String[] cTas =			{ "10" };
 		String[] cSas =			{ "F1" };
 		String[] cCommands =	{ "14" };
-		String[] cExpects =		{ "???" };
+		String[] cExpects =		{ "6CF11054" };
+		int[] cCommandTimeout =	{ CLEAR_DTC_TIMEOUT };
 
-		mService.setSendData(cTypes, cTas, cSas, cCommands, cExpects, COMMAND_DELAY);
+		mService.setSendData(cTypes, cTas, cSas, cCommands, cExpects, cCommandTimeout, COMMAND_DELAY);
 
-		mHandler.postDelayed(mRestartTask, DTC_DONE_DELAY);
+		mHandler.postDelayed(mRestartTask, CLEAR_DTC_DELAY);
 	}
 
 	private Runnable mRestartTask = new Runnable() {
 		public void run() {
-			mService.setSendData(types, tas, sas, commands, expects, COMMAND_DELAY);
+			mHD.resetHistoricDTC();
+			mService.setSendData(types, tas, sas, commands, expects, timeouts, COMMAND_DELAY);
 		}
 	};
 
@@ -253,6 +259,18 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		//"0CF1107C12",
 		//"0CF1107C19",
 		// Get DTC
-		"6CF110" /* 6CF11059 / 6CF1107F XXX BAD ??? */
+		"6CF11059"
+	};
+
+	private int[] timeouts = {
+		COMMAND_TIMEOUT,
+		COMMAND_TIMEOUT,
+		COMMAND_TIMEOUT,
+		COMMAND_TIMEOUT,
+		COMMAND_TIMEOUT,
+		COMMAND_TIMEOUT,
+		COMMAND_TIMEOUT,
+		COMMAND_TIMEOUT,
+		GET_DTC_TIMEOUT,
 	};
 }

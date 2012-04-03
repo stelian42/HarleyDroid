@@ -58,7 +58,8 @@ public class EmulatorInterface implements J1850Interface
 	}
 
 	public void startSend(String type[], String ta[], String sa[],
-						  String command[], String expect[], int delay) {
+						  String command[], String expect[],
+						  int timeout[], int delay) {
 		if (D) Log.d(TAG, "send: " + type + "-" + ta + "-" +
 					 sa + "-" + command + "-" + expect);
 
@@ -68,16 +69,17 @@ public class EmulatorInterface implements J1850Interface
 		}
 		if (mSendThread != null)
 			mSendThread.cancel();
-		mSendThread = new SendThread(type, ta, sa, command, expect, delay);
+		mSendThread = new SendThread(type, ta, sa, command, expect, timeout, delay);
 		mSendThread.start();
 	}
 
 	public void setSendData(String type[], String ta[], String sa[],
-							String command[], String expect[], int delay) {
+							String command[], String expect[],
+							int timeout[], int delay) {
 		if (D) Log.d(TAG, "setSendData");
 
 		if (mSendThread != null)
-			mSendThread.setData(type, ta, sa, command, expect, delay);
+			mSendThread.setData(type, ta, sa, command, expect, timeout, delay);
 	}
 
 	public void startPoll() {
@@ -130,6 +132,9 @@ public class EmulatorInterface implements J1850Interface
 				line = "J0CF1107C023134302D30371D";
 				line = "J0CF1107C11303138393045";
 
+				line = "483B402094";
+				line = "483B40A0B2";
+
 				if (J1850.parse(line.getBytes(), mHD))
 					errors = 0;
 				else
@@ -151,26 +156,30 @@ public class EmulatorInterface implements J1850Interface
 		private boolean stop = false;
 		private boolean newData = false;
 		private String mType[], mTA[], mSA[], mCommand[], mExpect[];
+		private int mTimeout[];
 		private String mNewType[], mNewTA[], mNewSA[], mNewCommand[], mNewExpect[];
+		private int mNewTimeout[];
 		private int mDelay, mNewDelay;
 
-		public SendThread(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
+		public SendThread(String type[], String ta[], String sa[], String command[], String expect[], int timeout[], int delay) {
 			setName("EmulatorInterface: SendThread");
 			mType = type;
 			mTA = ta;
 			mSA = sa;
 			mCommand = command;
 			mExpect = expect;
+			mTimeout = timeout;
 			mDelay = delay;
 		}
 
-		public void setData(String type[], String ta[], String sa[], String command[], String expect[], int delay) {
+		public void setData(String type[], String ta[], String sa[], String command[], String expect[], int timeout[], int delay) {
 			synchronized (this) {
 				mNewType = type;
 				mNewTA = ta;
 				mNewSA = sa;
 				mNewCommand = command;
 				mNewExpect = expect;
+				mNewTimeout = timeout;
 				mNewDelay = delay;
 				newData = true;
 			}
@@ -189,6 +198,7 @@ public class EmulatorInterface implements J1850Interface
 						mSA = mNewSA;
 						mCommand = mNewCommand;
 						mExpect = mNewExpect;
+						mTimeout = mNewTimeout;
 						mDelay = mNewDelay;
 						newData = false;
 					}
@@ -210,14 +220,19 @@ public class EmulatorInterface implements J1850Interface
 
 					// fake some answer...
 					//String line = "J0CF1107C11303138393045";
-					String line = "6CF11059ABCD20";
+					String line = "6CF1105901341167";
 
 					J1850.parse(line.getBytes(), mHD);
 
 					try {
-						Thread.sleep(mDelay);
+						Thread.sleep(mTimeout[i]);
 					} catch (InterruptedException e) {
 					}
+				}
+
+				try {
+					Thread.sleep(mDelay);
+				} catch (InterruptedException e) {
 				}
 			}
 		}

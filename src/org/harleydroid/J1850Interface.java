@@ -36,9 +36,11 @@ public interface J1850Interface {
 	// HarleyDroidService.startedSend() will be called when send begins.
 	// will be called upon completion.
 	public void startSend(String type[], String ta[], String sa[],
-						  String command[], String expect[], int delay);
+						  String command[], String expect[],
+						  int timeout[], int delay);
 
 	// Changes the data to be used in the send thread.
 	public void setSendData(String type[], String ta[], String sa[],
-							String command[], String expect[], int delay);
+							String command[], String expect[],
+							int timeout[], int delay);
 };
