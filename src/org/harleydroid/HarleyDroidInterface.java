@@ -257,7 +257,7 @@ public class HarleyDroidInterface implements J1850Interface
 					}
 				}
 
-				for (int i = 0; !stop && i < mCommand.length; i++) {
+				for (int i = 0; !stop && !newData && i < mCommand.length; i++) {
 
 					byte[] data = new byte[3 + mCommand[i].length() / 2];
 					data[0] = (byte)Integer.parseInt(mType[i], 16);
@@ -274,7 +274,7 @@ public class HarleyDroidInterface implements J1850Interface
 					try {
 						recv = mSock.chat(mType[i] + mTA[i] + mSA[i] + mCommand[i], mExpect[i], mTimeout[i]);
 
-						if (stop)
+						if (stop || newData)
 							break;
 
 						// split into lines and strip off timestamp
@@ -293,7 +293,7 @@ public class HarleyDroidInterface implements J1850Interface
 					} catch (TimeoutException e) {
 						++errors;
 						if (errors > MAX_ERRORS) {
-							mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
+							mHarleyDroidService.disconnected(HarleyDroid.STATUS_TOOMANYERRORS);
 							mSock.close();
 							mSock = null;
 							return;

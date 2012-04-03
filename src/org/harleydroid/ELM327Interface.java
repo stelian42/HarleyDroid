@@ -213,8 +213,8 @@ public class ELM327Interface implements J1850Interface
 			setName("ELM327Interface: PollThread");
 			try {
 				// Monitor All
-				mSock.chat("ATMA", "", AT_TIMEOUT);
-			} catch (Exception e1) {
+				mSock.writeLine("ATMA");
+			} catch (IOException e1) {
 				mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERRORAT);
 				mSock.close();
 				mSock = null;
@@ -317,12 +317,12 @@ public class ELM327Interface implements J1850Interface
 					}
 				}
 
-				for (int i = 0; !stop && i < mCommand.length; i++) {
+				for (int i = 0; !stop && !newData && i < mCommand.length; i++) {
 					try {
 						mSock.chat("ATSH" + mType[i] + mTA[i] + mSA[i], "OK", AT_TIMEOUT);
 						recv = mSock.chat(mCommand[i], mExpect[i], mTimeout[i]);
 						// split into lines
-						if (stop)
+						if (stop || newData)
 							break;
 
 						String lines[] = recv.split("\n");
