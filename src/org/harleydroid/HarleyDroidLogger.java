@@ -218,14 +218,14 @@ public class HarleyDroidLogger implements HarleyDataDashboardListener, HarleyDat
 		write("ESL," + ecmSWLevel);
 	}
 
-	public void onHistoricDTCChanged(int[] dtc) {
+	public void onHistoricDTCChanged(String[] dtc) {
 		String data = "";
 		for (int i = 0; i < dtc.length; i++)
 			data += dtc[i] + ",";
 		write("DTH,", data);
 	}
 
-	public void onCurrentDTCChanged(int[] dtc) {
+	public void onCurrentDTCChanged(String[] dtc) {
 		String data = "";
 		for (int i = 0; i < dtc.length; i++)
 			data += dtc[i] + ",";

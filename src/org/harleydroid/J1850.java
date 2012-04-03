@@ -151,9 +151,9 @@ public class J1850 {
 		} else if ((x == 0xa8836112) && ((in[4] & 0xd0) == 0xd0))
 			hd.setFuelGauge(in[4] & 0x0f);
 		else if ((x & 0xffffff5d) == 0x483b4000) {
-			if ((in[3] & 0x20) == 0x20)
+			if (((int)in[3] & 0xff) == 0x20)
 				hd.setNeutral(false);
-			else if ((in[3] & 0xa0) == 0xa0)
+			else if (((int)in[3] & 0xff) == 0xA0)
 				hd.setNeutral(true);
 			hd.setClutch((in[3] & 0x80) != 0);
 		} else if ((x & 0xffffff7f) == 0x68881003) {
@@ -199,14 +199,25 @@ public class J1850 {
 			/* this is the get DTC command, answers are below... */
 			if (D) Log.d(TAG, "DTC start");
 		} else if ((x & 0xffff0fff) == 0x6cf10059) {
-			int dtc = (((int)in[4] & 0xff) << 8) | ((int)in[5] & 0xff);
+			String dtc = "";
+			switch ((in[4] & 0xc0) >> 6) {
+				case 0: dtc = "P"; break;
+				case 1: dtc = "C"; break;
+				case 2: dtc = "B"; break;
+				case 3: dtc = "U"; break;
+			}
+			dtc += Integer.toString((in[4] & 0x30) >> 4, 16);
+			dtc += Integer.toString(in[4] & 0x0f, 16);
+			dtc += Integer.toString((in[5] & 0xf0) >> 4, 16);
+			dtc += Integer.toString(in[5] & 0x0f, 16);
+			dtc = dtc.toUpperCase();
 			if (in[2] == 0x10) {
 				/* historic DTC */
-				if (D) Log.d(TAG, "historic DTC: 0x" + Integer.toString(dtc, 16));
+				if (D) Log.d(TAG, "historic DTC: " + dtc);
 				hd.addHistoricDTC(dtc);
 			} else if (in[2] == 0x40) {
 				/* current DTC */
-				if (D) Log.d(TAG, "current DTC: 0x" + Integer.toString(dtc, 16));
+				if (D) Log.d(TAG, "current DTC: " + dtc);
 				hd.addCurrentDTC(dtc);
 			} else
 				hd.setUnknown(buffer);
@@ -217,6 +228,7 @@ public class J1850 {
 		return true;
 	}
 
+	/*
 	public static void main(String[] args) {
 		// RPM at 1000 RPM
 		//String line = "28 1B 10 02 0f a0 d7";
@@ -244,4 +256,5 @@ public class J1850 {
 		else
 			System.out.println("Parse error");
 	}
+	*/
 }

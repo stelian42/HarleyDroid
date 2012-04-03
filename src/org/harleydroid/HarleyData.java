@@ -29,7 +29,7 @@ public class HarleyData {
 	// raw values reported in the J1850 stream
 	private int mRPM = 0;					// RPM in rotation/minute * 4
 	private int mSpeed = 0;					// speed in mph * 200
-	private int mEngineTemp = 0;			// XXX engine temperature in Fahrenheit
+	private int mEngineTemp = 32;			// XXX engine temperature in Fahrenheit
 	private int mFuelGauge = 0;				// fuel gauge: 0 (empty) to 6 (full)
 	private int mTurnSignals = 0;			// turn signals bitmap: 0x1=right, 0x2=left
 	private boolean mNeutral = false;		// XXX boolean: in neutral
@@ -38,12 +38,12 @@ public class HarleyData {
 	private boolean mCheckEngine = false;	// boolean: check engine
 	private int mOdometer = 0;				// odometer tick (1 tick = 0.4 meters)
 	private int mFuel = 0;					// fuel consumption tick (1 tick = 0.000040 liters)
-	private String mVIN = "N/A";			// VIN
-	private String mECMPN = "N/A";			// ECM Part Number
-	private String mECMCalID = "N/A";		// ECM Calibration ID
+	private String mVIN = "";				// VIN
+	private String mECMPN = "";				// ECM Part Number
+	private String mECMCalID = "";			// ECM Calibration ID
 	private int mECMSWLevel = 0;			// ECM Software Level
-	private CopyOnWriteArrayList<Integer> mHistoricDTC; // Historic DTC
-	private CopyOnWriteArrayList<Integer> mCurrentDTC;	// Current DTC
+	private CopyOnWriteArrayList<String> mHistoricDTC; // Historic DTC
+	private CopyOnWriteArrayList<String> mCurrentDTC;	// Current DTC
 
 	private int mResetOdometer = 0;
 	private int mResetFuel = 0;
@@ -57,8 +57,8 @@ public class HarleyData {
 		mDiagnosticsListeners = new CopyOnWriteArrayList<HarleyDataDiagnosticsListener>();
 		mRawListeners = new CopyOnWriteArrayList<HarleyDataRawListener>();
 
-		mHistoricDTC = new CopyOnWriteArrayList<Integer>();
-		mCurrentDTC = new CopyOnWriteArrayList<Integer>();
+		mHistoricDTC = new CopyOnWriteArrayList<String>();
+		mCurrentDTC = new CopyOnWriteArrayList<String>();
 	}
 
 	public void addHarleyDataDashboardListener(HarleyDataDashboardListener l) {
@@ -310,10 +310,10 @@ public class HarleyData {
 			l.onECMSWLevelChanged(mECMSWLevel);
 	}
 
-	public int[] getHistoricDTC() {
-		int[] dtclist = new int[mHistoricDTC.size()];
+	public String[] getHistoricDTC() {
+		String[] dtclist = new String[mHistoricDTC.size()];
 		int i = 0;
-		for (Integer n : mHistoricDTC)
+		for (String n : mHistoricDTC)
 			dtclist[i++] = n;
 		return dtclist;
 	}
@@ -322,22 +322,22 @@ public class HarleyData {
 		mHistoricDTC.clear();
 	}
 
-	public void addHistoricDTC(int dtc) {
+	public void addHistoricDTC(String dtc) {
 		if (mHistoricDTC.contains(dtc))
 			return;
 		mHistoricDTC.add(dtc);
-		int[] dtclist = new int[mHistoricDTC.size()];
+		String[] dtclist = new String[mHistoricDTC.size()];
 		int i = 0;
-		for (Integer n : mHistoricDTC)
+		for (String n : mHistoricDTC)
 			dtclist[i++] = n;
 		for (HarleyDataDiagnosticsListener l : mDiagnosticsListeners)
 			l.onHistoricDTCChanged(dtclist);
 	}
 
-	public int[] getCurrentDTC() {
-		int[] dtclist = new int[mCurrentDTC.size()];
+	public String[] getCurrentDTC() {
+		String[] dtclist = new String[mCurrentDTC.size()];
 		int i = 0;
-		for (Integer n : mCurrentDTC)
+		for (String n : mCurrentDTC)
 			dtclist[i++] = n;
 		return dtclist;
 	}
@@ -346,13 +346,13 @@ public class HarleyData {
 		mCurrentDTC.clear();
 	}
 
-	public void addCurrentDTC(int dtc) {
+	public void addCurrentDTC(String dtc) {
 		if (mCurrentDTC.contains(dtc))
 			return;
 		mCurrentDTC.add(dtc);
-		int[] dtclist = new int[mCurrentDTC.size()];
+		String[] dtclist = new String[mCurrentDTC.size()];
 		int i = 0;
-		for (Integer n : mCurrentDTC)
+		for (String n : mCurrentDTC)
 			dtclist[i++] = n;
 		for (HarleyDataDiagnosticsListener l : mDiagnosticsListeners)
 			l.onCurrentDTCChanged(dtclist);

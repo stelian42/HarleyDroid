@@ -25,6 +25,6 @@ public interface HarleyDataDiagnosticsListener {
 	public void onECMPNChanged(String ecmPN);
 	public void onECMCalIDChanged(String ecmCalID);
 	public void onECMSWLevelChanged(int swLevel);
-	public void onHistoricDTCChanged(int[] dtc);
-	public void onCurrentDTCChanged(int[] dtc);
+	public void onHistoricDTCChanged(String[] dtc);
+	public void onCurrentDTCChanged(String[] dtc);
 };

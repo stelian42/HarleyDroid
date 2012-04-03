@@ -94,10 +94,10 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 				drawECMSWLevel(msg.arg1);
 				break;
 			case UPDATE_HISTORICDTC:
-				drawHistoricDTC(msg.getData().getIntArray("historicdtc"));
+				drawHistoricDTC(msg.getData().getStringArray("historicdtc"));
 				break;
 			case UPDATE_CURRENTDTC:
-				drawCurrentDTC(msg.getData().getIntArray("currentdtc"));
+				drawCurrentDTC(msg.getData().getStringArray("currentdtc"));
 				break;
 			}
 		}
@@ -132,18 +132,18 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 		mHandler.obtainMessage(HarleyDroidDiagnosticsView.UPDATE_ECMSWLEVEL, ecmSWLevel, -1).sendToTarget();
 	}
 
-	public void onHistoricDTCChanged(int[] dtc) {
+	public void onHistoricDTCChanged(String[] dtc) {
 		Message m = mHandler.obtainMessage(HarleyDroidDiagnosticsView.UPDATE_HISTORICDTC);
 		Bundle b = new Bundle();
-		b.putIntArray("historicdtc", dtc);
+		b.putStringArray("historicdtc", dtc);
 		m.setData(b);
 		m.sendToTarget();
 	}
 
-	public void onCurrentDTCChanged(int[] dtc) {
+	public void onCurrentDTCChanged(String[] dtc) {
 		Message m = mHandler.obtainMessage(HarleyDroidDiagnosticsView.UPDATE_CURRENTDTC);
 		Bundle b = new Bundle();
-		b.putIntArray("currentdtc", dtc);
+		b.putStringArray("currentdtc", dtc);
 		m.setData(b);
 		m.sendToTarget();
 	}
@@ -158,10 +158,10 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 			drawHistoricDTC(hd.getHistoricDTC());
 			drawCurrentDTC(hd.getCurrentDTC());
 		} else {
-			drawVIN("N/A");
-			drawECMPN("N/A");
-			drawECMCalID("N/A");
-			drawECMSWLevel(0);
+			drawVIN("");
+			drawECMPN("");
+			drawECMCalID("");
+			drawECMSWLevel(-1);
 			drawHistoricDTC(null);
 			drawCurrentDTC(null);
 		}
@@ -183,34 +183,38 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 	}
 
 	public void drawECMSWLevel(int value) {
-		if (mViewECMSWLevel != null)
-			mViewECMSWLevel.setText("0x" + Integer.toString(value, 16));
+		if (mViewECMSWLevel != null) {
+			if (value == -1)
+				mViewECMSWLevel.setText("");
+			else
+				mViewECMSWLevel.setText("0x" + Integer.toString(value, 16));
+		}
 	}
 
-	public void drawHistoricDTC(int[] dtc) {
+	public void drawHistoricDTC(String[] dtc) {
 		if (D) Log.d("DTC", "drawHistoric");
 
 		if (mViewHistoricDTC == null)
 			return;
 
 		// arrayAdapter.notifyDataSetChanged();
-		ArrayList<Integer> items = new ArrayList<Integer>();
+		ArrayList<String> items = new ArrayList<String>();
 		if (dtc != null)
 			for (int i = 0; i < dtc.length; i++)
-				items.add(new Integer(dtc[i]));
-		mViewHistoricDTC.setAdapter(new ArrayAdapter<Integer>(mActivity, R.layout.dtc_item, items));
+				items.add(dtc[i]);
+		mViewHistoricDTC.setAdapter(new ArrayAdapter<String>(mActivity, R.layout.dtc_item, items));
 	}
 
-	public void drawCurrentDTC(int[] dtc) {
+	public void drawCurrentDTC(String[] dtc) {
 		if (D) Log.d("DTC", "drawCurrent");
 
 		if (mViewCurrentDTC == null)
 			return;
 
-		ArrayList<Integer> items = new ArrayList<Integer>();
+		ArrayList<String> items = new ArrayList<String>();
 		if (dtc != null)
 			for (int i = 0; i < dtc.length; i++)
-				items.add(new Integer(dtc[i]));
-		mViewCurrentDTC.setAdapter(new ArrayAdapter<Integer>(mActivity, R.layout.dtc_item, items));
+				items.add(dtc[i]);
+		mViewCurrentDTC.setAdapter(new ArrayAdapter<String>(mActivity, R.layout.dtc_item, items));
 	}
 }
