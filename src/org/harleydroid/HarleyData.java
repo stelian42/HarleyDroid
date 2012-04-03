@@ -34,7 +34,7 @@ public class HarleyData {
 	private int mTurnSignals = 0;			// turn signals bitmap: 0x1=right, 0x2=left
 	private boolean mNeutral = false;		// XXX boolean: in neutral
 	private boolean mClutch = false;		// boolean: clutch engaged
-	private int mGear = 0;					// current gear: -1 or 1 to 6
+	private int mGear = -1;					// current gear: -1 or 1 to 6
 	private boolean mCheckEngine = false;	// boolean: check engine
 	private int mOdometer = 0;				// odometer tick (1 tick = 0.4 meters)
 	private int mFuel = 0;					// fuel consumption tick (1 tick = 0.000040 liters)

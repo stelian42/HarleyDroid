@@ -261,16 +261,16 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 				drawTurnSignals(msg.arg1);
 				break;
 			case UPDATE_NEUTRAL:
-				drawNeutral(msg.arg1);
+				drawNeutral(msg.arg1 != 0 ? true : false);
 				break;
 			case UPDATE_CLUTCH:
-				drawClutch(msg.arg1);
+				drawClutch(msg.arg1 != 0 ? true : false);
 				break;
 			case UPDATE_GEAR:
 				drawGear(msg.arg1);
 				break;
 			case UPDATE_CHECKENGINE:
-				drawCheckEngine(msg.arg1);
+				drawCheckEngine(msg.arg1 != 0 ? true : false);
 				break;
 			case UPDATE_ODOMETER_IMPERIAL:
 				drawOdometerImperial(msg.arg1);
@@ -358,10 +358,10 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			drawEngineTempMetric(hd.getEngineTempMetric());
 			drawFuelGauge(hd.getFuelGauge());
 			drawTurnSignals(hd.getTurnSignals());
-			drawNeutral(hd.getNeutral() ? 1 : 0);
-			drawClutch(hd.getClutch() ? 1 : 0);
+			drawNeutral(hd.getNeutral());
+			drawClutch(hd.getClutch());
 			drawGear(hd.getGear());
-			drawCheckEngine(hd.getCheckEngine() ? 1 : 0);
+			drawCheckEngine(hd.getCheckEngine());
 			drawOdometerImperial(hd.getOdometerImperial());
 			drawOdometerMetric(hd.getOdometerMetric());
 			drawFuelImperial(hd.getFuelImperial());
@@ -374,10 +374,10 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			drawEngineTempMetric(0);
 			drawFuelGauge(0);
 			drawTurnSignals(0);
-			drawNeutral(0);
-			drawClutch(0);
-			drawGear(0);
-			drawCheckEngine(0);
+			drawNeutral(false);
+			drawClutch(false);
+			drawGear(-1);
+			drawCheckEngine(false);
 			drawOdometerImperial(0);
 			drawOdometerMetric(0);
 			drawFuelImperial(0);
@@ -456,18 +456,26 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			if (mImageTurnSignalsRight != null)
 				mImageTurnSignalsRight.setVisibility(View.INVISIBLE);
 			if (mViewTurnSignals != null)
-				mViewTurnSignals.setText("");
+				mViewTurnSignals.setText("-");
 		}
 	}
 
-	public void drawNeutral(int value) {
-		if (mViewNeutral != null)
-			mViewNeutral.setText(Integer.toString(value));
+	public void drawNeutral(boolean value) {
+		if (mViewNeutral != null) {
+			if (value)
+				mViewNeutral.setText("N");
+			else
+				mViewNeutral.setText("-");
+		}
 	}
 
-	public void drawClutch(int value) {
-		if (mViewClutch != null)
-			mViewClutch.setText(Integer.toString(value));
+	public void drawClutch(boolean value) {
+		if (mViewClutch != null) {
+			if (value)
+				mViewClutch.setText("C");
+			else
+				mViewClutch.setText("-");
+		}
 	}
 
 	public void drawGear(int value) {
@@ -479,11 +487,15 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 		}
 	}
 
-	public void drawCheckEngine(int value) {
+	public void drawCheckEngine(boolean value) {
 		if (mImageCheckEngine != null)
-			mImageCheckEngine.setVisibility(value == 0 ? View.INVISIBLE : View.VISIBLE);
-		if (mViewCheckEngine != null)
-			mViewCheckEngine.setText(Integer.toString(value));
+			mImageCheckEngine.setVisibility(value ? View.VISIBLE : View.INVISIBLE);
+		if (mViewCheckEngine != null) {
+			if (value)
+				mViewCheckEngine.setText("E");
+			else
+				mViewCheckEngine.setText("-");
+		}
 	}
 
 	public void drawOdometerImperial(int value) {
