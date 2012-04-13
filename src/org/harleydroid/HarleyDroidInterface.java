@@ -122,7 +122,7 @@ public class HarleyDroidInterface implements J1850Interface
 	static byte[] myGetBytes(String s, int start, int end) {
 		byte[] result = new byte[end - start];
 		for (int i = start; i < end; i++) {
-			result[i] = (byte) s.charAt(i);
+			result[i - start] = (byte) s.charAt(i);
 		}
 		return result;
 	}
@@ -172,8 +172,10 @@ public class HarleyDroidInterface implements J1850Interface
 				} catch (TimeoutException e1) {
 					if (!stop)
 						mHarleyDroidService.disconnected(HarleyDroid.STATUS_NODATA);
-					mSock.close();
-					mSock = null;
+					if (mSock != null) {
+						mSock.close();
+						mSock = null;
+					}
 					return;
 				}
 
@@ -294,8 +296,10 @@ public class HarleyDroidInterface implements J1850Interface
 						++errors;
 						if (errors > MAX_ERRORS) {
 							mHarleyDroidService.disconnected(HarleyDroid.STATUS_TOOMANYERRORS);
-							mSock.close();
-							mSock = null;
+							if (mSock != null) {
+								mSock.close();
+								mSock = null;
+							}
 							return;
 						}
 					}
