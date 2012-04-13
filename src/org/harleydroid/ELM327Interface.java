@@ -231,8 +231,10 @@ public class ELM327Interface implements J1850Interface
 				} catch (TimeoutException e1) {
 					if (!stop)
 						mHarleyDroidService.disconnected(HarleyDroid.STATUS_NODATA);
-					mSock.close();
-					mSock = null;
+					if (mSock != null) {
+						mSock.close();
+						mSock = null;
+					}
 					return;
 				}
 
@@ -338,8 +340,10 @@ public class ELM327Interface implements J1850Interface
 						++errors;
 						if (errors > MAX_ERRORS) {
 							mHarleyDroidService.disconnected(HarleyDroid.STATUS_TOOMANYERRORS);
-							mSock.close();
-							mSock = null;
+							if (mSock != null) {
+								mSock.close();
+								mSock = null;
+							}
 							return;
 						}
 					}
