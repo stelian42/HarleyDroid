@@ -37,23 +37,31 @@ public class HarleyDroidSettings extends PreferenceActivity {
 
 		BluetoothAdapter bluetoothAdapter = null;
 		ArrayList<CharSequence> bluetoothDevices = new ArrayList<CharSequence>();
+		ArrayList<CharSequence> bluetoothAddresses = new ArrayList<CharSequence>();
 
 		if (!HarleyDroid.EMULATOR) {
 			bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 			Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-			for (BluetoothDevice dev : pairedDevices)
-				bluetoothDevices.add(dev.getAddress());
+			for (BluetoothDevice dev : pairedDevices) {
+				bluetoothDevices.add(dev.getAddress() + " - " + dev.getName());
+				bluetoothAddresses.add(dev.getAddress());
+			}
 		}
 		else {
-			bluetoothDevices.add("0:0:0:0");
-			bluetoothDevices.add("1:1:1:1");
-			bluetoothDevices.add("2:2:2:2");
-			bluetoothDevices.add("3:3:3:3");
-			bluetoothDevices.add("4:4:4:4");
+			bluetoothDevices.add("0:0:0:0 - Zerro");
+			bluetoothAddresses.add("0:0:0:0");
+			bluetoothDevices.add("1:1:1:1 - One");
+			bluetoothAddresses.add("1:1:1:1");
+			bluetoothDevices.add("2:2:2:2 - Two");
+			bluetoothAddresses.add("2:2:2:2");
+			bluetoothDevices.add("3:3:3:3 - Three");
+			bluetoothAddresses.add("3:3:3:3");
+			bluetoothDevices.add("4:4:4:4 - Four");
+			bluetoothAddresses.add("4:4:4:4");
 		}
 
 		ListPreference btlist = (ListPreference) findPreference("bluetoothid");
-		btlist.setEntryValues(bluetoothDevices.toArray(new CharSequence[0]));
+		btlist.setEntryValues(bluetoothAddresses.toArray(new CharSequence[0]));
 		btlist.setEntries(bluetoothDevices.toArray(new CharSequence[0]));
 	}
 }
