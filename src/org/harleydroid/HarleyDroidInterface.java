@@ -214,7 +214,7 @@ public class HarleyDroidInterface implements J1850Interface
 		private int mDelay, mNewDelay;
 
 		public SendThread(String type[], String ta[], String sa[], String command[], String expect[], int timeout[], int delay) {
-			setName("ELM327Interface: SendThread");
+			setName("HarleyDroidInterface: SendThread");
 			mType = type;
 			mTA = ta;
 			mSA = sa;
@@ -234,6 +234,7 @@ public class HarleyDroidInterface implements J1850Interface
 				mNewTimeout = timeout;
 				mNewDelay = delay;
 				newData = true;
+				this.interrupt();
 			}
 		}
 

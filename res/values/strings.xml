@@ -84,11 +84,11 @@
 <string name="pref_interfacetype">Interface type</string>
 <string-array name="pref_interfacetype_names">
 	<item>"ELM327"</item>
-	<item>"HarleyDroid"</item>
+	<item>"HarleyDroidInterface"</item>
 </string-array>
 <string-array name="pref_interfacetype_values">
 	<item>"elm327"</item>
-	<item>"harleydroid"</item>
+	<item>"hdi"</item>
 </string-array>
 <string name="pref_bluetoothdev">Bluetooth device</string>
 <string name="pref_autoconnect">Autoconnect on startup</string>

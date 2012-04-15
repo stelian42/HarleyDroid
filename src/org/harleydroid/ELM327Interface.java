@@ -132,7 +132,7 @@ public class ELM327Interface implements J1850Interface
 	static byte[] myGetBytes(String s, int start, int end) {
 		byte[] result = new byte[end - start];
 		for (int i = start; i < end; i++) {
-			result[i] = (byte) s.charAt(i);
+			result[i - start] = (byte) s.charAt(i);
 		}
 		return result;
 	}
@@ -295,6 +295,7 @@ public class ELM327Interface implements J1850Interface
 				mNewTimeout = timeout;
 				mNewDelay = delay;
 				newData = true;
+				this.interrupt();
 			}
 		}
 

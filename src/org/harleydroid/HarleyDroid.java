@@ -186,22 +186,19 @@ public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnE
 		mService.setHandler(mHandler);
 		mHD = mService.getHarleyData();
 
-		if (!mService.isInitialized()) {
-
-			if (!EMULATOR) {
-				// should not happen because capture menu is disabled, but the
-				// error was somehow reproduced by users.
-				if (mBluetoothID == null)
-					return;
-				mService.setInterfaceType(mInterfaceType,
-						mBluetoothAdapter.getRemoteDevice(mBluetoothID));
-			}
-			else
-				mService.setInterfaceType(mInterfaceType, null);
-
-			mService.setLogging(mLogging, mUnitMetric, mGPS, mLogRaw);
-			mService.setAutoReconnect(mAutoReconnect, Integer.parseInt(mReconnectDelay));
+		if (!EMULATOR) {
+			// should not happen because capture menu is disabled, but the
+			// error was somehow reproduced by users.
+			if (mBluetoothID == null)
+				return;
+			mService.setInterfaceType(mInterfaceType,
+					mBluetoothAdapter.getRemoteDevice(mBluetoothID));
 		}
+		else
+			mService.setInterfaceType(mInterfaceType, null);
+
+		mService.setLogging(mLogging, mUnitMetric, mGPS, mLogRaw);
+		mService.setAutoReconnect(mAutoReconnect, Integer.parseInt(mReconnectDelay));
 	}
 
 	public void onServiceDisconnected(ComponentName name) {

@@ -153,12 +153,12 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		mHD.removeHarleyDataDiagnosticsListener(mHarleyDroidDiagnosticsView);
 	}
 
-	private static final int COMMAND_TIMEOUT = 1000;
-	private static final int GET_DTC_TIMEOUT = 3000;
-	private static final int CLEAR_DTC_TIMEOUT = 1000;
+	private static final int COMMAND_TIMEOUT = 100;
+	private static final int GET_DTC_TIMEOUT = 300;
+	private static final int CLEAR_DTC_TIMEOUT = 100;
 
-	private static final int COMMAND_DELAY = 2000;
-	private static final int CLEAR_DTC_DELAY = 5000;
+	private static final int COMMAND_DELAY = 10000;
+	private static final int CLEAR_DTC_DELAY = 3000;
 
 	public void clearDTC() {
 		if (D) Log.d(TAG, "clearDTC()");
@@ -170,7 +170,8 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		String[] cExpects =		{ "6CF11054" };
 		int[] cCommandTimeout =	{ CLEAR_DTC_TIMEOUT };
 
-		mService.setSendData(cTypes, cTas, cSas, cCommands, cExpects, cCommandTimeout, COMMAND_DELAY);
+		if (mService != null)
+			mService.setSendData(cTypes, cTas, cSas, cCommands, cExpects, cCommandTimeout, COMMAND_DELAY);
 
 		mHandler.postDelayed(mRestartTask, CLEAR_DTC_DELAY);
 	}
@@ -178,7 +179,8 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 	private Runnable mRestartTask = new Runnable() {
 		public void run() {
 			mHD.resetHistoricDTC();
-			mService.setSendData(types, tas, sas, commands, expects, timeouts, COMMAND_DELAY);
+			if (mService != null)
+				mService.setSendData(types, tas, sas, commands, expects, timeouts, COMMAND_DELAY);
 		}
 	};
 

@@ -63,6 +63,8 @@ public class HarleyDroidService extends Service
 	private Notification notification;
 	private PendingIntent notificationIntent;
 	private Handler mHandler = null;
+	private String mInterfaceType = null;
+	private BluetoothDevice mDevice = null;
 	private J1850Interface mInterface = null;
 	private boolean mLogging = false;
 	private boolean mMetric = true;
@@ -99,16 +101,7 @@ public class HarleyDroidService extends Service
 		super.onDestroy();
 		if (D) Log.d(TAG, "onDestroy()");
 
-		if (mReconThread != null)
-			mReconThread.interrupt();
-		if (mLogger != null) {
-			mHD.removeHarleyDataDashboardListener(mLogger);
-			mHD.removeHarleyDataDiagnosticsListener(mLogger);
-			mHD.removeHarleyDataRawListener(mLogger);
-			mLogger.stop();
-		}
-		if (mInterface != null)
-			mInterface.disconnect();
+		doDisconnect();
 		mNM.cancel(R.string.notification_label);
 	}
 
@@ -155,13 +148,25 @@ public class HarleyDroidService extends Service
 	}
 
 	public void setInterfaceType(String interfaceType, BluetoothDevice dev) {
-		if (HarleyDroid.EMULATOR)
-			mInterface = new EmulatorInterface(this);
-		else {
-			if (interfaceType.equals("elm327"))
-				mInterface = new ELM327Interface(this, dev);
-			else if (interfaceType.equals("harleydroid"))
-				mInterface = new HarleyDroidInterface(this, dev);
+		boolean reconnect = (mInterface != null);
+
+		if (mInterfaceType == null || !mInterfaceType.equals(interfaceType) ||
+			mDevice == null || !mDevice.getAddress().equals(dev.getAddress())) {
+			mInterfaceType = interfaceType;
+			mDevice = dev;
+			if (reconnect)
+				doDisconnect();
+			if (HarleyDroid.EMULATOR)
+				mInterface = new EmulatorInterface(this);
+			else {
+				if (interfaceType.equals("elm327"))
+					mInterface = new ELM327Interface(this, dev);
+				else if (interfaceType.equals("hdi"))
+					mInterface = new HarleyDroidInterface(this, dev);
+			}
+			mCurrentState = STATE_DISCONNECT;
+			if (reconnect)
+				stateMachine();
 		}
 	}
 
@@ -173,6 +178,20 @@ public class HarleyDroidService extends Service
 		CharSequence text = getText(id);
 		notification.setLatestEventInfo(this, getText(R.string.notification_label), text, notificationIntent);
 		mNM.notify(R.string.notification_label, notification);
+	}
+
+	private void doDisconnect() {
+		if (mReconThread != null)
+			mReconThread.interrupt();
+		if (mLogger != null) {
+			mHD.removeHarleyDataDashboardListener(mLogger);
+			mHD.removeHarleyDataDiagnosticsListener(mLogger);
+			mHD.removeHarleyDataRawListener(mLogger);
+			mLogger.stop();
+			mLogger = null;
+		}
+		if (mInterface != null)
+			mInterface.disconnect();
 	}
 
 	private void stateMachine() {
@@ -296,18 +315,7 @@ public class HarleyDroidService extends Service
 					HarleyDroidService.this.notify(R.string.notification_autorecon);
 					mHandler.obtainMessage(HarleyDroid.STATUS_AUTORECON, -1, -1).sendToTarget();
 
-					if (mReconThread != null)
-						mReconThread.interrupt();
-					if (mLogger != null) {
-						mHD.removeHarleyDataDashboardListener(mLogger);
-						mHD.removeHarleyDataDiagnosticsListener(mLogger);
-						mHD.removeHarleyDataRawListener(mLogger);
-						mLogger.stop();
-						mLogger = null;
-					}
-					if (mInterface != null)
-						mInterface.disconnect();
-
+					doDisconnect();
 					mReconThread = new Thread() {
 						public void run() {
 							setName("HarleyDroidService: reconThread");
