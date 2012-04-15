@@ -275,7 +275,7 @@ public class HarleyDroidInterface implements J1850Interface
 							 mSA[i] + "-" + command + "-" + mExpect[i]);
 
 					try {
-						recv = mSock.chat(mType[i] + mTA[i] + mSA[i] + mCommand[i], mExpect[i], mTimeout[i]);
+						recv = mSock.chat(mType[i] + mTA[i] + mSA[i] + command, mExpect[i], mTimeout[i]);
 
 						if (stop || newData)
 							break;
