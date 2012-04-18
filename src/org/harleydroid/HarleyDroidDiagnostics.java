@@ -153,12 +153,12 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		mHD.removeHarleyDataDiagnosticsListener(mHarleyDroidDiagnosticsView);
 	}
 
-	private static final int COMMAND_TIMEOUT = 100;
-	private static final int GET_DTC_TIMEOUT = 300;
-	private static final int CLEAR_DTC_TIMEOUT = 100;
+	private static final int COMMAND_TIMEOUT = 500;
+	private static final int GET_DTC_TIMEOUT = 2000;
+	private static final int CLEAR_DTC_TIMEOUT = 500;
 
 	private static final int COMMAND_DELAY = 10000;
-	private static final int CLEAR_DTC_DELAY = 3000;
+	private static final int CLEAR_DTC_DELAY = 2000;
 
 	public void clearDTC() {
 		if (D) Log.d(TAG, "clearDTC()");

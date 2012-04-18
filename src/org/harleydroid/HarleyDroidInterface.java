@@ -305,15 +305,19 @@ public class HarleyDroidInterface implements J1850Interface
 						}
 					}
 
-					try {
-						Thread.sleep(mTimeout[i]);
-					} catch (InterruptedException e) {
+					if (!stop && !newData) {
+						try {
+							Thread.sleep(mTimeout[i]);
+						} catch (InterruptedException e) {
+						}
 					}
 				}
 
-				try {
-					Thread.sleep(mDelay);
-				} catch (InterruptedException e) {
+				if (!stop && !newData) {
+					try {
+						Thread.sleep(mDelay);
+					} catch (InterruptedException e) {
+					}
 				}
 			}
 		}

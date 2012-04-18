@@ -302,6 +302,7 @@ public class ELM327Interface implements J1850Interface
 		public void run() {
 			int errors = 0;
 			String recv;
+			String lastHeaders = "";
 
 			mHarleyDroidService.startedSend();
 
@@ -322,7 +323,15 @@ public class ELM327Interface implements J1850Interface
 
 				for (int i = 0; !stop && !newData && i < mCommand.length; i++) {
 					try {
-						mSock.chat("ATSH" + mType[i] + mTA[i] + mSA[i], "OK", AT_TIMEOUT);
+
+						if (!lastHeaders.equals(mType[i] + mTA[i] + mSA[i])) {
+							lastHeaders = mType[i] + mTA[i] + mSA[i];
+							if (D) Log.d(TAG, "send: ATSH" + lastHeaders);
+							mSock.chat("ATSH" + lastHeaders, "OK", AT_TIMEOUT);
+						}
+
+						if (D) Log.d(TAG, "send: " + mCommand[i] + "-" + mExpect[i]);
+
 						recv = mSock.chat(mCommand[i], mExpect[i], mTimeout[i]);
 						// split into lines
 						if (stop || newData)
@@ -349,15 +358,19 @@ public class ELM327Interface implements J1850Interface
 						}
 					}
 
-					try {
-						Thread.sleep(mTimeout[i]);
-					} catch (InterruptedException e) {
+					if (!stop && !newData) {
+						try {
+							Thread.sleep(mTimeout[i]);
+						} catch (InterruptedException e) {
+						}
 					}
 				}
 
-				try {
-					Thread.sleep(mDelay);
-				} catch (InterruptedException e) {
+				if (!stop && !newData) {
+					try {
+						Thread.sleep(mDelay);
+					} catch (InterruptedException e) {
+					}
 				}
 			}
 		}
