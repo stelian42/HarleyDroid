@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
+<!--
+     HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 
      Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 
@@ -18,269 +18,354 @@
      along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/text_layout"
-		android:orientation="horizontal"
-		android:layout_width="fill_parent"
-    	android:layout_height="fill_parent"
-    	android:layout_gravity="center"
-    	android:weightSum="2.0"
-    	android:baselineAligned="false"
-    	>
-		<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/raw1_layout"
-    		android:orientation="vertical"
-    		android:layout_width="fill_parent"
-    		android:layout_height="fill_parent"
-    		android:layout_weight="1.0"
-    		android:stretchColumns="1"
-    		>
-			<TableRow>
-			<TextView
-				android:id="@+id/rpm_label"
-    			android:text="@string/rpm_label"
-   				android:padding="3dip"
-   				/>
-			<TextView
-				android:id="@+id/rpm_field"
-				android:padding="3dip"
-   				/>
-			</TableRow>
-			<TableRow>
-			<FrameLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				>
-				<TextView
-					android:id="@+id/speed_metric_label"
-	    			android:text="@string/speed_metric_label"
-	    			android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-    				android:padding="3dip"
-    				/>
-    			<TextView
-					android:id="@+id/speed_imperial_label"
-	    			android:text="@string/speed_imperial_label"
-	    			android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-    				android:padding="3dip"
-    				android:visibility="gone"
-    				/>
-    		</FrameLayout>
-    		<FrameLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				>
-				<TextView
-					android:id="@+id/speed_metric_field"
-					android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-					android:padding="3dip"
-   					/>
-   				<TextView
-					android:id="@+id/speed_imperial_field"
-					android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-					android:padding="3dip"
-					android:visibility="gone"
-   					/>
-   			</FrameLayout>
-			</TableRow>
-			<TableRow>
-			<FrameLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				>
-				<TextView
-					android:id="@+id/enginetemp_metric_label"
-	   	 			android:text="@string/enginetemp_metric_label"
-	   	 			android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-    				android:padding="3dip"
-    				/>
-    			<TextView
-					android:id="@+id/enginetemp_imperial_label"
-	   	 			android:text="@string/enginetemp_imperial_label"
-	   	 			android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-    				android:padding="3dip"
-    				android:visibility="gone"
-    				/>
-    		</FrameLayout>
-    		<FrameLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				>
-				<TextView
-					android:id="@+id/enginetemp_metric_field"
-					android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-					android:padding="3dip"
-    				/>
-    			<TextView
-					android:id="@+id/enginetemp_imperial_field"
-					android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-					android:padding="3dip"
-					android:visibility="gone"
-    				/>
-    		</FrameLayout>
-			</TableRow>
-			<TableRow>
-			<TextView
-				android:id="@+id/fuelgauge_label"
-    			android:text="@string/fuelgauge_label"
-    			android:padding="3dip"
-	 	   		/>
-			<TextView
-				android:id="@+id/fuelgauge_field"
-				android:padding="3dip"
-    			/>
-			</TableRow>
-			<TableRow>
-			<TextView
-				android:id="@+id/turnsignals_label"
-	    		android:text="@string/turnsignals_label"
-			    android:padding="3dip"
-    			/>
-			<TextView
-				android:id="@+id/turnsignals_field"
-				android:padding="3dip"
-    			/>
-			</TableRow>
-			<TableRow>
-			<TextView
-				android:id="@+id/neutral_label"
-    			android:text="@string/neutral_label"
-	    		android:padding="3dip"
-    			/>
-			<TextView
-				android:id="@+id/neutral_field"
-				android:padding="3dip"
-    			/>
-			</TableRow>
-		</TableLayout>
-		<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/raw2_layout"
-    		android:orientation="vertical"
-    		android:layout_width="fill_parent"
-    		android:layout_height="fill_parent"
-    		android:layout_weight="1.0"
-    		android:stretchColumns="1"
-    		>
-    		<TableRow>
-			<TextView
-				android:id="@+id/clutch_label"
-    			android:text="@string/clutch_label"
-    			android:padding="3dip"
-    			/>
-			<TextView
-				android:id="@+id/clutch_field"
-				android:padding="3dip"
-    			/>
-			</TableRow>
-			<TableRow>
-			<TextView
-				android:id="@+id/gear_label"
-			    android:text="@string/gear_label"
-    			android:padding="3dip"
-    			/>
-			<TextView
-				android:id="@+id/gear_field"
-				android:padding="3dip"
-    			/>
-			</TableRow>
-			<TableRow>
-			<TextView
-				android:id="@+id/checkengine_label"
-	    		android:text="@string/checkengine_label"
-    			android:padding="3dip"
-    			/>
-			<TextView
-				android:id="@+id/checkengine_field"
-				android:padding="3dip"
-    			/>
-			</TableRow>
-			<TableRow>
-			<FrameLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				>
-				<TextView
-					android:id="@+id/odometer_metric_label"
-		    		android:text="@string/odometer_metric_label"
-		    		android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-    				android:padding="3dip"
-    				/>
-    			<TextView
-					android:id="@+id/odometer_imperial_label"
-		    		android:text="@string/odometer_imperial_label"
-		    		android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-    				android:padding="3dip"
-    				android:visibility="gone"
-    				/>
-    		</FrameLayout>
-    		<FrameLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				>
-				<TextView
-					android:id="@+id/odometer_metric_field"
-					android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-					android:padding="3dip"
-		    		/>
-		    	<TextView
-					android:id="@+id/odometer_imperial_field"
-					android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-					android:padding="3dip"
-					android:visibility="gone"
-		    		/>
-		    </FrameLayout>
-			</TableRow>
-			<TableRow>
-			<FrameLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				>
-				<TextView
-					android:id="@+id/fuel_metric_label"
-	   	 			android:text="@string/fuel_metric_label"
-	   	 			android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-		   			android:padding="3dip"
-	   	 			/>
-	   	 		<TextView
-					android:id="@+id/fuel_imperial_label"
-	   	 			android:text="@string/fuel_imperial_label"
-	   	 			android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-		   			android:padding="3dip"
-		   			android:visibility="gone"
-	   	 			/>
-	   	 	</FrameLayout>
-	   	 	<FrameLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				>
-				<TextView
-					android:id="@+id/fuel_metric_field"
-					android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-					android:padding="3dip"
-	 	   			/>
-	 	   		<TextView
-					android:id="@+id/fuel_imperial_field"
-					android:layout_width="wrap_content"
-    				android:layout_height="wrap_content"
-					android:padding="3dip"
-					android:visibility="gone"
-	 	   			/>
-	 	   	</FrameLayout>
-			</TableRow>
-    	</TableLayout>
-	</LinearLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/text_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    android:weightSum="2.0" >
 
+    <TableLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/raw1_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1.0"
+        android:orientation="vertical"
+        android:stretchColumns="1" >
+
+        <TableRow android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/rpm_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/rpm_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/rpm_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <TextView
+                    android:id="@+id/speed_metric_label"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:text="@string/speed_metric_label"
+                    android:textSize="@dimen/textsize" />
+
+                <TextView
+                    android:id="@+id/speed_imperial_label"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:text="@string/speed_imperial_label"
+                    android:textSize="@dimen/textsize"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <TextView
+                    android:id="@+id/speed_metric_field"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:textSize="@dimen/textsize" />
+
+                <TextView
+                    android:id="@+id/speed_imperial_field"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:textSize="@dimen/textsize"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <TextView
+                    android:id="@+id/enginetemp_metric_label"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:text="@string/enginetemp_metric_label"
+                    android:textSize="@dimen/textsize" />
+
+                <TextView
+                    android:id="@+id/enginetemp_imperial_label"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:text="@string/enginetemp_imperial_label"
+                    android:textSize="@dimen/textsize"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <TextView
+                    android:id="@+id/enginetemp_metric_field"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:textSize="@dimen/textsize" />
+
+                <TextView
+                    android:id="@+id/enginetemp_imperial_field"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:textSize="@dimen/textsize"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/fuelgauge_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/fuelgauge_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/fuelgauge_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/turnsignals_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/turnsignals_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/turnsignals_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/neutral_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/neutral_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/neutral_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/raw2_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1.0"
+        android:orientation="vertical"
+        android:stretchColumns="1" >
+
+        <TableRow android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/clutch_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/clutch_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/clutch_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/gear_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/gear_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/gear_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/checkengine_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/checkengine_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/checkengine_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <TextView
+                    android:id="@+id/odometer_metric_label"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:text="@string/odometer_metric_label"
+                    android:textSize="@dimen/textsize" />
+
+                <TextView
+                    android:id="@+id/odometer_imperial_label"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:text="@string/odometer_imperial_label"
+                    android:textSize="@dimen/textsize"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <TextView
+                    android:id="@+id/odometer_metric_field"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:textSize="@dimen/textsize" />
+
+                <TextView
+                    android:id="@+id/odometer_imperial_field"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:textSize="@dimen/textsize"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <TextView
+                    android:id="@+id/fuel_metric_label"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:text="@string/fuel_metric_label"
+                    android:textSize="@dimen/textsize" />
+
+                <TextView
+                    android:id="@+id/fuel_imperial_label"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:text="@string/fuel_imperial_label"
+                    android:textSize="@dimen/textsize"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <TextView
+                    android:id="@+id/fuel_metric_field"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:textSize="@dimen/textsize" />
+
+                <TextView
+                    android:id="@+id/fuel_imperial_field"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="3dip"
+                    android:textSize="@dimen/textsize"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+        </TableRow>
+    </TableLayout>
+
+</LinearLayout>

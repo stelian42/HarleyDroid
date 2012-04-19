@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
+<!--
+     HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 
      Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 
@@ -19,86 +19,95 @@
 -->
 
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="wrap_content"
-	android:layout_width="wrap_content"
-	android:stretchColumns="2">
-	<TableRow>
-		<ImageView
-			android:layout_column="1"
-			android:padding="10dip"
-			android:src="@drawable/ic_launcher_harleydroid" />
-		<LinearLayout
-			android:layout_column="2"
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:orientation="vertical">
-			<TextView
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:text="@string/app_name"
-				android:textSize="30sp" />
-			<TextView
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:text="@string/about_copyright"
-				android:textSize="15sp" />
-		</LinearLayout>
-	</TableRow>
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:stretchColumns="2" >
 
-	<View android:layout_height="2dip" />
+    <TableRow>
 
-	<TableRow>
-		<TextView
-			android:paddingLeft="10dip"
-			android:paddingRight="10dip"
-			android:layout_column="1"
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="@string/about_version"
-			android:textSize="20sp" />
-		<TextView
-			android:layout_height="wrap_content"
-			android:id="@+id/about_version"
-			android:layout_width="wrap_content"
-			android:text="@string/about_unknown"
-			android:textSize="20sp" />
-	</TableRow>
+        <ImageView
+            android:layout_column="1"
+            android:padding="10dip"
+            android:src="@drawable/ic_launcher_harleydroid" />
 
-	<View android:layout_height="2dip" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:orientation="vertical" >
 
-	<TableRow>
-		<TextView
-			android:paddingLeft="10dip"
-			android:paddingRight="10dip"
-			android:layout_column="1"
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="@string/about_support"
-			android:textSize="20sp" />
-		<TextView
-			android:autoLink="web"
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="@string/about_weburl"
-			android:textSize="12sp" />
-	</TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textSize="30sp" />
 
-	<TextView
-		android:paddingLeft="10dip"
-		android:paddingRight="10dip"
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:text="@string/about_notendorsed"
-		android:textSize="15sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_copyright"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </TableRow>
 
-	<TextView
-		android:paddingLeft="10dip"
-		android:paddingRight="10dip"
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:text="@string/about_needelm327"
-		android:textSize="15sp" />
+    <View android:layout_height="2dip" />
 
-	<View android:layout_height="4dip" />
+    <TableRow>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:text="@string/about_version"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/about_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about_unknown"
+            android:textSize="20sp" />
+    </TableRow>
+
+    <View android:layout_height="2dip" />
+
+    <TableRow>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:text="@string/about_support"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:text="@string/about_weburl"
+            android:textSize="12sp" />
+    </TableRow>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:text="@string/about_notendorsed"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:text="@string/about_needelm327"
+        android:textSize="15sp" />
+
+    <View android:layout_height="4dip" />
 
 </TableLayout>

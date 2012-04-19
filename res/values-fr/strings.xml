@@ -38,9 +38,9 @@
 <string name="rpm_label">RPM:</string>
 <string name="speed_imperial_label">Vitesse (mph):</string>
 <string name="speed_metric_label">Vitesse (km/h):</string>
-<string name="enginetemp_imperial_label">Temperature moteur (°F):</string>
-<string name="enginetemp_metric_label">Temperature moteur (°C):</string>
-<string name="fuelgauge_label">Niveau d\'essence:</string>
+<string name="enginetemp_imperial_label">T° moteur (°F):</string>
+<string name="enginetemp_metric_label">T° moteur (°C):</string>
+<string name="fuelgauge_label">Niveau essence:</string>
 <string name="turnsignals_label">Clignotants:</string>
 <string name="neutral_label">Point mort:</string>
 <string name="clutch_label">Embrayage:</string>
@@ -50,10 +50,10 @@
 <string name="odometer_metric_label">Distance (km):</string>
 <string name="fuel_imperial_label">Essence (fl oz):</string>
 <string name="fuel_metric_label">Essence (ml):</string>
-<string name="ecmcalid_label">Calibration ECM:</string>
-<string name="ecmswlevel_label">Version logiciel ECM:</string>
-<string name="currentdtc_label">Erreurs courantes:</string>
-<string name="historicdtc_label">Erreurs historiques:</string>
+<string name="ecmcalid_label">Calib. ECM:</string>
+<string name="ecmswlevel_label">Version ECM:</string>
+<string name="currentdtc_label">Erreurs\n(courantes):</string>
+<string name="historicdtc_label">Erreurs\n(historiques):</string>
 
 <string name="connect_label">Connexion</string>
 <string name="disconnect_label">Déconnexion</string>

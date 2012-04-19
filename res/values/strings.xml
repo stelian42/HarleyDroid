@@ -39,8 +39,8 @@
 <string name="rpm_label">RPM:</string>
 <string name="speed_imperial_label">Speed (mph):</string>
 <string name="speed_metric_label">Speed (km/h):</string>
-<string name="enginetemp_imperial_label">Engine temperature (°F):</string>
-<string name="enginetemp_metric_label">Engine temperature (°C):</string>
+<string name="enginetemp_imperial_label">Engine T° (°F):</string>
+<string name="enginetemp_metric_label">Engine T° (°C):</string>
 <string name="fuelgauge_label">Fuel gauge:</string>
 <string name="turnsignals_label">Turn signals:</string>
 <string name="neutral_label">Neutral:</string>
@@ -53,10 +53,10 @@
 <string name="fuel_metric_label">Fuel (ml):</string>
 <string name="vin_label">VIN:</string>
 <string name="ecmpn_label">ECM P/N:</string>
-<string name="ecmcalid_label">ECM Calibration ID:</string>
-<string name="ecmswlevel_label">ECM Software Level:</string>
-<string name="currentdtc_label">Current DTC:</string>
-<string name="historicdtc_label">Historic DTC:</string>
+<string name="ecmcalid_label">ECM Calib.:</string>
+<string name="ecmswlevel_label">ECM Version:</string>
+<string name="currentdtc_label">DTC\n(current):</string>
+<string name="historicdtc_label">DTC\n(historic):</string>
 
 <string name="connect_label">Start capture</string>
 <string name="disconnect_label">Stop capture</string>

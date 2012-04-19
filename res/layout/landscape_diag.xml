@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
+<!--
+     HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
 
      Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
 
@@ -17,98 +17,131 @@
      You should have received a copy of the GNU General Public License
      along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/diag_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/diag_layout"
-		android:orientation="horizontal"
-		android:layout_width="fill_parent"
-    	android:layout_height="fill_parent"
-    	android:layout_gravity="center"
-    	android:weightSum="2.0"
-    	android:baselineAligned="false"
-    	>
-		<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/diag1_layout"
-    		android:orientation="vertical"
-    		android:layout_width="fill_parent"
-    		android:layout_height="fill_parent"
-    		android:layout_weight="1.0"
-    		android:stretchColumns="1"
-    		>
-			<TableRow>
-			<TextView
-				android:id="@+id/vin_label"
-    			android:text="@string/vin_label"
-    			android:padding="3dip"
-    			/>
-			<TextView
-				android:id="@+id/vin_field"
-				android:padding="3dip"
-    			/>
-			</TableRow>
-			<TableRow>
-			<TextView
-				android:id="@+id/ecmpn_label"
-    			android:text="@string/ecmpn_label"
-    			android:padding="3dip"
-    			/>
-			<TextView
-				android:id="@+id/ecmpn_field"
-				android:padding="3dip"
-    			/>
-			</TableRow>
-			<TableRow>
-			<TextView
-				android:id="@+id/currentdtc_label"
-    			android:text="@string/currentdtc_label"
-    			android:padding="3dip"
-    			/>
-			<ListView
-			    android:id="@+id/currentdtc_field"
-    	        >
-			</ListView>
-			</TableRow>
-		</TableLayout>
-		<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/diag2_layout"
-    		android:orientation="vertical"
-    		android:layout_width="fill_parent"
-    		android:layout_height="fill_parent"
-    		android:layout_weight="1.0"
-    		android:stretchColumns="1"
-    		>
-    		<TableRow>
-			<TextView
-				android:id="@+id/ecmcalid_label"
-    			android:text="@string/ecmcalid_label"
-    			android:padding="3dip"
-	    		/>
-			<TextView
-				android:id="@+id/ecmcalid_field"
-				android:padding="3dip"
-    			/>
-			</TableRow>
-			<TableRow>
-			<TextView
-				android:id="@+id/ecmswlevel_label"
-    			android:text="@string/ecmswlevel_label"
-    			android:padding="3dip"
-    			/>
-			<TextView
-				android:id="@+id/ecmswlevel_field"
-				android:padding="3dip"
-    			/>
-			</TableRow>
-			<TableRow>
-			<TextView
-				android:id="@+id/historicdtc_label"
-    			android:text="@string/historicdtc_label"
-    			android:padding="3dip"
-    			/>
-			<ListView
-			    android:id="@+id/historicdtc_field"
-    	  		>
-			</ListView>
-			</TableRow>
-    	</TableLayout>
-	</LinearLayout>
+    <TableLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/diag1_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:stretchColumns="1" >
+
+        <TableRow android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/vin_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/vin_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/vin_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/ecmpn_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/ecmpn_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/ecmpn_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/ecmcalid_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/ecmcalid_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/ecmcalid_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+        </TableRow>
+
+        <TableRow android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/ecmswlevel_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/ecmswlevel_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/ecmswlevel_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/dtc_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/currentdtc_label"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:padding="3dip"
+            android:text="@string/currentdtc_label"
+            android:textSize="@dimen/textsize" />
+
+        <ListView
+            android:id="@+id/currentdtc_field"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+        </ListView>
+
+        <TextView
+            android:id="@+id/historicdtc_label"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:padding="3dip"
+            android:text="@string/historicdtc_label"
+            android:textSize="@dimen/textsize" />
+
+        <ListView
+            android:id="@+id/historicdtc_field"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+        </ListView>
+    </LinearLayout>
+
+</LinearLayout>
