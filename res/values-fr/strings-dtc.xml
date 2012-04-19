@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
+
+     Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+<string-array name="dtc_codes">
+	<item>C0562</item>
+	<item>C0563</item>
+	<item>C1014</item>
+	<item>C1017</item>
+	<item>C1018</item>
+	<item>C1021</item>
+	<item>C1023</item>
+	<item>C1025</item>
+	<item>C1027</item>
+	<item>C1032</item>
+	<item>C1034</item>
+	<item>C1042</item>
+	<item>C1043</item>
+	<item>C1055</item>
+	<item>C1056</item>
+	<item>C1057</item>
+	<item>C1061</item>
+	<item>C1062</item>
+	<item>C1065</item>
+	<item>C1066</item>
+	<item>C1094</item>
+	<item>C1095</item>
+	<item>C1118</item>
+	<item>C1121</item>
+	<item>C1151</item>
+	<item>C1153</item>
+	<item>C1158</item>
+	<item>C1206</item>
+	<item>C1208</item>
+	<item>C1212</item>
+	<item>C1214</item>
+	<item>C1216</item>
+	<item>P0106</item>
+	<item>P0107</item>
+	<item>P0108</item>
+	<item>P0112</item>
+	<item>P0113</item>
+	<item>P0117</item>
+	<item>P0118</item>
+	<item>P0122</item>
+	<item>P0123</item>
+	<item>P0131</item>
+	<item>P0132</item>
+	<item>P0134</item>
+	<item>P0151</item>
+	<item>P0152</item>
+	<item>P0154</item>
+	<item>P0261</item>
+	<item>P0262</item>
+	<item>P0263</item>
+	<item>P0264</item>
+	<item>P0265</item>
+	<item>P0339</item>
+	<item>P0371</item>
+	<item>P0372</item>
+	<item>P0373</item>
+	<item>P0374</item>
+	<item>P0444</item>
+	<item>P0445</item>
+	<item>P0501</item>
+	<item>P0502</item>
+	<item>P0503</item>
+	<item>P0505</item>
+	<item>P0506</item>
+	<item>P0507</item>
+	<item>P0511</item>
+	<item>P0562</item>
+	<item>P0563</item>
+	<item>P0572</item>
+	<item>P0577</item>
+	<item>P0602</item>
+	<item>P0603</item>
+	<item>P0604</item>
+	<item>P0605</item>
+	<item>P0607</item>
+	<item>P0608</item>
+	<item>P0617</item>
+	<item>P0628</item>
+	<item>P0629</item>
+	<item>P0641</item>
+	<item>P0651</item>
+	<item>P0661</item>
+	<item>P0662</item>
+	<item>P0691</item>
+	<item>P0692</item>
+	<item>P1001</item>
+	<item>P1002</item>
+	<item>P1003</item>
+	<item>P1004</item>
+	<item>P1009</item>
+	<item>P1010</item>
+	<item>P1110</item>
+	<item>P1111</item>
+	<item>P1112</item>
+	<item>P1151</item>
+	<item>P1152</item>
+	<item>P1154</item>
+	<item>P1155</item>
+	<item>P1351</item>
+	<item>P1352</item>
+	<item>P1353</item>
+	<item>P1354</item>
+	<item>P1355</item>
+	<item>P1356</item>
+	<item>P1357</item>
+	<item>P1358</item>
+	<item>P1470</item>
+	<item>P1471</item>
+	<item>P1475</item>
+	<item>P1477</item>
+	<item>P1478</item>
+	<item>P1481</item>
+	<item>P1482</item>
+	<item>P1501</item>
+	<item>P1502</item>
+	<item>P1503</item>
+	<item>P1601</item>
+	<item>P1651</item>
+	<item>P1652</item>
+	<item>P1653</item>
+	<item>P1654</item>
+	<item>P2300</item>
+	<item>P2301</item>
+	<item>P2303</item>
+	<item>P2304</item>
+	<item>U1016</item>
+	<item>U1064</item>
+	<item>U1096</item>
+	<item>U1098</item>
+	<item>U1300</item>
+	<item>U1301</item>
+</string-array>
+<string-array name="dtc_strings">
+	<item>C0562 Tension du système basse</item>
+	<item>C0563 Tension du système élevée</item>
+	<item>C1014 Défaillance de relais transistorisé interne de l\'ECU</item>
+	<item>C1017 Erreur de circuit ouvert d\'alimentation de moteur de pompe</item>
+	<item>C1018 Erreur de résistance élevée de masse de moteur de pompe</item>
+	<item>C1021 Capteur de vitesse de roue avant mesure toujours = 0</item>
+	<item>C1023 Capteur de vitesse de roue arrière mesure toujours = 0</item>
+	<item>C1025 Signal intermittent de vitesse de roue avant</item>
+	<item>C1027 Signal intermittent de vitesse de roue arrière</item>
+	<item>C1032 Signal ouvert/court-circuit de vitesse de roue avant</item>
+	<item>C1034 Signal ouvert/court-circuit de vitesse de roue arrière</item>
+	<item>C1042 Moteur de pompe</item>
+	<item>C1043 Moteur de pompe calé</item>
+	<item>C1055 Défaillance interne de l\'ECU</item>
+	<item>C1056 Défaillance interne de l\'ECU</item>
+	<item>C1057 Défaillance interne de l\'ECU</item>
+	<item>C1061 Défaillance interne de l\'ECU</item>
+	<item>C1062 Défaillance interne de l\'ECU</item>
+	<item>C1065 Défaillance interne de l\'ECU</item>
+	<item>C1066 Défaillance interne de l\'ECU</item>
+	<item>C1094 Commutateur de frein avant toujours en marche</item>
+	<item>C1095 Commutateur de frein avant</item>
+	<item>C1118 Défaillance interne de l\'ECU</item>
+	<item>C1121 Défaillance interne de l\'ECU</item>
+	<item>C1151 Dégagement ABS de roue avant trop long</item>
+	<item>C1153 Dégagement ABS de roue arrière trop long</item>
+	<item>C1158 Programmation d\'étalonnage requise</item>
+	<item>C1206 Fréquence de capteur de vitesse de roue avant hors plage</item>
+	<item>C1208 Fréquence de capteur de vitesse de roue arrière hors plage</item>
+	<item>C1212 Frein avant ou arrière non serré avec ralentissement</item>
+	<item>C1214 Commutateur de frein arrière toujours en marche</item>
+	<item>C1216 Commutateur arrière</item>
+	<item>P0106 MAP Unstable</item>
+	<item>P0107 Capter MAP (PAA) ouvert/hors tension</item>
+	<item>P0108 Capteur MAP (PAA) sous tension</item>
+	<item>P0112 tension du capteur faible</item>
+	<item>P0113 Capteur de T° Air d\'Admi. ouvert/sous tension</item>
+	<item>P0117 Capteur de T° Mot. yension faible</item>
+	<item>P0118 Capteur de T° Mot. ouvert/sous tension</item>
+	<item>P0122 Capteur de Position d\'Ouverture des Gaz ouvert/faible</item>
+	<item>P0123 Capteur de Pos. d\'ouvert. des Gaz sous tension</item>
+	<item>P0131 Capteur d\'oxygène avant faible</item>
+	<item>P0132 Capteur d\'oxygène avant sous tension</item>
+	<item>P0134 Capteur d\'oxygène avant ouvert</item>
+	<item>P0151 Capteur d\'oxygène arrière faible</item>
+	<item>P0152 Capteur d\'oxygène arrière sous tension</item>
+	<item>P0154 Capteur d\'oxygène arrière ouvert</item>
+	<item>P0261 Injecteur avant ouvert/hors tension</item>
+	<item>P0262 Injecteur Avant sous tension</item>
+	<item>P0263 Injecteur Arrière ouvert/hors tension</item>
+	<item>P0264 Injecteur Arrière sous tension</item>
+	<item>P0265 Circuit ouvert/court-circuit à la tension batterie de l\'injecteur de carburant arrière</item>
+	<item>P0339 Capteur repère de vilebrequin intermittent</item>
+	<item>Capteur CKP P0371 court-circuité bas</item>
+	<item>Capteur CKP P0372 court-circuité haut</item>
+	<item>P0373 Capteur de Position de Vilebrequin intermittent</item>
+	<item>P0374 erreur de synchro du Capteur de position de Vilebrequin</item>
+	<item>P0444 Electrovanne de Purge ouvert/faible</item>
+	<item>P0445 Electrovanne de Purge élévé</item>
+	<item>P0501 Capteur VSS hors tension</item>
+	<item>P0502 Capteur VSS sous tension</item>
+	<item>P0503 VSS Intermittent/élevé</item>
+	<item>P0505 Perte du Contrôle de la Vitesse de Ralenti</item>
+	<item>P0506 Régime du système IAC plus élevé qu\'anticipé</item>
+	<item>P0506 Régime du système IAC plus faible qu\'anticipé</item>
+	<item>P0511 Commande d\'air de ralenti circuit ouvert/court-circuit sur Vbat</item>
+	<item>P0562 Tension de la Batterie faible</item>
+	<item>P0563 Tension de la Batterie élevé</item>
+	<item>P0572 Erreur d\'entrée de commutateur de frein</item>
+	<item>P0577 Erreur de régulateur de vitesse trop haute</item>
+	<item>P0603 ECM Flash Error</item>
+	<item>P0603 Erreur de l\'EEPROM de l\'ECM</item>
+	<item>P0604 RAM Flash error</item>
+	<item>P0605 Erreur Flash ECM</item>
+	<item>P0607 A to D error</item>
+	<item>P0608 Échec du module de contrôle VSS</item>
+	<item>P0617 Circuit de relais du démarreur ouvert/court-circuit à la batterie</item>
+	<item>P0628 Pompe à carburant court-circuitée à la masse</item>
+	<item>P0629 Circuit de pompe à carburant ouvert/court-circuité à la tension batterie</item>
+	<item>P0641 5 V</item>
+	<item>P0651 5 V Réf. 2 hors plage</item>
+	<item>P0661 Solénoïde du système admission active</item>
+	<item>P0662 Solénoïde d\'admission active tension élevée/court-circuité</item>
+	<item>P0691 Circuit de ventilateur ouvert/court-circuité à la masse</item>
+	<item>P0692 Court-circuit de ventilateur à la tension batterie</item>
+	<item>P1001 bobine du système relais ouvert/faible</item>
+	<item>P1002 Relais Système Elevé/Court-circuité</item>
+	<item>P1003 Contacts Relais Système Ouverts</item>
+	<item>P1004 Contacts Relais Système Fermés</item>
+	<item>P1009 mot de passe incorrect</item>
+	<item>P1010 Mot de passe perdu</item>
+	<item>P1110 Circuit d\'admission active</item>
+	<item>P1111 Circuit d\'admission active</item>
+	<item>P1112 TPS ne répond pas à l\'activation de l\'admission active</item>
+	<item>P1151 Capteur d\'angle d\'inclinaison court-circuité à la masse</item>
+	<item>P1152 Capteur d\'angle d\'inclinaison ouvert/court-circuité à la tension batterie</item>
+	<item>P1154 Circuit du capteur de position d\'embrayage</item>
+	<item>P1155 Circuit d\'entrée du commutateur de point mort</item>
+	<item>P1351 Bobine d\'Allumage Avant ouvert/hors tension</item>
+	<item>P1352 Bobine d\'Allumage Avant sous tension/court-circuitée</item>
+	<item>P1353 Pas de Combustion Cylindre Avant</item>
+	<item>P1354 Bobine d\'Allumage Arrière Ouvert/Faible</item>
+	<item>P1355 Bobine d\'Allumage Arrière ouvert/court-circuité</item>
+	<item>P1356 Cylindre Arrière Pas de Combustion</item>
+	<item>P1357 Secondaire avant intermittent</item>
+	<item>P1358 Secondaire arrière intermittent</item>
+	<item>P1470 Soupape de silencieux actif coincée en position ouverte</item>
+	<item>P1471 Soupape de silencieux actif coincée en position fermée</item>
+	<item>P1475 Erreur d\'actionneur d\'émission</item>
+	<item>P1477 Actionneur d\'émission circuit ouvert/tension basse</item>
+	<item>P1478 Actionneur d\'émission court-circuité/tension élevée</item>
+	<item>P1481 Bobine Relais de Ventilateur ouvert/faible</item>
+	<item>P1482 Bobine relais de Ventilateur élevé</item>
+	<item>P1501 Jiffy Stand Sensor Low</item>
+	<item>P1502 Jiffy Stand Sensor High</item>
+	<item>P1503 Transition à béquille latérale abaissée à la vitesse du véhicule</item>
+	<item>P1601 Défaillance de circuit de contrôle de relais auxiliaire</item>
+	<item>P1651 Témoin Lumineux Moteur Ouvert/Faible</item>
+	<item>P1652 Témoin Lumineux Moteur Sous Tension</item>
+	<item>P1653 Compte-Tours faible</item>
+	<item>P1654 Compte-Tours élevé</item>
+	<item>P2300 Bobine d\'allumage avant</item>
+	<item>P2301 Bobine d\'allumage avant</item>
+	<item>P2303 Bobine d\'allumage arrière</item>
+	<item>P2304 Bobine d\'allumage arrière</item>
+	<item>U1016 Perte des Données Série de l\'ECM</item>
+	<item>U1064 Perte des données série du TSM/TSSM</item>
+	<item>U1096 Perte des données de série IM</item>
+	<item>U1098 Loss Tachometer Serial Data at ECM</item>
+	<item>U1300 Données Série faible</item>
+	<item>U1301 Données Série ouvert/sous tension</item>
+</string-array>
+
+</resources>

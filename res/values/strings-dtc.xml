@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
+
+     Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+<string-array name="dtc_codes">
+	<item>C0562</item>
+	<item>C0563</item>
+	<item>C1014</item>
+	<item>C1017</item>
+	<item>C1018</item>
+	<item>C1021</item>
+	<item>C1023</item>
+	<item>C1025</item>
+	<item>C1027</item>
+	<item>C1032</item>
+	<item>C1034</item>
+	<item>C1042</item>
+	<item>C1043</item>
+	<item>C1055</item>
+	<item>C1056</item>
+	<item>C1057</item>
+	<item>C1061</item>
+	<item>C1062</item>
+	<item>C1065</item>
+	<item>C1066</item>
+	<item>C1094</item>
+	<item>C1095</item>
+	<item>C1118</item>
+	<item>C1121</item>
+	<item>C1151</item>
+	<item>C1153</item>
+	<item>C1158</item>
+	<item>C1206</item>
+	<item>C1208</item>
+	<item>C1212</item>
+	<item>C1214</item>
+	<item>C1216</item>
+	<item>P0106</item>
+	<item>P0107</item>
+	<item>P0108</item>
+	<item>P0112</item>
+	<item>P0113</item>
+	<item>P0117</item>
+	<item>P0118</item>
+	<item>P0122</item>
+	<item>P0123</item>
+	<item>P0131</item>
+	<item>P0132</item>
+	<item>P0134</item>
+	<item>P0151</item>
+	<item>P0152</item>
+	<item>P0154</item>
+	<item>P0261</item>
+	<item>P0262</item>
+	<item>P0263</item>
+	<item>P0264</item>
+	<item>P0265</item>
+	<item>P0339</item>
+	<item>P0371</item>
+	<item>P0372</item>
+	<item>P0373</item>
+	<item>P0374</item>
+	<item>P0444</item>
+	<item>P0445</item>
+	<item>P0501</item>
+	<item>P0502</item>
+	<item>P0503</item>
+	<item>P0505</item>
+	<item>P0506</item>
+	<item>P0507</item>
+	<item>P0511</item>
+	<item>P0562</item>
+	<item>P0563</item>
+	<item>P0572</item>
+	<item>P0577</item>
+	<item>P0602</item>
+	<item>P0603</item>
+	<item>P0604</item>
+	<item>P0605</item>
+	<item>P0607</item>
+	<item>P0608</item>
+	<item>P0617</item>
+	<item>P0628</item>
+	<item>P0629</item>
+	<item>P0641</item>
+	<item>P0651</item>
+	<item>P0661</item>
+	<item>P0662</item>
+	<item>P0691</item>
+	<item>P0692</item>
+	<item>P1001</item>
+	<item>P1002</item>
+	<item>P1003</item>
+	<item>P1004</item>
+	<item>P1009</item>
+	<item>P1010</item>
+	<item>P1110</item>
+	<item>P1111</item>
+	<item>P1112</item>
+	<item>P1151</item>
+	<item>P1152</item>
+	<item>P1154</item>
+	<item>P1155</item>
+	<item>P1351</item>
+	<item>P1352</item>
+	<item>P1353</item>
+	<item>P1354</item>
+	<item>P1355</item>
+	<item>P1356</item>
+	<item>P1357</item>
+	<item>P1358</item>
+	<item>P1470</item>
+	<item>P1471</item>
+	<item>P1475</item>
+	<item>P1477</item>
+	<item>P1478</item>
+	<item>P1481</item>
+	<item>P1482</item>
+	<item>P1501</item>
+	<item>P1502</item>
+	<item>P1503</item>
+	<item>P1601</item>
+	<item>P1651</item>
+	<item>P1652</item>
+	<item>P1653</item>
+	<item>P1654</item>
+	<item>P2300</item>
+	<item>P2301</item>
+	<item>P2303</item>
+	<item>P2304</item>
+	<item>U1016</item>
+	<item>U1064</item>
+	<item>U1096</item>
+	<item>U1098</item>
+	<item>U1300</item>
+	<item>U1301</item>
+</string-array>
+<string-array name="dtc_strings">
+	<item>C0562 System Voltage Low</item>
+	<item>C0563 System Voltage High</item>
+	<item>C1014 ECU Internal Solid State Relay Fault</item>
+	<item>C1017 Pump Motor Power Circuit open fault</item>
+	<item>C1018 Pump Motor Ground High Resistance Fault</item>
+	<item>C1021 Front Wheel Speed Sensor Always = 0</item>
+	<item>C1023 Rear Wheel Speed Sensor Always = 0</item>
+	<item>C1025 Front Wheel Speed Signal Intermittent</item>
+	<item>C1027 Rear Wheel Speed Signal Intermittent</item>
+	<item>C1032 Front Wheel Speed Open/Shorted</item>
+	<item>C1034 Rear Wheel Speed Open/Shorted</item>
+	<item>C1042 Pump Motor Open</item>
+	<item>C1043 Pump Motor Stalled</item>
+	<item>C1055 ECU Internal Fault</item>
+	<item>C1056 ECU Internal Fault</item>
+	<item>C1057 ECU Internal Fault</item>
+	<item>C1061 ECU Internal Fault</item>
+	<item>C1062 ECU Internal Fault</item>
+	<item>C1065 ECU Internal Fault</item>
+	<item>C1066 ECU Internal Fault</item>
+	<item>C1094 Front Brake Switch Always On</item>
+	<item>C1095 Front Brake Switch Open</item>
+	<item>C1118 ECU Internal Fault</item>
+	<item>C1121 ECU Internal Fault</item>
+	<item>C1151 Front Wheel ABS Release Too Long</item>
+	<item>C1153 Rear Wheel ABS Release Too Long</item>
+	<item>C1158 Calibration Programming Required</item>
+	<item>C1206 Front Wheel Speed Sensor Frequency Out of Range</item>
+	<item>C1208 Rear Wheel Speed Sensor Frequency Out of Range</item>
+	<item>C1212 Front or Rear Brake not applied with Decel</item>
+	<item>C1214 Rear Brake Switch Always On</item>
+	<item>C1216 Rear Switch Open</item>
+	<item>P0106 MAP Unstable</item>
+	<item>P0107 MAP sensor open/low</item>
+	<item>P0108 MAP sensor high</item>
+	<item>P0112 IAT sensor voltage low</item>
+	<item>P0113 IAT sensor open/high</item>
+	<item>P0117 ET sensor voltage low</item>
+	<item>P0118 ET sensor open/high</item>
+	<item>P0122 TP sensor open/low</item>
+	<item>P0123 TP sensor high</item>
+	<item>P0131 Front Oxygen Sensor Low</item>
+	<item>P0132 Front Oxygen Sensor High</item>
+	<item>P0134 Front Oxygen Sensor Open</item>
+	<item>P0151 Rear Oxygen Sensor Low</item>
+	<item>P0152 Rear Oxygen Sensor High</item>
+	<item>P0154 Rear Oxygen Sensor Open</item>
+	<item>P0261 Front injector open/low</item>
+	<item>P0262 Front injector high</item>
+	<item>P0263 Rear injector open/low</item>
+	<item>P0264 Rear injector high</item>
+	<item>P0265 Rear Fuel Injector Open/Short to Vbat</item>
+	<item>P0339 Crankshaft Position Sensor Intermittent</item>
+	<item>P0371 CKP sensor shorted low</item>
+	<item>P0372 CKP sensor shorted high</item>
+	<item>P0373 CKP sensor intermittent</item>
+	<item>P0374 CKP sensor synch error</item>
+	<item>P0444 Purge solenoid open/low</item>
+	<item>P0445 Purge solenoid high</item>
+	<item>P0501 VSS sensor low</item>
+	<item>P0502 VSS sensor high</item>
+	<item>P0503 VSS Intermittent/High</item>
+	<item>P0505 Loss of idle speed control</item>
+	<item>P0506 IAC System RPM Higher than expected</item>
+	<item>P0507 IAC System RPM Lower than expected</item>
+	<item>P0511 Idle Air Control Open/Short to Vbat</item>
+	<item>P0562 Battery voltage low</item>
+	<item>P0563 Battery voltage high</item>
+	<item>P0572 Brake Switch Input Error</item>
+	<item>P0577 Cruise Control High Error</item>
+	<item>P0602 ECM Flash Error</item>
+	<item>P0603 ECM EEPROM error</item>
+	<item>P0604 RAM Flash error</item>
+	<item>P0605 ECM Flash error</item>
+	<item>P0607 A to D error</item>
+	<item>P0608 VSS Control Module Fail</item>
+	<item>P0617 Start Relay Open Circuit/Short to Battery</item>
+	<item>P0628 Fuel Pump Short to Ground</item>
+	<item>P0629 Fuel Pump Open/Short to Vbat</item>
+	<item>P0641 5 Volt Ref 1 Out of Range</item>
+	<item>P0651 5 Volt Ref 2 Out of Range</item>
+	<item>P0661 Active Intake solenoid open/low</item>
+	<item>P0662 Active Intake solenoid high/shorted</item>
+	<item>P0691 Fan Open Circuit/Short to Ground</item>
+	<item>P0692 Fan Short to Vbat</item>
+	<item>P1001 System relay coil open/low</item>
+	<item>P1002 System relay high/shorted</item>
+	<item>P1003 System relay contacts open</item>
+	<item>P1004 System relay contacts closed</item>
+	<item>P1009 Incorrect password</item>
+	<item>P1010 Missing password</item>
+	<item>P1110 Active Intake Circuit Low</item>
+	<item>P1111 Active Intake Circuit High</item>
+	<item>P1112 TPS not responding to Active Intake Actuation</item>
+	<item>P1151 Bank Angle Sensor Sensor Short to Ground</item>
+	<item>P1152 Bank Angle Sensor Open/Short to Vbat</item>
+	<item>P1154 Clutch Position Sensor Circuit Low</item>
+	<item>P1155 Neutral Switch Input Circuit Low</item>
+	<item>P1351 Front ignition coil open/low</item>
+	<item>P1352 Front ignition coil high/shorted</item>
+	<item>P1353 Front Cylinder No Combustion</item>
+	<item>P1354 Rear ignition coil open/low</item>
+	<item>P1355 Rear ignition coil high/shorted</item>
+	<item>P1356 Rear Cylinder No Combustion</item>
+	<item>P1357 Intermittent Secondary Front</item>
+	<item>P1358 Intermittent Secondary Rear</item>
+	<item>P1470 Active Muffler Valve Stuck Open</item>
+	<item>P1471 Active Muffler Valve Stuck Closed</item>
+	<item>P1475 Exhaust Actuator Error</item>
+	<item>P1477 Exhaust Actuator Open/Low</item>
+	<item>P1478 Exhaust Actuation Shorted/High</item>
+	<item>P1481 Fan relay coil open/low</item>
+	<item>P1482 Fan relay coil high</item>
+	<item>P1501 Jiffy Stand Sensor Low</item>
+	<item>P1502 Jiffy Stand Sensor High</item>
+	<item>P1503 Transition to SS down at vehicle speed</item>
+	<item>P1601 Aux Relay Driver Circuit Fault</item>
+	<item>P1651 Check Engine light open/low</item>
+	<item>P1652 Check Engine light high</item>
+	<item>P1653 Tachometer low</item>
+	<item>P1654 Tachometer high</item>
+	<item>P2300 Front Ignition Coil Short to Ground</item>
+	<item>P2301 Front Ignition Coil Open/Short to Vbat</item>
+	<item>P2303 Rear Ignition Coil Short to Ground</item>
+	<item>P2304 Rear Ignition Coil Open/Short to Vbat</item>
+	<item>U1016 Loss of ECM Serial Data</item>
+	<item>U1064 Loss of TSM/TSSM Serial Data</item>
+	<item>U1096 Loss of IM serial data</item>
+	<item>U1098 Loss Tachometer Serial Data at ECM</item>
+	<item>U1300 Serial Data low</item>
+	<item>U1301 Serial Data open/high</item>
+</string-array>
+
+</resources>

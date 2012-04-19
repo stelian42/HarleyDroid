@@ -22,15 +22,20 @@ package org.harleydroid;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
+public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener, OnItemClickListener
 {
 	private static final boolean D = false;
 	private static final String TAG = HarleyDroidDiagnosticsView.class.getSimpleName();
@@ -73,6 +78,9 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 		mViewECMSWLevel = (TextView) mActivity.findViewById(R.id.ecmswlevel_field);
 		mViewCurrentDTC = (ListView) mActivity.findViewById(R.id.currentdtc_field);
 		mViewHistoricDTC = (ListView) mActivity.findViewById(R.id.historicdtc_field);
+
+		mViewCurrentDTC.setOnItemClickListener(this);
+		mViewHistoricDTC.setOnItemClickListener(this);
 	}
 
 	private final Handler mHandler = new Handler() {
@@ -216,5 +224,21 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 			for (int i = 0; i < dtc.length; i++)
 				items.add(dtc[i]);
 		mViewCurrentDTC.setAdapter(new ArrayAdapter<String>(mActivity, R.layout.dtc_item, items));
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> adapter, View view, int pos, long id) {
+		Resources res = mActivity.getResources();
+		String dtc = ((TextView)view).getText().toString();
+		String[] dtcCodes = res.getStringArray(R.array.dtc_codes);
+		String[] dtcStrings = res.getStringArray(R.array.dtc_strings);
+
+		Log.i(TAG, "Clicked on [" + ((TextView)view).getText() + "]");
+		for (int i = 0; i < dtcCodes.length; ++i) {
+			if (dtc.equals(dtcCodes[i])) {
+				Toast.makeText(mActivity.getApplicationContext(), dtcStrings[i], Toast.LENGTH_SHORT).show();
+				break;
+			}
+		}
 	}
 }
