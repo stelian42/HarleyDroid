@@ -34,7 +34,6 @@
             android:padding="3dip"
             android:text="@string/rpm_label"
             android:textSize="@dimen/textsize" />
-    		/>
 
         <TextView
             android:id="@+id/rpm_field"

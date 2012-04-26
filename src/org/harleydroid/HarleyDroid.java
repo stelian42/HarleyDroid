@@ -37,7 +37,7 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-public class HarleyDroid extends Activity implements ServiceConnection, Eula.OnEulaAgreedTo
+public abstract class HarleyDroid extends Activity implements ServiceConnection, Eula.OnEulaAgreedTo
 {
 	private static final boolean D = false;
 	private static final boolean DTRACE = false;

@@ -20,6 +20,7 @@
 
 <resources>
     
+<string name="app_name">HarleyDroid</string>
 <string name="dashboard_name">HarleyDroid</string>
 <string name="diagnostics_name">Diagnostics HarleyDroid</string>
 <string name="settings_name">Préférences de HarleyDroid</string>
@@ -50,10 +51,12 @@
 <string name="odometer_metric_label">Distance (km):</string>
 <string name="fuel_imperial_label">Essence (fl oz):</string>
 <string name="fuel_metric_label">Essence (ml):</string>
+<string name="vin_label">VIN:</string>
+<string name="ecmpn_label">ECM P/N:</string>
 <string name="ecmcalid_label">Calib. ECM:</string>
 <string name="ecmswlevel_label">Version ECM:</string>
-<string name="currentdtc_label">Erreurs\n(courantes):</string>
-<string name="historicdtc_label">Erreurs\n(historiques):</string>
+<string name="currentdtc_label">Défauts\n(courants):</string>
+<string name="historicdtc_label">Défauts\n(historiques):</string>
 
 <string name="connect_label">Connexion</string>
 <string name="disconnect_label">Déconnexion</string>
@@ -74,7 +77,19 @@
 <string name="notification_diagnostics">Réception des données de diagnostic en cours&#8230;</string>
 <string name="notification_autorecon">Reconnexion automatique dans quelques secondes&#8230;</string>
 
+<string name="check_engine">Erreur moteur</string>
+<string name="turn_left">Gauche</string>
+<string name="turn_right">Droite</string>
+
 <string name="pref_interfacetype">Type d\'interface</string>
+<string-array name="pref_interfacetype_names">
+	<item>"ELM327"</item>
+	<item>"HarleyDroidInterface"</item>
+</string-array>
+<string-array name="pref_interfacetype_values">
+	<item>"elm327"</item>
+	<item>"hdi"</item>
+</string-array>
 <string name="pref_bluetoothdev">Périphérique Bluetooth</string>
 <string name="pref_autoconnect">Connexion automatique au lancement</string>
 <string name="pref_autoreconnect">Reconnexion automatique si déconnexion</string>
@@ -88,20 +103,31 @@
 	<item>"Metrique"</item>
 	<item>"Impérial"</item>
 </string-array>
+<string-array name="pref_unit_values">
+	<item>"metric"</item>
+	<item>"imperial"</item>
+</string-array>
 <string name="pref_orientation">Orientation de l\'écran</string>
 <string-array name="pref_orientation_names">
 	<item>"Automatique"</item>
 	<item>"Portrait"</item>
 	<item>"Paysage"</item>
 </string-array>
+<string-array name="pref_orientation_values">
+	<item>"auto"</item>
+	<item>"portrait"</item>
+	<item>"landscape"</item>
+</string-array>
 
 <string name="eula_title">Licence</string>
 <string name="eula_accept">Accepter</string>
 <string name="eula_refuse">Refuser</string>
 
+<string name="about_copyright">&#169;2010&#8211;2012 Stelian Pop</string>
 <string name="about_version">Version:</string>
 <string name="about_unknown">inconnue</string>
 <string name="about_support">Support:</string>
+<string name="about_weburl">github.com/stelian42/HarleyDroid</string>
 <string name="about_notendorsed">HarleyDroid n\'est pas approuvé ou certifié par Harley-Davidson Motor Company.</string>
 <string name="about_needelm327">Cette application nécessite une interface spécifique connectée au bus de diagnostic de la moto.</string>
 <string name="about_ok">OK</string>
