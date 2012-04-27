@@ -220,15 +220,19 @@ public class HarleyDroidLogger implements HarleyDataDashboardListener, HarleyDat
 
 	public void onHistoricDTCChanged(String[] dtc) {
 		String data = "";
-		for (int i = 0; i < dtc.length; i++)
-			data += dtc[i] + ",";
+		if (dtc.length > 0)
+			data = dtc[0];
+		for (int i = 1; i < dtc.length; i++)
+			data += "," + dtc[i];
 		write("DTH,", data);
 	}
 
 	public void onCurrentDTCChanged(String[] dtc) {
 		String data = "";
-		for (int i = 0; i < dtc.length; i++)
-			data += dtc[i] + ",";
+		if (dtc.length > 0)
+			data = dtc[0];
+		for (int i = 1; i < dtc.length; i++)
+			data += "," + dtc[i];
 		write("DTC,", data);
 	}
 
