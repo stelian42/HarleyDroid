@@ -38,9 +38,9 @@ public class HarleyData {
 	private boolean mCheckEngine = false;	// boolean: check engine
 	private int mOdometer = 0;				// odometer tick (1 tick = 0.4 meters)
 	private int mFuel = 0;					// fuel consumption tick (1 tick = 0.000040 liters)
-	private String mVIN = "";				// VIN
-	private String mECMPN = "";				// ECM Part Number
-	private String mECMCalID = "";			// ECM Calibration ID
+	private String mVIN = "-----------------";		// VIN
+	private String mECMPN = "------------";			// ECM Part Number
+	private String mECMCalID = "------------";	// ECM Calibration ID
 	private int mECMSWLevel = 0;			// ECM Software Level
 	private CopyOnWriteArrayList<String> mHistoricDTC; // Historic DTC
 	private CopyOnWriteArrayList<String> mCurrentDTC;	// Current DTC

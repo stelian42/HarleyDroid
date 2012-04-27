@@ -38,9 +38,9 @@ public class J1850 {
 	// accumulated fuel ticks (deals with overflow at 0xffff)
 	private static int fuelaccum = 0;
 
-	private static byte[] vin = new byte[18];
-	private static byte[] ecmPN = new byte[12];
-	private static byte[] ecmCalID = new byte[12];
+	private static byte[] vin = { '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-' };
+	private static byte[] ecmPN = { '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-' };
+	private static byte[] ecmCalID = { '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-' };
 
 	static byte[] bytes_to_hex(byte[] in) {
 		byte out[] = new byte[MAXBUF];
@@ -118,13 +118,13 @@ public class J1850 {
 			y = ((in[4] << 8) & 0x0000ff00) |
 			     (in[5]       & 0x000000ff);
 
-		if (x == 0x281b1002)
+		if (x == 0x281b1002) {
 			hd.setRPM(y);
-		else if (x == 0x48291002)
+		} else if (x == 0x48291002) {
 			hd.setSpeed(y);
-		else if (x == 0xa8491010)
+		} else if (x == 0xa8491010) {
 			hd.setEngineTemp((int)in[4] & 0xff);
-		else if (x == 0xa83b1003) {
+		} else if (x == 0xa83b1003) {
 			if (in[4] != 0) {
 				int gear = 0;
 				while ((in[4] >>= 1) != 0)
@@ -132,9 +132,9 @@ public class J1850 {
 				hd.setGear(gear);
 			} else
 				hd.setGear(-1);
-		} else if ((x == 0x48da4039) && ((in[4] & 0xfc) == 0))
+		} else if ((x == 0x48da4039) && ((in[4] & 0xfc) == 0)) {
 			hd.setTurnSignals(in[4] & 0x03);
-		else if ((x & 0xffffff7f) == 0xa8691006) {
+		} else if ((x & 0xffffff7f) == 0xa8691006) {
 			odolast = y - odolast;
 			if (odolast < 0)	// ...could also test for (x & 0x80)
 				odolast += 65536;
@@ -148,9 +148,9 @@ public class J1850 {
 			fuelaccum += fuellast;
 			fuellast = y;
 			hd.setFuel(fuelaccum);
-		} else if ((x == 0xa8836112) && ((in[4] & 0xd0) == 0xd0))
+		} else if ((x == 0xa8836112) && ((in[4] & 0xd0) == 0xd0)) {
 			hd.setFuelGauge(in[4] & 0x0f);
-		else if ((x & 0xffffff5d) == 0x483b4000) {
+		} else if ((x & 0xffffff5d) == 0x483b4000) {
 			if (((int)in[3] & 0xff) == 0x20)
 				hd.setNeutral(false);
 			else if (((int)in[3] & 0xff) == 0xA0)
@@ -167,6 +167,7 @@ public class J1850 {
 			switch (in[4]) {
 			case 0x01:
 				System.arraycopy(in, 5, ecmPN, 0, 6);
+				hd.setECMPN(new String(ecmPN).trim());
 				break;
 			case 0x02:
 				System.arraycopy(in, 5, ecmPN, 6, 6);
@@ -174,6 +175,7 @@ public class J1850 {
 				break;
 			case 0x03:
 				System.arraycopy(in, 5, ecmCalID, 0, 6);
+				hd.setECMCalID(new String(ecmCalID).trim());
 				break;
 			case 0x04:
 				System.arraycopy(in, 5, ecmCalID, 6, 6);
@@ -184,9 +186,11 @@ public class J1850 {
 				break;
 			case 0x0f:
 				System.arraycopy(in, 5, vin, 0, 6);
+				hd.setVIN(new String(vin).trim());
 				break;
 			case 0x10:
 				System.arraycopy(in, 5, vin, 6, 6);
+				hd.setVIN(new String(vin).trim());
 				break;
 			case 0x11:
 				System.arraycopy(in, 5, vin, 12, 5);
@@ -199,31 +203,33 @@ public class J1850 {
 			/* this is the get DTC command, answers are below... */
 			if (D) Log.d(TAG, "DTC start");
 		} else if ((x & 0xffff0fff) == 0x6cf10059) {
-			String dtc = "";
-			switch ((in[4] & 0xc0) >> 6) {
-				case 0: dtc = "P"; break;
-				case 1: dtc = "C"; break;
-				case 2: dtc = "B"; break;
-				case 3: dtc = "U"; break;
+			if (in[4] != 0 || in[5] != 0) {
+				String dtc = "";
+				switch ((in[4] & 0xc0) >> 6) {
+					case 0: dtc = "P"; break;
+					case 1: dtc = "C"; break;
+					case 2: dtc = "B"; break;
+					case 3: dtc = "U"; break;
+				}
+				dtc += Integer.toString((in[4] & 0x30) >> 4, 16);
+				dtc += Integer.toString(in[4] & 0x0f, 16);
+				dtc += Integer.toString((in[5] & 0xf0) >> 4, 16);
+				dtc += Integer.toString(in[5] & 0x0f, 16);
+				dtc = dtc.toUpperCase();
+				if (in[2] == 0x10) {
+					/* historic DTC */
+					if (D) Log.d(TAG, "historic DTC: " + dtc);
+					hd.addHistoricDTC(dtc);
+				} else if (in[2] == 0x40) {
+					/* current DTC */
+					if (D) Log.d(TAG, "current DTC: " + dtc);
+					hd.addCurrentDTC(dtc);
+				} else
+					hd.setUnknown(buffer);
 			}
-			dtc += Integer.toString((in[4] & 0x30) >> 4, 16);
-			dtc += Integer.toString(in[4] & 0x0f, 16);
-			dtc += Integer.toString((in[5] & 0xf0) >> 4, 16);
-			dtc += Integer.toString(in[5] & 0x0f, 16);
-			dtc = dtc.toUpperCase();
-			if (in[2] == 0x10) {
-				/* historic DTC */
-				if (D) Log.d(TAG, "historic DTC: " + dtc);
-				hd.addHistoricDTC(dtc);
-			} else if (in[2] == 0x40) {
-				/* current DTC */
-				if (D) Log.d(TAG, "current DTC: " + dtc);
-				hd.addCurrentDTC(dtc);
-			} else
-				hd.setUnknown(buffer);
-		} else if (x == 0x6c10f114)
+		} else if (x == 0x6c10f114) {
 			if (D) Log.d(TAG, "DTC clear");
-		else
+		} else
 			hd.setUnknown(buffer);
 		return true;
 	}
