@@ -166,7 +166,7 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		String[] cTypes =		{ "6C" };
 		String[] cTas =			{ "10" };
 		String[] cSas =			{ "F1" };
-		String[] cCommands =	{ "14" };
+		String[] cCommands =		{ "14" };
 		String[] cExpects =		{ "6CF11054" };
 		int[] cCommandTimeout =	{ CLEAR_DTC_TIMEOUT };
 
@@ -194,8 +194,6 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		"0C",
 		"0C",
 		"0C",
-		//"0C",
-		//"0C",
 		// Get DTC
 		"6C",
 	};
@@ -210,8 +208,6 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		"10",
 		"10",
 		"10",
-		//"10",
-		//"10",
 		// Get DTC
 		"FE",
 	};
@@ -226,8 +222,6 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		"F1",
 		"F1",
 		"F1",
-		//"F1",
-		//"F1",
 		// Get DTC
 		"F1",
 	};
@@ -242,8 +236,6 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		"3C0F",
 		"3C10",
 		"3C11",
-		//"3C12", unknown
-		//"3C19", unknown
 		// Get DTC
 		"1912FF00",
 	};
@@ -258,13 +250,12 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		"0CF1107C0F",
 		"0CF1107C10",
 		"0CF1107C11",
-		//"0CF1107C12",
-		//"0CF1107C19",
 		// Get DTC
-		"6CF11059"
+		"6CF11059",
 	};
 
 	private int[] timeouts = {
+		// Get VIN, ECM info etc...
 		COMMAND_TIMEOUT,
 		COMMAND_TIMEOUT,
 		COMMAND_TIMEOUT,
@@ -273,6 +264,7 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		COMMAND_TIMEOUT,
 		COMMAND_TIMEOUT,
 		COMMAND_TIMEOUT,
+		// Get DTC
 		GET_DTC_TIMEOUT,
 	};
 }
