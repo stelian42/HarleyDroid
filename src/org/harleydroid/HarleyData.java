@@ -320,16 +320,15 @@ public class HarleyData {
 
 	public void resetHistoricDTC() {
 		mHistoricDTC.clear();
+		String[] dtclist = getHistoricDTC();
+		for (HarleyDataDiagnosticsListener l : mDiagnosticsListeners)
+			l.onHistoricDTCChanged(dtclist);
 	}
 
 	public void addHistoricDTC(String dtc) {
-		if (mHistoricDTC.contains(dtc))
-			return;
-		mHistoricDTC.add(dtc);
-		String[] dtclist = new String[mHistoricDTC.size()];
-		int i = 0;
-		for (String n : mHistoricDTC)
-			dtclist[i++] = n;
+		if (!mHistoricDTC.contains(dtc))
+			mHistoricDTC.add(dtc);
+		String[] dtclist = getHistoricDTC();
 		for (HarleyDataDiagnosticsListener l : mDiagnosticsListeners)
 			l.onHistoricDTCChanged(dtclist);
 	}
@@ -344,16 +343,15 @@ public class HarleyData {
 
 	public void resetCurrentDTC() {
 		mCurrentDTC.clear();
+		String[] dtclist = getCurrentDTC();
+		for (HarleyDataDiagnosticsListener l : mDiagnosticsListeners)
+			l.onCurrentDTCChanged(dtclist);
 	}
 
 	public void addCurrentDTC(String dtc) {
-		if (mCurrentDTC.contains(dtc))
-			return;
-		mCurrentDTC.add(dtc);
-		String[] dtclist = new String[mCurrentDTC.size()];
-		int i = 0;
-		for (String n : mCurrentDTC)
-			dtclist[i++] = n;
+		if (!mCurrentDTC.contains(dtc))
+			mCurrentDTC.add(dtc);
+		String[] dtclist = getCurrentDTC();
 		for (HarleyDataDiagnosticsListener l : mDiagnosticsListeners)
 			l.onCurrentDTCChanged(dtclist);
 	}
