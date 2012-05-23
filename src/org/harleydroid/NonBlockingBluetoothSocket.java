@@ -90,13 +90,12 @@ public class NonBlockingBluetoothSocket extends Thread
 		String line = null;
 		try {
 			line = queue.poll(timeout, TimeUnit.MILLISECONDS);
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			if (D) Log.e(TAG, "" + System.currentTimeMillis() + " readLine() interrupted: " + e);
 		}
 		if (line == null) {
 			if (D) Log.d(TAG, "" + System.currentTimeMillis() + " readLine() timeout");
-			throw new TimeoutException("timeout");
+			throw new TimeoutException(null);
 		}
 		if (D) Log.d(TAG, "" + System.currentTimeMillis() + " readLine (" + line.length() + "): " + line);
 		return line;
@@ -112,17 +111,21 @@ public class NonBlockingBluetoothSocket extends Thread
 	public String chat(String send, String expect, long timeout) throws IOException, TimeoutException {
 		StringBuilder result = new StringBuilder();
 		writeLine(send);
-		long start = System.currentTimeMillis();
-		while (timeout > 0) {
-			String line = readLine(timeout);
-			long now = System.currentTimeMillis();
-			timeout -= (now - start);
-			start = now;
-			result.append(line + "\n");
-			if (line.indexOf(expect) != -1)
-				return result.toString();
+		try {
+			long start = System.currentTimeMillis();
+			while (timeout > 0) {
+				String line = readLine(timeout);
+				long now = System.currentTimeMillis();
+				timeout -= (now - start);
+				start = now;
+				result.append(line + "\n");
+				if (line.indexOf(expect) != -1)
+					return result.toString();
+			}
+			throw new TimeoutException(null);
+		} catch (TimeoutException e) {
+			throw new TimeoutException(result.toString());
 		}
-		throw new TimeoutException("timeout");
 	}
 
 	static byte[] myGetBytes(String s, int start, int end) {
@@ -145,8 +148,7 @@ public class NonBlockingBluetoothSocket extends Thread
 				if (line.length() > 0)
 					queue.add(line);
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			if (D) Log.e(TAG, "" + System.currentTimeMillis() + " mReadThread exception: " + e);
 		}
 	}

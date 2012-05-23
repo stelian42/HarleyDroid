@@ -179,6 +179,8 @@ public class HarleyDroidInterface implements J1850Interface
 					return;
 				}
 
+				mHD.setRaw(myGetBytes(line));
+
 				// strip off timestamp
 				idxJ = line.indexOf('J');
 				if (idxJ != -1) {
@@ -283,6 +285,7 @@ public class HarleyDroidInterface implements J1850Interface
 						// split into lines and strip off timestamp
 						String lines[] = recv.split("\n");
 						for (int j = 0; j < lines.length; ++j) {
+							mHD.setRaw(myGetBytes(lines[j]));
 							idxJ = lines[j].indexOf('J');
 							if (idxJ != -1)
 								J1850.parse(myGetBytes(lines[j], idxJ + 1, lines[j].length()), mHD);
@@ -294,6 +297,16 @@ public class HarleyDroidInterface implements J1850Interface
 						mSock = null;
 						return;
 					} catch (TimeoutException e) {
+
+						// split into lines and strip off timestamp
+						String lines[] = e.getMessage().split("\n");
+						for (int j = 0; j < lines.length; ++j) {
+							mHD.setRaw(myGetBytes(lines[j]));
+							idxJ = lines[j].indexOf('J');
+							if (idxJ != -1)
+								J1850.parse(myGetBytes(lines[j], idxJ + 1, lines[j].length()), mHD);
+						}
+
 						++errors;
 						if (errors > MAX_ERRORS) {
 							mHarleyDroidService.disconnected(HarleyDroid.STATUS_TOOMANYERRORS);

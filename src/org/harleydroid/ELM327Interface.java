@@ -238,7 +238,9 @@ public class ELM327Interface implements J1850Interface
 					return;
 				}
 
-				if (J1850.parse(myGetBytes(line), mHD))
+				byte[] bytes = myGetBytes(line);
+				mHD.setRaw(bytes);
+				if (J1850.parse(bytes, mHD))
 					errors = 0;
 				else
 					++errors;
@@ -338,8 +340,11 @@ public class ELM327Interface implements J1850Interface
 							break;
 
 						String lines[] = recv.split("\n");
-						for (int j = 0; j < lines.length; ++j)
-							J1850.parse(myGetBytes(lines[j]), mHD);
+						for (int j = 0; j < lines.length; ++j) {
+							byte[] bytes = myGetBytes(lines[j]);
+							mHD.setRaw(bytes);
+							J1850.parse(bytes, mHD);
+						}
 						errors = 0;
 					} catch (IOException e) {
 						mHarleyDroidService.disconnected(HarleyDroid.STATUS_ERROR);
@@ -347,6 +352,13 @@ public class ELM327Interface implements J1850Interface
 						mSock = null;
 						return;
 					} catch (TimeoutException e) {
+
+						String lines[] = e.getMessage().split("\n");
+						for (int j = 0; j < lines.length; ++j) {
+							byte[] bytes = myGetBytes(lines[j]);
+							mHD.setRaw(bytes);
+							J1850.parse(bytes, mHD);
+						}
 						++errors;
 						if (errors > MAX_ERRORS) {
 							mHarleyDroidService.disconnected(HarleyDroid.STATUS_TOOMANYERRORS);

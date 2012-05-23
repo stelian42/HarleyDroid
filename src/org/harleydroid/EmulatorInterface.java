@@ -135,7 +135,9 @@ public class EmulatorInterface implements J1850Interface
 				line = "483B402094";
 				line = "483B40A0B2";
 
-				if (J1850.parse(line.getBytes(), mHD))
+				byte[] bytes = line.getBytes();
+				mHD.setRaw(bytes);
+				if (J1850.parse(bytes, mHD))
 					errors = 0;
 				else
 					++errors;
@@ -222,7 +224,9 @@ public class EmulatorInterface implements J1850Interface
 					//String line = "J0CF1107C11303138393045";
 					String line = "6CF1105901341167";
 
-					J1850.parse(line.getBytes(), mHD);
+					byte[] bytes = line.getBytes();
+					mHD.setRaw(bytes);
+					J1850.parse(bytes, mHD);
 
 					try {
 						Thread.sleep(mTimeout[i]);
