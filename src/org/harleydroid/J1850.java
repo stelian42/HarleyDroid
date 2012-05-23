@@ -22,6 +22,8 @@
 
 package org.harleydroid;
 
+import java.util.Arrays;
+
 import android.util.Log;
 
 public class J1850 {
@@ -41,6 +43,14 @@ public class J1850 {
 	private static byte[] vin = { '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-' };
 	private static byte[] ecmPN = { '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-' };
 	private static byte[] ecmCalID = { '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-' };
+
+	public static void resetCounters() {
+		odolast = odoaccum = 0;
+		fuellast = fuelaccum = 0;
+		Arrays.fill(vin, (byte)'-');
+		Arrays.fill(ecmPN, (byte)'-');
+		Arrays.fill(ecmCalID, (byte)'-');
+	}
 
 	static byte[] bytes_to_hex(byte[] in) {
 		byte out[] = new byte[MAXBUF];
@@ -100,8 +110,6 @@ public class J1850 {
 			System.out.print(Integer.toHexString(in[i]) + " ");
 		System.out.println("");
 		 */
-
-		hd.setRaw(buffer);
 
 		if (crc(in) != (byte)0xc4) {
 			hd.setBadCRC(buffer);

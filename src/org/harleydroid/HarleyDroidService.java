@@ -89,6 +89,7 @@ public class HarleyDroidService extends Service
 		if (D) Log.d(TAG, "onCreate()");
 
 		mHD = new HarleyData();
+		J1850.resetCounters();
 
 		mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		notification = new Notification(R.drawable.ic_stat_notify_harleydroid, "", System.currentTimeMillis());
