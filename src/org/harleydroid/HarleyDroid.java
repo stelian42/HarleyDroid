@@ -150,7 +150,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		// bind to the service
 		bindService(new Intent(this, HarleyDroidService.class), this, 0);
 
-		if (mAutoConnect && mService == null) {
+		if (mAutoConnect && mBluetoothID != null && mService == null) {
 			mAutoConnect = false;
 			startHDS();
 		}
