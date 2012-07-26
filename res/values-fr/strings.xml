@@ -49,7 +49,7 @@
 <string name="checkengine_label">Erreur moteur:</string>
 <string name="odometer_imperial_label">Distance (miles):</string>
 <string name="odometer_metric_label">Distance (km):</string>
-<string name="fuel_imperial_label">Essence (fl oz):</string>
+<string name="fuel_imperial_label">Essence (gal):</string>
 <string name="fuel_metric_label">Essence (ml):</string>
 <string name="vin_label">VIN:</string>
 <string name="ecmpn_label">ECM P/N:</string>

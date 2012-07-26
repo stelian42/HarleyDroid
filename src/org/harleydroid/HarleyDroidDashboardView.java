@@ -517,9 +517,10 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 	}
 
 	public void drawFuelImperial(int value) {
-		// value is in fl oz
+		// value is in gallons * 1000
+		float gallons = value / 1000f;
 		if (mViewFuelImperial != null)
-			mViewFuelImperial.setText(Float.toString(value));
+			mViewFuelImperial.setText(String.format("%5.3f", gallons));
 	}
 
 	public void drawFuelMetric(int value) {

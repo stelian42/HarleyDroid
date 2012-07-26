@@ -238,9 +238,9 @@ public class HarleyData {
 		}
 	}
 
-	// returns the fuel in fl oz
+	// returns the fuel in gallons * 1000
 	public int getFuelImperial() {
-		return ((mFuel - mResetFuel) * 338) / 250000;
+		return ((mFuel - mResetFuel) * 264) / 25000;
 	}
 
 	// returns the fuel in milliliters
