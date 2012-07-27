@@ -45,8 +45,8 @@ public class HarleyData {
 	private CopyOnWriteArrayList<String> mHistoricDTC; // Historic DTC
 	private CopyOnWriteArrayList<String> mCurrentDTC;	// Current DTC
 
-	private int mResetOdometer = 0;
-	private int mResetFuel = 0;
+	private int mResetOdometer = -1;
+	private int mResetFuel = -1;
 
 	private CopyOnWriteArrayList<HarleyDataDashboardListener> mDashboardListeners;
 	private CopyOnWriteArrayList<HarleyDataDiagnosticsListener> mDiagnosticsListeners;
@@ -219,15 +219,21 @@ public class HarleyData {
 
 	// returns the odometer in miles * 100
 	public int getOdometerImperial() {
+		if (mResetOdometer < 0)
+			return 0;
 		return ((mOdometer - mResetOdometer) * 40) / 1609;
 	}
 
 	// returns the odometer in km * 100
 	public int getOdometerMetric() {
+		if (mResetOdometer < 0)
+			return 0;
 		return (mOdometer - mResetOdometer) / 25;
 	}
 
 	public void setOdometer(int odometer) {
+		if (mResetOdometer < 0)
+			mResetOdometer = odometer;
 		if (mOdometer != odometer) {
 			mOdometer = odometer;
 			for (HarleyDataDashboardListener l : mDashboardListeners) {
@@ -240,15 +246,21 @@ public class HarleyData {
 
 	// returns the fuel in gallons * 1000
 	public int getFuelImperial() {
+		if (mResetFuel < 0)
+			return 0;
 		return ((mFuel - mResetFuel) * 264) / 25000;
 	}
 
 	// returns the fuel in milliliters
 	public int getFuelMetric() {
+		if (mResetFuel < 0)
+			return 0;
 		return (mFuel - mResetFuel) / 25;
 	}
 
 	public void setFuel(int fuel) {
+		if (mResetFuel < 0)
+			mResetFuel = fuel;
 		if (mFuel != fuel) {
 			mFuel = fuel;
 			for (HarleyDataDashboardListener l : mDashboardListeners) {
@@ -260,8 +272,8 @@ public class HarleyData {
 	}
 
 	public void resetCounters() {
-		mResetOdometer = mOdometer;
-		mResetFuel = mFuel;
+		mResetOdometer = -1;
+		mResetFuel = -1;
 		for (HarleyDataDashboardListener l : mDashboardListeners) {
 			l.onOdometerImperialChanged(0);
 			l.onOdometerMetricChanged(0);
