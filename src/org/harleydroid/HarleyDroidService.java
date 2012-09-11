@@ -55,6 +55,7 @@ public class HarleyDroidService extends Service
 	private static final int STATE_TO_POLL = 6;
 	private static final int STATE_SEND = 7;
 	private static final int STATE_TO_SEND = 8;
+	private static final int STATE_WAIT_RECONNECT = 9;
 
 	private final IBinder binder = new HarleyDroidServiceBinder();
 	private HarleyDroidLogger mLogger = null;
@@ -205,6 +206,7 @@ public class HarleyDroidService extends Service
 		case STATE_CONNECT:
 			switch (mCurrentState) {
 			case STATE_DISCONNECT:
+			case STATE_WAIT_RECONNECT:
 				mCurrentState = STATE_TO_CONNECT;
 				notify(R.string.notification_connecting);
 				mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTING, -1, -1).sendToTarget();
@@ -225,6 +227,7 @@ public class HarleyDroidService extends Service
 			case STATE_CONNECT:
 			case STATE_SEND:
 			case STATE_POLL:
+			case STATE_WAIT_RECONNECT:
 				stopSelf();
 				return;
 			case STATE_TO_DISCONNECT:
@@ -238,6 +241,7 @@ public class HarleyDroidService extends Service
 		case STATE_POLL:
 			switch (mCurrentState) {
 			case STATE_DISCONNECT:
+			case STATE_WAIT_RECONNECT:
 				mCurrentState = STATE_TO_CONNECT;
 				notify(R.string.notification_connecting);
 				mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTING, -1, -1).sendToTarget();
@@ -259,6 +263,7 @@ public class HarleyDroidService extends Service
 		case STATE_SEND:
 			switch (mCurrentState) {
 			case STATE_DISCONNECT:
+			case STATE_WAIT_RECONNECT:
 				mCurrentState = STATE_TO_CONNECT;
 				notify(R.string.notification_connecting);
 				mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTING, -1, -1).sendToTarget();
@@ -277,7 +282,21 @@ public class HarleyDroidService extends Service
 				return;
 			}
 			break;
-
+		case STATE_WAIT_RECONNECT:
+			switch (mCurrentState) {
+			case STATE_DISCONNECT:
+				mCurrentState = STATE_WAIT_RECONNECT;
+				return;
+			case STATE_CONNECT:
+			case STATE_POLL:
+			case STATE_TO_DISCONNECT:
+			case STATE_TO_CONNECT:
+			case STATE_TO_POLL:
+			case STATE_TO_SEND:
+				/* nothing to done, wait for state to settle */
+				return;
+			}
+			break;
 		}
 		if (D) Log.d(TAG, "stateMachine(): bad state transition from " + mCurrentState + " to " + mWantedState);
 	}
@@ -310,7 +329,6 @@ public class HarleyDroidService extends Service
 			case MSG_DISCONNECTED:
 				mHandler.obtainMessage(msg.arg1, -1, -1).sendToTarget();
 				mCurrentState = STATE_DISCONNECT;
-
 				if (mAutoReconnect) {
 					final int lastState = mWantedState;
 					HarleyDroidService.this.notify(R.string.notification_autorecon);
@@ -329,7 +347,7 @@ public class HarleyDroidService extends Service
 							}
 						}
 					};
-					mWantedState = STATE_DISCONNECT;
+					mWantedState = STATE_WAIT_RECONNECT;
 					mReconThread.start();
 				}
 				else {
