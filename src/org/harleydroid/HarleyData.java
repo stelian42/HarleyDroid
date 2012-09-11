@@ -29,7 +29,7 @@ public class HarleyData {
 	// raw values reported in the J1850 stream
 	private int mRPM = 0;					// RPM in rotation/minute * 4
 	private int mSpeed = 0;					// speed in mph * 200
-	private int mEngineTemp = 32;			// XXX engine temperature in Fahrenheit
+	private int mEngineTemp = 40;				// engine temperature in Celsius + 40
 	private int mFuelGauge = 0;				// fuel gauge: 0 (empty) to 6 (full)
 	private int mTurnSignals = 0;			// turn signals bitmap: 0x1=right, 0x2=left
 	private boolean mNeutral = false;		// XXX boolean: in neutral
@@ -121,20 +121,20 @@ public class HarleyData {
 
 	// returns the temperature in F
 	public int getEngineTempImperial() {
-		return mEngineTemp;
+		return (mEngineTemp - 40) * 9 / 5 + 32;
 	}
 
 	// returns the temperature in C
 	public int getEngineTempMetric() {
-		return (mEngineTemp - 32) * 5 / 9;
+		return mEngineTemp - 40;
 	}
 
 	public void setEngineTemp(int engineTemp) {
 		if (mEngineTemp != engineTemp) {
 			mEngineTemp = engineTemp;
 			for (HarleyDataDashboardListener l : mDashboardListeners) {
-				l.onEngineTempImperialChanged(mEngineTemp);
-				l.onEngineTempMetricChanged((mEngineTemp - 32) * 5 / 9);
+				l.onEngineTempImperialChanged((mEngineTemp - 40) * 9 / 5 + 32);
+				l.onEngineTempMetricChanged(mEngineTemp - 40);
 			}
 		}
 	}
