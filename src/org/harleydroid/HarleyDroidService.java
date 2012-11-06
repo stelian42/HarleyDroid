@@ -152,8 +152,13 @@ public class HarleyDroidService extends Service
 	public void setInterfaceType(String interfaceType, BluetoothDevice dev) {
 		boolean reconnect = (mInterface != null);
 
-		if (mInterfaceType == null || !mInterfaceType.equals(interfaceType) ||
-			mDevice == null || !mDevice.getAddress().equals(dev.getAddress())) {
+		if (mInterfaceType == null ||
+			!mInterfaceType.equals(interfaceType) ||
+			(!HarleyDroid.EMULATOR && (mDevice == null ||
+									   !mDevice.getAddress().equals(dev.getAddress())))) {
+
+			if (D) Log.d(TAG, "setInterfaceType(" + interfaceType + ")");
+
 			mInterfaceType = interfaceType;
 			mDevice = dev;
 			if (reconnect)
