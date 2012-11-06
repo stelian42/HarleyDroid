@@ -97,6 +97,7 @@ public class HarleyDroidService extends Service
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
 		notificationIntent = PendingIntent.getActivity(this, 0, new Intent(this, HarleyDroidDashboard.class), 0);
 		notify(R.string.notification_connecting);
+		startForeground(R.string.notification_label, notification);
 	}
 
 	public void onDestroy() {
