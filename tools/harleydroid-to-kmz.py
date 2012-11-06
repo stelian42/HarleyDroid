@@ -55,7 +55,8 @@ sys.stdout = open(kmlfile, 'w')
 
 print >> sys.stderr, 'Generating description'
 oldlon = oldlat = 0
-oldval = 0
+first_odo = -1
+last_odo = -1
 desc_date = ''
 desc_odo = 0
 for line in f:
@@ -70,10 +71,10 @@ for line in f:
 	if date and not desc_date:
 		desc_date = time.asctime(time.strptime(date[:-3], "%Y%m%d%H%M%S"))
 	if typ == "ODO":
-		if int(val) > oldval:
-			desc_odo += int(val) - oldval
-		oldval = int(val)
-desc_odo = float(desc_odo) / 100.0
+		if first_odo == -1:
+			first_odo = int(val)
+		last_odo = int(val)
+desc_odo = float(last_odo - first_odo) / 100.0
 kml_header(sys.argv[1], "HarleyDroid track\n%s km on %s" % ( desc_odo, desc_date))
 f.seek(0)
 
