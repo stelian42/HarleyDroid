@@ -1,7 +1,7 @@
 all: debug
 
 debug:
-	[ -f local.properties ] || android update project --name HarleyDroid --target android-5 --path .
+	[ -f local.properties ] || android update project --name HarleyDroid --target android-17 --path .
 	ant debug
 
 release:
