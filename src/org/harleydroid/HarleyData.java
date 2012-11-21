@@ -42,6 +42,8 @@ public class HarleyData {
 	private String mECMPN = "------------";			// ECM Part Number
 	private String mECMCalID = "------------";	// ECM Calibration ID
 	private int mECMSWLevel = 0;			// ECM Software Level
+	private int mFuelAverage;				// average fuel consumption
+	private int mFuelInstant;				// instant fuel consumption
 	private CopyOnWriteArrayList<String> mHistoricDTC; // Historic DTC
 	private CopyOnWriteArrayList<String> mCurrentDTC;	// Current DTC
 
@@ -59,6 +61,26 @@ public class HarleyData {
 
 		mHistoricDTC = new CopyOnWriteArrayList<String>();
 		mCurrentDTC = new CopyOnWriteArrayList<String>();
+
+		new Thread() {
+			public void run() {
+				setName("HarleyData: FuelInstant Thread");
+				int fuel1 = getFuelMetric();
+				int odo1 = getOdometerMetric();
+				while (true) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+					}
+					int fuel2 = getFuelMetric();
+					int odo2 = getOdometerMetric();
+					if (odo2 != odo1)
+						setFuelInstant((1000 * (fuel2 - fuel1)) / (odo2 - odo1));
+					fuel1 = fuel2;
+					odo1 = odo2;
+				}
+			}
+		}.start();
 	}
 
 	public void addHarleyDataDashboardListener(HarleyDataDashboardListener l) {
@@ -263,10 +285,65 @@ public class HarleyData {
 			mResetFuel = fuel;
 		if (mFuel != fuel) {
 			mFuel = fuel;
+			int f = mFuel - mResetFuel;
 			for (HarleyDataDashboardListener l : mDashboardListeners) {
-				int f = mFuel - mResetFuel;
 				l.onFuelImperialChanged((f * 338) / 250000);
 				l.onFuelMetricChanged(f / 25);
+			}
+			/* update average fuel consumption */
+			if (getOdometerMetric() != 0)
+				setFuelAverage(( 50 * f ) / getOdometerMetric());
+		}
+	}
+
+	// returns the mileage in MPG * 100
+	public int getFuelAverageImperial() {
+		if (mFuelAverage == 0)
+			return -1;
+		else
+			return 2352146 / mFuelAverage;
+	}
+
+	// returns the mileage in l / 100km * 100
+	public int getFuelAverageMetric() {
+		return mFuelAverage;
+	}
+
+	private void setFuelAverage(int fuel) {
+		if (mFuelAverage != fuel) {
+			mFuelAverage = fuel;
+			for (HarleyDataDashboardListener l : mDashboardListeners) {
+				if (mFuelAverage == 0)
+					l.onFuelAverageImperialChanged(-1);
+				else
+					l.onFuelAverageImperialChanged(2352146 / mFuelAverage);
+				l.onFuelAverageMetricChanged(mFuelAverage);
+			}
+		}
+	}
+
+	// returns the instant mileage in MPG * 100
+	public int getFuelInstantImperial() {
+		if (mFuelInstant == 0)
+			return -1;
+		else
+			return 2352146 / mFuelInstant;
+	}
+
+	// returns the instant mileage in l / 100km * 100
+	public int getFuelInstantMetric() {
+		return mFuelInstant;
+	}
+
+	private void setFuelInstant(int fuel) {
+		if (mFuelInstant != fuel) {
+			mFuelInstant = fuel;
+			for (HarleyDataDashboardListener l : mDashboardListeners) {
+				if (mFuelInstant == 0)
+					l.onFuelInstantImperialChanged(-1);
+				else
+					l.onFuelInstantImperialChanged(2352146 / mFuelInstant);
+				l.onFuelInstantMetricChanged(mFuelInstant);
 			}
 		}
 	}

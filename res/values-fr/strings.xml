@@ -51,6 +51,10 @@
 <string name="odometer_metric_label">Distance (km):</string>
 <string name="fuel_imperial_label">Essence (gal):</string>
 <string name="fuel_metric_label">Essence (ml):</string>
+<string name="fuelavg_imperial_label">Cons. (MPG):</string>
+<string name="fuelavg_metric_label">Cons. (l/100km):</string>
+<string name="fuelinst_imperial_label">Inst. (MPG):</string>
+<string name="fuelinst_metric_label">Inst. (l/100km):</string>
 <string name="vin_label">VIN:</string>
 <string name="ecmpn_label">ECM P/N:</string>
 <string name="ecmcalid_label">Calib. ECM:</string>

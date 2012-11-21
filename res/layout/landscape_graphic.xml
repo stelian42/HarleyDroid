@@ -182,11 +182,11 @@
         android:layout_gravity="bottom"
         android:baselineAligned="true"
         android:orientation="horizontal"
-        android:weightSum="3.0" >
+        android:weightSum="8.0" >
 
         <TextView
             android:id="@+id/gear"
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
             android:gravity="left"
@@ -195,20 +195,37 @@
             android:textColor="#9f00ff00"
             android:textSize="40dp" />
 
-        <TextView
-            android:id="@+id/whatever"
-            android:layout_width="fill_parent"
+        <FrameLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            android:gravity="center"
-            android:padding="3dip"
-            android:scaleType="fitCenter"
-            android:textColor="#9f00ff00"
-            android:textSize="40dp" />
+            android:layout_gravity="center"
+            android:layout_weight="6.0" >
+
+        	<TextView
+            	android:id="@+id/mileage_metric"
+            	android:layout_width="fill_parent"
+            	android:layout_height="wrap_content"
+            	android:gravity="center"
+            	android:padding="3dip"
+	           	android:scaleType="fitCenter"
+    	        android:textColor="#9f00ff00"
+            	android:textSize="25dp" />
+
+        	<TextView
+            	android:id="@+id/mileage_imperial"
+            	android:layout_width="fill_parent"
+            	android:layout_height="wrap_content"
+            	android:gravity="center"
+            	android:padding="3dip"
+	           	android:scaleType="fitCenter"
+    	        android:textColor="#9f00ff00"
+            	android:textSize="25dp"
+            	android:visibility="gone" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/neutral"
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
             android:gravity="right"

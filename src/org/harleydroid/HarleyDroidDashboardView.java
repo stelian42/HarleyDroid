@@ -46,6 +46,10 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 	public static final int UPDATE_ODOMETER_METRIC = 13;
 	public static final int UPDATE_FUEL_IMPERIAL = 14;
 	public static final int UPDATE_FUEL_METRIC = 15;
+	public static final int UPDATE_FUEL_AVERAGE_IMPERIAL = 16;
+	public static final int UPDATE_FUEL_AVERAGE_METRIC = 17;
+	public static final int UPDATE_FUEL_INSTANT_IMPERIAL = 18;
+	public static final int UPDATE_FUEL_INSTANT_METRIC = 19;
 
 	public static final int VIEW_GRAPHIC = 1;
 	public static final int VIEW_TEXT = 2;
@@ -82,6 +86,16 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 	private TextView mLabelFuelImperial;
 	private TextView mViewFuelMetric;
 	private TextView mViewFuelImperial;
+	private TextView mLabelFuelAvgMetric;
+	private TextView mLabelFuelAvgImperial;
+	private TextView mViewFuelAvgMetric;
+	private TextView mViewFuelAvgImperial;
+	private TextView mLabelFuelInstMetric;
+	private TextView mLabelFuelInstImperial;
+	private TextView mViewFuelInstMetric;
+	private TextView mViewFuelInstImperial;
+	private TextView mViewMileageMetric;
+	private TextView mViewMileageImperial;
 
 	public HarleyDroidDashboardView(Activity activity) {
 		mActivity = activity;
@@ -108,6 +122,8 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			mImageTurnSignalsRight = (View) mActivity.findViewById(R.id.turn_right);
 			mViewNeutral = (TextView) mActivity.findViewById(R.id.neutral);
 			mViewGear = (TextView) mActivity.findViewById(R.id.gear);
+			mViewMileageMetric = (TextView) mActivity.findViewById(R.id.mileage_metric);
+			mViewMileageImperial = (TextView) mActivity.findViewById(R.id.mileage_imperial);
 
 			mViewRpm = null;
 			mLabelSpeedMetric = null;
@@ -130,13 +146,25 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			mLabelFuelImperial = null;
 			mViewFuelMetric = null;
 			mViewFuelImperial = null;
+			mLabelFuelAvgMetric = null;
+			mLabelFuelAvgImperial = null;
+			mViewFuelAvgMetric = null;
+			mViewFuelAvgImperial = null;
+			mLabelFuelInstMetric = null;
+			mLabelFuelInstImperial = null;
+			mViewFuelInstMetric = null;
+			mViewFuelInstImperial = null;
 
 			if (unitMetric) {
 				mGaugeSpeedImperial.setVisibility(View.GONE);
 				mGaugeSpeedMetric.setVisibility(View.VISIBLE);
+				mViewMileageImperial.setVisibility(View.GONE);
+				mViewMileageMetric.setVisibility(View.VISIBLE);
 			} else {
 				mGaugeSpeedMetric.setVisibility(View.GONE);
 				mGaugeSpeedImperial.setVisibility(View.VISIBLE);
+				mViewMileageMetric.setVisibility(View.GONE);
+				mViewMileageImperial.setVisibility(View.VISIBLE);
 			}
 			break;
 		case VIEW_TEXT:
@@ -152,6 +180,8 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			mImageTurnSignalsLeft = null;
 			mImageCheckEngine = null;
 			mImageTurnSignalsRight = null;
+			mViewMileageMetric = null;
+			mViewMileageImperial = null;
 
 			mViewRpm = (TextView) mActivity.findViewById(R.id.rpm_field);
 			mLabelSpeedMetric = (TextView) mActivity.findViewById(R.id.speed_metric_label);
@@ -176,6 +206,14 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			mLabelFuelImperial = (TextView) mActivity.findViewById(R.id.fuel_imperial_label);
 			mViewFuelMetric = (TextView) mActivity.findViewById(R.id.fuel_metric_field);
 			mViewFuelImperial = (TextView) mActivity.findViewById(R.id.fuel_imperial_field);
+			mLabelFuelAvgMetric = (TextView) mActivity.findViewById(R.id.fuelavg_metric_label);
+			mLabelFuelAvgImperial = (TextView) mActivity.findViewById(R.id.fuelavg_imperial_label);
+			mViewFuelAvgMetric = (TextView) mActivity.findViewById(R.id.fuelavg_metric_field);
+			mViewFuelAvgImperial = (TextView) mActivity.findViewById(R.id.fuelavg_imperial_field);
+			mLabelFuelInstMetric = (TextView) mActivity.findViewById(R.id.fuelinst_metric_label);
+			mLabelFuelInstImperial = (TextView) mActivity.findViewById(R.id.fuelinst_imperial_label);
+			mViewFuelInstMetric = (TextView) mActivity.findViewById(R.id.fuelinst_metric_field);
+			mViewFuelInstImperial = (TextView) mActivity.findViewById(R.id.fuelinst_imperial_field);
 
 			if (unitMetric) {
 				mLabelSpeedImperial.setVisibility(View.GONE);
@@ -202,6 +240,18 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 				mViewFuelImperial.setVisibility(View.GONE);
 				mViewFuelImperial = null;
 				mViewFuelMetric.setVisibility(View.VISIBLE);
+				mLabelFuelAvgImperial.setVisibility(View.GONE);
+				mLabelFuelAvgImperial = null;
+				mLabelFuelAvgMetric.setVisibility(View.VISIBLE);
+				mViewFuelAvgImperial.setVisibility(View.GONE);
+				mViewFuelAvgImperial = null;
+				mViewFuelAvgMetric.setVisibility(View.VISIBLE);
+				mLabelFuelInstImperial.setVisibility(View.GONE);
+				mLabelFuelInstImperial = null;
+				mLabelFuelInstMetric.setVisibility(View.VISIBLE);
+				mViewFuelInstImperial.setVisibility(View.GONE);
+				mViewFuelInstImperial = null;
+				mViewFuelInstMetric.setVisibility(View.VISIBLE);
 			} else {
 				mLabelSpeedMetric.setVisibility(View.GONE);
 				mLabelSpeedMetric = null;
@@ -227,6 +277,18 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 				mViewFuelMetric.setVisibility(View.GONE);
 				mViewFuelMetric = null;
 				mViewFuelImperial.setVisibility(View.VISIBLE);
+				mLabelFuelAvgMetric.setVisibility(View.GONE);
+				mLabelFuelAvgMetric = null;
+				mLabelFuelAvgImperial.setVisibility(View.VISIBLE);
+				mViewFuelAvgMetric.setVisibility(View.GONE);
+				mViewFuelAvgMetric = null;
+				mViewFuelAvgImperial.setVisibility(View.VISIBLE);
+				mLabelFuelInstMetric.setVisibility(View.GONE);
+				mLabelFuelInstMetric = null;
+				mLabelFuelInstImperial.setVisibility(View.VISIBLE);
+				mViewFuelInstMetric.setVisibility(View.GONE);
+				mViewFuelInstMetric = null;
+				mViewFuelInstImperial.setVisibility(View.VISIBLE);
 			}
 
 			break;
@@ -283,6 +345,18 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 				break;
 			case UPDATE_FUEL_METRIC:
 				drawFuelMetric(msg.arg1);
+				break;
+			case UPDATE_FUEL_AVERAGE_IMPERIAL:
+				drawFuelAvgImperial(msg.arg1);
+				break;
+			case UPDATE_FUEL_AVERAGE_METRIC:
+				drawFuelAvgMetric(msg.arg1);
+				break;
+			case UPDATE_FUEL_INSTANT_IMPERIAL:
+				drawFuelInstImperial(msg.arg1);
+				break;
+			case UPDATE_FUEL_INSTANT_METRIC:
+				drawFuelInstMetric(msg.arg1);
 				break;
 			}
 		}
@@ -348,6 +422,22 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_FUEL_METRIC, fuel, -1).sendToTarget();
 	}
 
+	public void onFuelAverageImperialChanged(int fuel) {
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_FUEL_AVERAGE_IMPERIAL, fuel, -1).sendToTarget();
+	}
+
+	public void onFuelAverageMetricChanged(int fuel) {
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_FUEL_AVERAGE_METRIC, fuel, -1).sendToTarget();
+	}
+
+	public void onFuelInstantImperialChanged(int fuel) {
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_FUEL_INSTANT_IMPERIAL, fuel, -1).sendToTarget();
+	}
+
+	public void onFuelInstantMetricChanged(int fuel) {
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_FUEL_INSTANT_METRIC, fuel, -1).sendToTarget();
+	}
+
 	public void drawAll(HarleyData hd) {
 
 		if (hd != null) {
@@ -366,6 +456,10 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			drawOdometerMetric(hd.getOdometerMetric());
 			drawFuelImperial(hd.getFuelImperial());
 			drawFuelMetric(hd.getFuelMetric());
+			drawFuelAvgImperial(hd.getFuelAverageImperial());
+			drawFuelAvgMetric(hd.getFuelAverageMetric());
+			drawFuelInstImperial(hd.getFuelAverageImperial());
+			drawFuelInstMetric(hd.getFuelAverageMetric());
 		} else {
 			drawRPM(0);
 			drawSpeedImperial(0);
@@ -382,6 +476,10 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			drawOdometerMetric(0);
 			drawFuelImperial(0);
 			drawFuelMetric(0);
+			drawFuelAvgImperial(-1);
+			drawFuelAvgMetric(0);
+			drawFuelInstImperial(-1);
+			drawFuelInstMetric(0);
 		}
 	}
 
@@ -527,5 +625,88 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 		// value is in milliliters
 		if (mViewFuelMetric != null)
 			mViewFuelMetric.setText(Integer.toString(value));
+	}
+
+	private float lastFuelAvgImperial = -1;
+	private float lastFuelInstImperial = -1;
+	private float lastFuelAvgMetric = -1;
+	private float lastFuelInstMetric = -1;
+
+	public void drawFuelAvgImperial(int value) {
+		// value is in MPG * 100
+		if (value == -1)
+			lastFuelAvgImperial = -1;
+		else
+			lastFuelAvgImperial = value / 100f;
+		if (mViewFuelAvgImperial != null) {
+			if (lastFuelAvgImperial == -1)
+				mViewFuelAvgImperial.setText("-");
+			else
+				mViewFuelAvgImperial.setText(String.format("%4.2f", lastFuelAvgImperial));
+		}
+		drawMileageImperial();
+	}
+
+	public void drawFuelAvgMetric(int value) {
+		// value is in l / 100 km * 100
+		lastFuelAvgMetric = value / 100f;
+		if (mViewFuelAvgMetric != null)
+			mViewFuelAvgMetric.setText(String.format("%4.2f", lastFuelAvgMetric));
+		drawMileageMetric();
+	}
+
+	public void drawFuelInstImperial(int value) {
+		// value is in MPG * 100
+		if (value == -1)
+			lastFuelInstImperial = -1;
+		else
+			lastFuelInstImperial = value / 100f;
+		if (mViewFuelInstImperial != null) {
+			if (lastFuelInstImperial == -1)
+				mViewFuelInstImperial.setText("-");
+			else
+				mViewFuelInstImperial.setText(String.format("%4.2f", lastFuelInstImperial));
+		}
+		drawMileageImperial();
+	}
+
+	public void drawFuelInstMetric(int value) {
+		// value is in l / 100 km * 100
+		lastFuelInstMetric = value / 100f;
+		if (mViewFuelInstMetric != null)
+			mViewFuelInstMetric.setText(String.format("%4.2f", lastFuelInstMetric));
+		drawMileageMetric();
+	}
+
+	private void drawMileageImperial() {
+		if (mViewMileageImperial != null) {
+			String s;
+			if (lastFuelInstImperial == -1)
+				s = "-";
+			else
+				s = String.format("%3.1f",  lastFuelInstImperial);
+			s += " / ";
+			if (lastFuelAvgImperial == -1)
+				s += "-";
+			else
+				s += String.format("%3.1f",  lastFuelAvgImperial);
+			mViewMileageImperial.setText(s);
+		}
+	}
+
+	private void drawMileageMetric() {
+		if (mViewMileageMetric != null) {
+			String s;
+			if (lastFuelInstMetric == -1)
+				s = "-";
+			else
+				s = String.format("%3.1f",  lastFuelInstMetric);
+			s += " / ";
+			if (lastFuelAvgMetric == -1)
+				s += "-";
+			else
+				s += String.format("%3.1f",  lastFuelAvgMetric);
+			mViewMileageMetric.setText(s);
+		}
 	}
 }

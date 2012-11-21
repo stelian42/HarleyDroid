@@ -36,4 +36,8 @@ public interface HarleyDataDashboardListener {
 	public void onOdometerMetricChanged(int odometer);
 	public void onFuelImperialChanged(int fuel);
 	public void onFuelMetricChanged(int fuel);
+	public void onFuelAverageImperialChanged(int fuel);
+	public void onFuelAverageMetricChanged(int fuel);
+	public void onFuelInstantImperialChanged(int fuel);
+	public void onFuelInstantMetricChanged(int fuel);
 };

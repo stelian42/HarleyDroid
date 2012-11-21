@@ -95,7 +95,8 @@ public class EmulatorInterface implements J1850Interface
 		private boolean stop = false;
 
 		public void run() {
-			int cnt = 0;
+			int odo = 0;
+			int fuel = 0;
 			int errors = 0;
 
 			setName("EmulatorInterface: PollThread");
@@ -105,14 +106,16 @@ public class EmulatorInterface implements J1850Interface
 				String line;
 
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(500);
 				} catch (InterruptedException e1) {
 				}
 
 				/* send several messages to update the UI */
-				mHD.setOdometer(cnt);
-				cnt += 50;
-				if (cnt % 100 == 0) {
+				mHD.setOdometer(odo);
+				odo += 50;
+				mHD.setFuel(fuel);
+				fuel += 50;
+				if (odo % 100 == 0) {
 					mHD.setCheckEngine(true);
 					mHD.setTurnSignals(0);
 				}

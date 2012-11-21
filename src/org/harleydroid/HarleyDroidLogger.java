@@ -202,6 +202,18 @@ public class HarleyDroidLogger implements HarleyDataDashboardListener, HarleyDat
 			write("FUL," + fuel);
 	}
 
+	public void onFuelAverageImperialChanged(int fuel) {
+	}
+
+	public void onFuelAverageMetricChanged(int fuel) {
+	}
+
+	public void onFuelInstantImperialChanged(int fuel) {
+	}
+
+	public void onFuelInstantMetricChanged(int fuel) {
+	}
+
 	public void onVINChanged(String vin) {
 		write("VIN," + vin);
 	}

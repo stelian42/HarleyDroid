@@ -331,4 +331,92 @@
         </FrameLayout>
     </TableRow>
 
+	<TableRow android:layout_weight="1" >
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <TextView
+                android:id="@+id/fuelavg_metric_label"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/fuelavg_metric_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/fuelavg_imperial_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/fuelavg_imperial_label"
+                android:textSize="@dimen/textsize"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <TextView
+                android:id="@+id/fuelavg_metric_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/fuelavg_imperial_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize"
+                android:visibility="gone" />
+        </FrameLayout>
+    </TableRow>
+    <TableRow android:layout_weight="1" >
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <TextView
+                android:id="@+id/fuelinst_metric_label"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/fuelinst_metric_label"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/fuelinst_imperial_label"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:text="@string/fuelinst_imperial_label"
+                android:textSize="@dimen/textsize"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <TextView
+                android:id="@+id/fuelinst_metric_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize" />
+
+            <TextView
+                android:id="@+id/fuelinst_imperial_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="3dip"
+                android:textSize="@dimen/textsize"
+                android:visibility="gone" />
+        </FrameLayout>
+    </TableRow>
 </TableLayout>
