@@ -27,6 +27,9 @@
 
 package org.harleydroid;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.harleydroid.R;
 
 import android.content.Context;
@@ -226,6 +229,20 @@ public final class Gauge extends View {
 	}
 
 	private void init(Context context, AttributeSet attrs) {
+
+		try {
+		    Method setLayerTypeMethod = getClass().getMethod("setLayerType", new Class[] {int.class, Paint.class});
+		    setLayerTypeMethod.invoke(this, new Object[] {LAYER_TYPE_SOFTWARE, null});
+		} catch (NoSuchMethodException e) {
+		    // Older OS, no HW acceleration anyway
+		} catch (IllegalArgumentException e) {
+		    e.printStackTrace();
+		} catch (IllegalAccessException e) {
+		    e.printStackTrace();
+		} catch (InvocationTargetException e) {
+		    e.printStackTrace();
+		}
+
 		// Get the properties from the resource file.
 		if (context != null && attrs != null){
 			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Dial);
