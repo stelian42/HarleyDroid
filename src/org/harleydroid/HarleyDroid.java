@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Environment;
@@ -129,6 +130,19 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		}
 		else if (mPrefs.getString("orientation", "auto").equals("landscape")) {
 			mOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+		}
+
+		else if (mPrefs.getString("orientation", "auto").equals("reversePortrait")) {
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD)
+				mOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+			else
+				mOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+		}
+		else if (mPrefs.getString("orientation", "auto").equals("reverseLandscape")) {
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD)
+				mOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+			else
+				mOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
 		}
 		this.setRequestedOrientation(mOrientation);
 		mLogging = false;
