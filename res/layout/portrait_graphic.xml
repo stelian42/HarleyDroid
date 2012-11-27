@@ -192,7 +192,7 @@
             android:padding="3dip"
             android:scaleType="fitStart"
             android:textColor="#9f00ff00"
-            android:textSize="40dp" />
+            android:textSize="40sp" />
 
         <FrameLayout
             android:layout_width="0dp"
@@ -208,7 +208,7 @@
         	    android:padding="3dip"
             	android:scaleType="fitCenter"
             	android:textColor="#9f00ff00"
-            	android:textSize="25dp" />
+		android:textSize="25sp" />
 
         	<TextView
 	            android:id="@+id/mileage_imperial"
@@ -218,7 +218,7 @@
         	    android:padding="3dip"
             	android:scaleType="fitCenter"
             	android:textColor="#9f00ff00"
-            	android:textSize="25dp" />
+		android:textSize="25sp" />
 
         	</FrameLayout>
         <TextView
@@ -230,7 +230,7 @@
             android:padding="3dip"
             android:scaleType="fitEnd"
             android:textColor="#9f00ff00"
-            android:textSize="40dp" />
+	    android:textSize="40sp" />
     </LinearLayout>
 
 </merge>
