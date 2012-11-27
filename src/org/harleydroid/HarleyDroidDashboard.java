@@ -147,6 +147,13 @@ public class HarleyDroidDashboard extends HarleyDroid {
 		case R.id.reset_menu:
 			if (mHD != null)
 				mHD.resetCounters();
+			else {
+				SharedPreferences.Editor editor = mPrefs.edit();
+				editor.putInt("odometer", 0);
+				editor.putInt("fuel", 0);
+				editor.commit();
+			}
+			mHarleyDroidDashboardView.drawAll(mHD);
 			return true;
 		case R.id.about_menu:
 			About.about(this);
@@ -169,8 +176,8 @@ public class HarleyDroidDashboard extends HarleyDroid {
 
 	public void onServiceDisconnected(ComponentName name) {
 		if (D) Log.d(TAG, "onServiceDisconnected()");
-		super.onServiceDisconnected(name);
 
 		mHD.removeHarleyDataDashboardListener(mHarleyDroidDashboardView);
+		super.onServiceDisconnected(name);
 	}
 }

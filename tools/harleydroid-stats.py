@@ -162,9 +162,12 @@ if first_odo != -1:
 if first_ful != -1:
 	print 'Start fuel (l): %.3f' % (float(first_ful) / 1000.0)
 	print 'End fuel (l): %.3f' % (float(last_ful) / 1000.0)
-	print 'Fuel consumption (l): %.3f' % (float(last_ful - first_ful) / 1000.0)
+	print 'Overall fuel consumption (l): %.3f' % (float(last_ful) / 1000.0)
+if last_odo != 0:
+	print 'Overall average consumption (l/100km): %.3f' % (10.0 * float(last_ful) / float(last_odo))
+	print 'This track fuel consumption (l): %.3f' % (float(last_ful - first_ful) / 1000.0)
 if last_odo - first_odo != 0:
-	print 'Average consumption (l/100km): %.3f' % (10.0 * float(last_ful - first_ful) / float(last_odo - first_odo))
+	print 'This track average consumption (l/100km): %.3f' % (10.0 * float(last_ful - first_ful) / float(last_odo - first_odo))
 if max_rpm != -1:
 	print 'Max RPM:', max_rpm
 if max_spd != -1:

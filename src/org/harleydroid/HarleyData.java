@@ -24,6 +24,8 @@ package org.harleydroid;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import android.content.SharedPreferences;
+
 public class HarleyData {
 
 	// raw values reported in the J1850 stream
@@ -42,21 +44,29 @@ public class HarleyData {
 	private String mECMPN = "------------";			// ECM Part Number
 	private String mECMCalID = "------------";	// ECM Calibration ID
 	private int mECMSWLevel = 0;			// ECM Software Level
-	private int mFuelAverage;				// average fuel consumption
-	private int mFuelInstant;				// instant fuel consumption
+	private int mFuelAverage = -1;			// average fuel consumption
+	private int mFuelInstant = 1;			// instant fuel consumption
 	private CopyOnWriteArrayList<String> mHistoricDTC; // Historic DTC
 	private CopyOnWriteArrayList<String> mCurrentDTC;	// Current DTC
 
 	private int mResetOdometer = -1;
 	private int mResetFuel = -1;
+	private int mSavedOdometer = 0;
+	private int mSavedFuel = 0;
 
 	private CopyOnWriteArrayList<HarleyDataDashboardListener> mDashboardListeners;
 	private CopyOnWriteArrayList<HarleyDataDiagnosticsListener> mDiagnosticsListeners;
 	private CopyOnWriteArrayList<HarleyDataRawListener> mRawListeners;
 
 	private HarleyDataThread mHarleyDataThread;
+	private SharedPreferences mPrefs;
 
-	public HarleyData() {
+	public HarleyData(SharedPreferences prefs) {
+
+		mPrefs = prefs;
+		mSavedOdometer = prefs.getInt("odometer", 0);
+		mSavedFuel = prefs.getInt("fuel", 0);
+
 		mDashboardListeners = new CopyOnWriteArrayList<HarleyDataDashboardListener>();
 		mDiagnosticsListeners = new CopyOnWriteArrayList<HarleyDataDiagnosticsListener>();
 		mRawListeners = new CopyOnWriteArrayList<HarleyDataRawListener>();
@@ -69,6 +79,13 @@ public class HarleyData {
 	}
 
 	public void destroy() {
+
+		SharedPreferences.Editor editor = mPrefs.edit();
+		mSavedOdometer = mSavedOdometer + mOdometer - mResetOdometer;
+		mSavedFuel = mSavedFuel + mFuel - mResetFuel;
+		editor.putInt("odometer", mSavedOdometer);
+		editor.putInt("fuel", mSavedFuel);
+		editor.commit();
 		mHarleyDataThread.cancel();
 		mHarleyDataThread = null;
 	}
@@ -96,7 +113,6 @@ public class HarleyData {
 	public void removeHarleyDataRawListener(HarleyDataRawListener l) {
 		mRawListeners.remove(l);
 	}
-
 
 	// returns the rotations per minute
 	public int getRPM() {
@@ -232,15 +248,15 @@ public class HarleyData {
 	// returns the odometer in miles * 100
 	public int getOdometerImperial() {
 		if (mResetOdometer < 0)
-			return 0;
-		return ((mOdometer - mResetOdometer) * 40) / 1609;
+			return (mSavedOdometer * 40) / 1609;
+		return ((mSavedOdometer + mOdometer - mResetOdometer) * 40) / 1609;
 	}
 
 	// returns the odometer in km * 100
 	public int getOdometerMetric() {
 		if (mResetOdometer < 0)
-			return 0;
-		return (mOdometer - mResetOdometer) / 25;
+			return mSavedOdometer / 25;
+		return (mSavedOdometer + mOdometer - mResetOdometer) / 25;
 	}
 
 	public void setOdometer(int odometer) {
@@ -249,7 +265,7 @@ public class HarleyData {
 		if (mOdometer != odometer) {
 			mOdometer = odometer;
 			for (HarleyDataDashboardListener l : mDashboardListeners) {
-				int o = mOdometer - mResetOdometer;
+				int o = mSavedOdometer + mOdometer - mResetOdometer;
 				l.onOdometerImperialChanged((o * 40) / 1609);
 				l.onOdometerMetricChanged(o / 25);
 			}
@@ -259,15 +275,15 @@ public class HarleyData {
 	// returns the fuel in gallons * 1000
 	public int getFuelImperial() {
 		if (mResetFuel < 0)
-			return 0;
-		return ((mFuel - mResetFuel) * 264) / 25000;
+			return (mSavedFuel * 264) / 20000;
+		return ((mSavedFuel + mFuel - mResetFuel) * 264) / 20000;
 	}
 
 	// returns the fuel in milliliters
 	public int getFuelMetric() {
 		if (mResetFuel < 0)
-			return 0;
-		return (mFuel - mResetFuel) / 25;
+			return mSavedFuel / 20;
+		return (mSavedFuel + mFuel - mResetFuel) / 20;
 	}
 
 	public void setFuel(int fuel) {
@@ -275,26 +291,28 @@ public class HarleyData {
 			mResetFuel = fuel;
 		if (mFuel != fuel) {
 			mFuel = fuel;
-			int f = mFuel - mResetFuel;
+			int f = mSavedFuel + mFuel - mResetFuel;
 			for (HarleyDataDashboardListener l : mDashboardListeners) {
-				l.onFuelImperialChanged((f * 338) / 250000);
-				l.onFuelMetricChanged(f / 25);
+				l.onFuelImperialChanged((f * 264) / 20000);
+				l.onFuelMetricChanged(f / 20);
 			}
 			/* update average fuel consumption */
-			if (getOdometerMetric() != 0)
+			if ((getOdometerMetric() != 0) && (f != 0))
 				setFuelAverage(( 50 * f ) / getOdometerMetric());
+			else
+				setFuelAverage(-1);
 		}
 	}
 
-	// returns the mileage in MPG * 100
+	// returns the mileage in MPG * 100 or -1 if not available
 	public int getFuelAverageImperial() {
-		if (mFuelAverage == 0)
+		if (mFuelAverage == -1)
 			return -1;
 		else
 			return 2352146 / mFuelAverage;
 	}
 
-	// returns the mileage in l / 100km * 100
+	// returns the mileage in l / 100km * 100 or -1 if not available
 	public int getFuelAverageMetric() {
 		return mFuelAverage;
 	}
@@ -303,7 +321,7 @@ public class HarleyData {
 		if (mFuelAverage != fuel) {
 			mFuelAverage = fuel;
 			for (HarleyDataDashboardListener l : mDashboardListeners) {
-				if (mFuelAverage == 0)
+				if (mFuelAverage == -1)
 					l.onFuelAverageImperialChanged(-1);
 				else
 					l.onFuelAverageImperialChanged(2352146 / mFuelAverage);
@@ -312,15 +330,15 @@ public class HarleyData {
 		}
 	}
 
-	// returns the instant mileage in MPG * 100
+	// returns the instant mileage in MPG * 100 or -1 if not available
 	public int getFuelInstantImperial() {
-		if (mFuelInstant == 0)
+		if (mFuelInstant == -1)
 			return -1;
 		else
 			return 2352146 / mFuelInstant;
 	}
 
-	// returns the instant mileage in l / 100km * 100
+	// returns the instant mileage in l / 100km * 100 or -1 if not available
 	public int getFuelInstantMetric() {
 		return mFuelInstant;
 	}
@@ -329,7 +347,7 @@ public class HarleyData {
 		if (mFuelInstant != fuel) {
 			mFuelInstant = fuel;
 			for (HarleyDataDashboardListener l : mDashboardListeners) {
-				if (mFuelInstant == 0)
+				if (mFuelInstant == -1)
 					l.onFuelInstantImperialChanged(-1);
 				else
 					l.onFuelInstantImperialChanged(2352146 / mFuelInstant);
@@ -339,6 +357,8 @@ public class HarleyData {
 	}
 
 	public void resetCounters() {
+		mSavedOdometer = 0;
+		mSavedFuel = 0;
 		mResetOdometer = -1;
 		mResetFuel = -1;
 		for (HarleyDataDashboardListener l : mDashboardListeners) {

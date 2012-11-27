@@ -25,11 +25,13 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class HarleyDroidService extends Service
@@ -83,13 +85,15 @@ public class HarleyDroidService extends Service
 	private String mSendExpect[];
 	private int mSendTimeout[];
 	private int mSendDelay;
+	protected SharedPreferences mPrefs;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		if (D) Log.d(TAG, "onCreate()");
 
-		mHD = new HarleyData();
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		mHD = new HarleyData(mPrefs);
 
 		mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		notification = new Notification(R.drawable.ic_stat_notify_harleydroid, "", System.currentTimeMillis());

@@ -21,8 +21,10 @@ package org.harleydroid;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -460,8 +462,8 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			drawFuelMetric(hd.getFuelMetric());
 			drawFuelAvgImperial(hd.getFuelAverageImperial());
 			drawFuelAvgMetric(hd.getFuelAverageMetric());
-			drawFuelInstImperial(hd.getFuelAverageImperial());
-			drawFuelInstMetric(hd.getFuelAverageMetric());
+			drawFuelInstImperial(hd.getFuelInstantImperial());
+			drawFuelInstMetric(hd.getFuelInstantMetric());
 		} else {
 			drawRPM(0);
 			drawSpeedImperial(0);
@@ -474,14 +476,25 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			drawClutch(false);
 			drawGear(-1);
 			drawCheckEngine(false);
-			drawOdometerImperial(0);
-			drawOdometerMetric(0);
-			drawFuelImperial(0);
-			drawFuelMetric(0);
-			drawFuelAvgImperial(-1);
-			drawFuelAvgMetric(0);
 			drawFuelInstImperial(-1);
-			drawFuelInstMetric(0);
+			drawFuelInstMetric(-1);
+
+			/* need to retrieve the saved odometer/fuel */
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity.getBaseContext());
+			int savedOdometer = prefs.getInt("odometer", 0);
+			int savedFuel = prefs.getInt("fuel", 0);
+			drawOdometerMetric(savedOdometer / 25);
+			drawOdometerImperial((savedOdometer * 40) / 1609);
+			drawFuelMetric(savedFuel / 20);
+			drawFuelImperial((savedFuel * 264) / 20000);
+			if (savedOdometer == 0 || savedFuel == 0) {
+				drawFuelAvgMetric(-1);
+				drawFuelAvgImperial(-1);
+			}
+			else {
+				drawFuelAvgMetric((1250 * savedFuel) / savedOdometer);
+				drawFuelAvgImperial(2352146 / ((1250 * savedFuel) / savedOdometer));
+			}
 		}
 	}
 
@@ -651,9 +664,16 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 
 	public void drawFuelAvgMetric(int value) {
 		// value is in l / 100 km * 100
-		lastFuelAvgMetric = value / 100f;
-		if (mViewFuelAvgMetric != null)
-			mViewFuelAvgMetric.setText(String.format("%4.2f", lastFuelAvgMetric));
+		if (value == -1)
+			lastFuelAvgMetric = -1;
+		else
+			lastFuelAvgMetric = value / 100f;
+		if (mViewFuelAvgMetric != null) {
+			if (lastFuelAvgMetric == -1)
+				mViewFuelAvgMetric.setText("-");
+			else
+				mViewFuelAvgMetric.setText(String.format("%4.2f", lastFuelAvgMetric));
+		}
 		drawMileageMetric();
 	}
 
@@ -674,9 +694,16 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 
 	public void drawFuelInstMetric(int value) {
 		// value is in l / 100 km * 100
-		lastFuelInstMetric = value / 100f;
-		if (mViewFuelInstMetric != null)
-			mViewFuelInstMetric.setText(String.format("%4.2f", lastFuelInstMetric));
+		if (value == -1)
+			lastFuelInstMetric = -1;
+		else
+			lastFuelInstMetric = value / 100f;
+		if (mViewFuelInstMetric != null) {
+			if (lastFuelInstMetric == -1)
+				mViewFuelInstMetric.setText("-");
+			else
+				mViewFuelInstMetric.setText(String.format("%4.2f", lastFuelInstMetric));
+		}
 		drawMileageMetric();
 	}
 

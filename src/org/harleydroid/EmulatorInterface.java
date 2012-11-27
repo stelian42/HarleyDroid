@@ -112,7 +112,7 @@ public class EmulatorInterface implements J1850Interface
 
 				/* send several messages to update the UI */
 				mHD.setOdometer(odo);
-				odo += 50;
+				odo += 150;
 				mHD.setFuel(fuel);
 				fuel += 50;
 				if (odo % 100 == 0) {

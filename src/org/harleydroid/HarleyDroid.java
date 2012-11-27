@@ -220,6 +220,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 
 		unbindService(this);
 		mService = null;
+		mHD = null;
 		// ugly, but we unbind() in onStop()...
 		bindService(new Intent(this, HarleyDroidService.class), this, 0);
 	}

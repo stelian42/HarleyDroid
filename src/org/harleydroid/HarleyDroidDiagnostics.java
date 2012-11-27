@@ -148,9 +148,9 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 
 	public void onServiceDisconnected(ComponentName name) {
 		if (D) Log.d(TAG, "onServiceDisconnected()");
-		super.onServiceDisconnected(name);
 
 		mHD.removeHarleyDataDiagnosticsListener(mHarleyDroidDiagnosticsView);
+		super.onServiceDisconnected(name);
 	}
 
 	private static final int COMMAND_TIMEOUT = 500;
