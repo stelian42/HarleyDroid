@@ -54,6 +54,8 @@ public class HarleyData {
 	private CopyOnWriteArrayList<HarleyDataDiagnosticsListener> mDiagnosticsListeners;
 	private CopyOnWriteArrayList<HarleyDataRawListener> mRawListeners;
 
+	private HarleyDataThread mHarleyDataThread;
+
 	public HarleyData() {
 		mDashboardListeners = new CopyOnWriteArrayList<HarleyDataDashboardListener>();
 		mDiagnosticsListeners = new CopyOnWriteArrayList<HarleyDataDiagnosticsListener>();
@@ -62,25 +64,13 @@ public class HarleyData {
 		mHistoricDTC = new CopyOnWriteArrayList<String>();
 		mCurrentDTC = new CopyOnWriteArrayList<String>();
 
-		new Thread() {
-			public void run() {
-				setName("HarleyData: FuelInstant Thread");
-				int fuel1 = getFuelMetric();
-				int odo1 = getOdometerMetric();
-				while (true) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-					}
-					int fuel2 = getFuelMetric();
-					int odo2 = getOdometerMetric();
-					if (odo2 != odo1)
-						setFuelInstant((1000 * (fuel2 - fuel1)) / (odo2 - odo1));
-					fuel1 = fuel2;
-					odo1 = odo2;
-				}
-			}
-		}.start();
+		mHarleyDataThread = new HarleyDataThread();
+		mHarleyDataThread.start();
+	}
+
+	public void destroy() {
+		mHarleyDataThread.cancel();
+		mHarleyDataThread = null;
 	}
 
 	public void addHarleyDataDashboardListener(HarleyDataDashboardListener l) {
@@ -494,4 +484,33 @@ public class HarleyData {
 		ret += " FUL:" + mFuel;
 		return ret;
 	}
+
+	private class HarleyDataThread extends Thread {
+
+		private boolean stop = false;
+
+		public void run() {
+			setName("HarleyDataThread");
+			int fuel1 = getFuelMetric();
+			int odo1 = getOdometerMetric();
+			while (!stop) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+				int fuel2 = getFuelMetric();
+				int odo2 = getOdometerMetric();
+				if ((fuel2 != fuel1) && (odo2 != odo1))
+					setFuelInstant((1000 * (fuel2 - fuel1)) / (odo2 - odo1));
+				else
+					setFuelInstant(-1);
+				fuel1 = fuel2;
+				odo1 = odo2;
+			}
+		}
+
+		public void cancel() {
+			stop = true;
+		}
+	};
 };

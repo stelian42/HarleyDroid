@@ -105,6 +105,7 @@ public class HarleyDroidService extends Service
 
 		doDisconnect();
 		mNM.cancel(R.string.notification_label);
+		mHD.destroy();
 	}
 
 	@Override
