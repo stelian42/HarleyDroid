@@ -19,6 +19,7 @@
 
 package org.harleydroid;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
@@ -26,6 +27,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+@SuppressLint("DefaultLocale")
 public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 {
 	private static final boolean D = false;

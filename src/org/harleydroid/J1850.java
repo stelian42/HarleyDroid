@@ -24,6 +24,7 @@ package org.harleydroid;
 
 import java.util.Arrays;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 public class J1850 {
@@ -97,6 +98,7 @@ public class J1850 {
 		return crc;
 	}
 
+	@SuppressLint("DefaultLocale")
 	public static boolean parse(byte[] buffer, HarleyData hd) {
 		byte[] in;
 		int x;

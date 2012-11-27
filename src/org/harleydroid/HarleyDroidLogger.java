@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.zip.GZIPOutputStream;
 
@@ -38,7 +39,7 @@ public class HarleyDroidLogger implements HarleyDataDashboardListener, HarleyDat
 	private static final String TAG = HarleyDroidLogger.class.getSimpleName();
 
 	static final SimpleDateFormat TIMESTAMP_FORMAT =
-		new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.US);
 	static {
 		TIMESTAMP_FORMAT.setTimeZone(TimeZone.getDefault());
 	}
