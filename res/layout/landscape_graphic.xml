@@ -142,35 +142,45 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="3.0" >
+        android:weightSum="8.0" >
 
         <ImageView
             android:id="@+id/turn_left"
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
             android:contentDescription="@string/turn_left"
-            android:scaleType="fitStart"
+            android:scaleType="fitCenter"
             android:src="@drawable/turn_left"
             android:visibility="invisible" />
 
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="6.0" >
+
         <ImageView
             android:id="@+id/check_engine"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1.0"
+            android:layout_gravity="center"
+            android:background="#80000000"
             android:contentDescription="@string/check_engine"
+            android:padding="5dp"
             android:scaleType="fitCenter"
             android:src="@drawable/check_engine"
             android:visibility="invisible" />
 
+        </FrameLayout>
+
         <ImageView
             android:id="@+id/turn_right"
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
             android:contentDescription="@string/turn_right"
-            android:scaleType="fitEnd"
+            android:scaleType="fitCenter"
             android:src="@drawable/turn_right"
             android:visibility="invisible" />
     </LinearLayout>
@@ -180,7 +190,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:baselineAligned="true"
         android:orientation="horizontal"
         android:weightSum="8.0" >
 
@@ -191,7 +200,7 @@
             android:layout_weight="1.0"
             android:gravity="left"
             android:padding="3dip"
-            android:scaleType="fitStart"
+            android:scaleType="fitCenter"
             android:textColor="#9f00ff00"
             android:textSize="40sp" />
 
@@ -202,35 +211,39 @@
             android:layout_weight="6.0" >
 
         	<TextView
-            	android:id="@+id/mileage_metric"
-            	android:layout_width="fill_parent"
-            	android:layout_height="wrap_content"
-            	android:gravity="center"
-            	android:padding="3dip"
-	           	android:scaleType="fitCenter"
-    	        android:textColor="#9f00ff00"
-		android:textSize="25sp" />
+        	    android:id="@+id/mileage_metric"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:layout_gravity="center"
+        	    android:background="#80000000"
+        	    android:gravity="center"
+        	    android:padding="5dip"
+        	    android:scaleType="fitCenter"
+        	    android:textColor="#9f00ff00"
+        	    android:textSize="25sp" />
 
         	<TextView
-            	android:id="@+id/mileage_imperial"
-            	android:layout_width="fill_parent"
-            	android:layout_height="wrap_content"
-            	android:gravity="center"
-            	android:padding="3dip"
-	           	android:scaleType="fitCenter"
-    	        android:textColor="#9f00ff00"
-		android:textSize="25sp"
-            	android:visibility="gone" />
-        </FrameLayout>
+        	    android:id="@+id/mileage_imperial"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:layout_gravity="center"
+        	    android:background="#80000000"
+        	    android:gravity="center"
+        	    android:padding="5dip"
+        	    android:scaleType="fitCenter"
+        	    android:textColor="#9f00ff00"
+        	    android:textSize="25sp"
+        	    android:visibility="gone" />
 
+       		</FrameLayout>
         <TextView
             android:id="@+id/neutral"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
             android:gravity="right"
-            android:padding="3dip"
-            android:scaleType="fitEnd"
+            android:padding="5dip"
+            android:scaleType="fitCenter"
             android:textColor="#9f00ff00"
 	    android:textSize="40sp" />
     </LinearLayout>
