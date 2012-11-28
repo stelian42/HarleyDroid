@@ -340,6 +340,7 @@ public class HarleyDroidService extends Service
 			case MSG_DISCONNECTED:
 				mHandler.obtainMessage(msg.arg1, -1, -1).sendToTarget();
 				mCurrentState = STATE_DISCONNECT;
+				mHD.savePersistentData();
 				if (mAutoReconnect) {
 					final int lastState = mWantedState;
 					HarleyDroidService.this.notify(R.string.notification_autorecon);

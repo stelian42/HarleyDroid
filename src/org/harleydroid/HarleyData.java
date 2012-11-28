@@ -78,14 +78,17 @@ public class HarleyData {
 		mHarleyDataThread.start();
 	}
 
-	public void destroy() {
-
+	public void savePersistentData() {
 		SharedPreferences.Editor editor = mPrefs.edit();
 		mSavedOdometer = mSavedOdometer + mOdometer - mResetOdometer;
 		mSavedFuel = mSavedFuel + mFuel - mResetFuel;
 		editor.putInt("odometer", mSavedOdometer);
 		editor.putInt("fuel", mSavedFuel);
 		editor.commit();
+	}
+
+	public void destroy() {
+		savePersistentData();
 		mHarleyDataThread.cancel();
 		mHarleyDataThread = null;
 	}
