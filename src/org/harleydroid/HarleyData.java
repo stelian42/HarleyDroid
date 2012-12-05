@@ -515,26 +515,37 @@ public class HarleyData {
 	}
 
 	private class HarleyDataThread extends Thread {
-
+		private static final int MAX_ITEMS = 10;
+		private int fuelItems[];
+		private int odoItems[];
+		private int head, tail;
 		private boolean stop = false;
 
 		public void run() {
 			setName("HarleyDataThread");
-			int fuel1 = getFuelMetric();
-			int odo1 = getOdometerMetric();
+			fuelItems = new int[MAX_ITEMS];
+			odoItems = new int[MAX_ITEMS];
+			head = 0;
+			tail = 1;
+
 			while (!stop) {
+				fuelItems[head] = getFuelMetric();
+				odoItems[head] = getOdometerMetric();
+				if ((fuelItems[head] != fuelItems[tail]) &&
+					(odoItems[head] != odoItems[tail]))
+					setFuelInstant((1000 * (fuelItems[head] - fuelItems[tail])) / (odoItems[head] - odoItems[tail]));
+				else
+					setFuelInstant(-1);
+				head++;
+				if (head >= MAX_ITEMS)
+					head = 0;
+				tail++;
+				if (tail >= MAX_ITEMS)
+					tail = 0;
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				int fuel2 = getFuelMetric();
-				int odo2 = getOdometerMetric();
-				if ((fuel2 != fuel1) && (odo2 != odo1))
-					setFuelInstant((1000 * (fuel2 - fuel1)) / (odo2 - odo1));
-				else
-					setFuelInstant(-1);
-				fuel1 = fuel2;
-				odo1 = odo2;
 			}
 		}
 
