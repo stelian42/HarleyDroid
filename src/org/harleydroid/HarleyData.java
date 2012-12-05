@@ -79,9 +79,15 @@ public class HarleyData {
 	}
 
 	public void savePersistentData() {
+		if (mResetOdometer > 0) {
+			mSavedOdometer = mSavedOdometer + mOdometer - mResetOdometer;
+			mResetOdometer = mOdometer;
+		}
+		if (mResetFuel > 0) {
+			mSavedFuel = mSavedFuel + mFuel - mResetFuel;
+			mResetFuel = mFuel;
+		}
 		SharedPreferences.Editor editor = mPrefs.edit();
-		mSavedOdometer = mSavedOdometer + mOdometer - mResetOdometer;
-		mSavedFuel = mSavedFuel + mFuel - mResetFuel;
 		editor.putInt("odometer", mSavedOdometer);
 		editor.putInt("fuel", mSavedFuel);
 		editor.commit();
