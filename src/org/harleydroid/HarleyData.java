@@ -29,24 +29,25 @@ import android.content.SharedPreferences;
 public class HarleyData {
 
 	// raw values reported in the J1850 stream
-	private int mRPM = 0;					// RPM in rotation/minute * 4
-	private int mSpeed = 0;					// speed in mph * 200
+	private int mRPM = 0;						// RPM in rotation/minute * 4
+	private int mSpeed = 0;						// speed in mph * 200
 	private int mEngineTemp = 40;				// engine temperature in Celsius + 40
-	private int mFuelGauge = 0;				// fuel gauge: 0 (empty) to 6 (full)
-	private int mTurnSignals = 0;			// turn signals bitmap: 0x1=right, 0x2=left
-	private boolean mNeutral = false;		// XXX boolean: in neutral
-	private boolean mClutch = false;		// boolean: clutch engaged
-	private int mGear = -1;					// current gear: -1 or 1 to 6
-	private boolean mCheckEngine = false;	// boolean: check engine
-	private int mOdometer = 0;				// odometer tick (1 tick = 0.4 meters)
-	private int mFuel = 0;					// fuel consumption tick (1 tick = 0.000040 liters)
-	private String mVIN = "-----------------";		// VIN
-	private String mECMPN = "------------";			// ECM Part Number
+	private int mFuelGauge = 0;					// fuel gauge: 0 (empty or N/A) to 6 (full)
+	private boolean mFuelLow = false;			// fuel low light
+	private int mTurnSignals = 0;				// turn signals bitmap: 0x1=right, 0x2=left
+	private boolean mNeutral = false;			// boolean: in neutral
+	private boolean mClutch = false;			// boolean: clutch engaged
+	private int mGear = -1;						// current gear: -1 or 1 to 6
+	private boolean mCheckEngine = false;		// boolean: check engine
+	private int mOdometer = 0;					// odometer tick (1 tick = 0.4 meters)
+	private int mFuel = 0;						// fuel consumption tick (1 tick = 0.000040 liters)
+	private String mVIN = "-----------------";	// VIN
+	private String mECMPN = "------------";		// ECM Part Number
 	private String mECMCalID = "------------";	// ECM Calibration ID
-	private int mECMSWLevel = 0;			// ECM Software Level
-	private int mFuelAverage = -1;			// average fuel consumption
-	private int mFuelInstant = 1;			// instant fuel consumption
-	private CopyOnWriteArrayList<String> mHistoricDTC; // Historic DTC
+	private int mECMSWLevel = 0;				// ECM Software Level
+	private int mFuelAverage = -1;				// average fuel consumption
+	private int mFuelInstant = 1;				// instant fuel consumption
+	private CopyOnWriteArrayList<String> mHistoricDTC;	// Historic DTC
 	private CopyOnWriteArrayList<String> mCurrentDTC;	// Current DTC
 
 	private int mResetOdometer = -1;

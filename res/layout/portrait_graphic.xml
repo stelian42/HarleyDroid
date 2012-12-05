@@ -20,12 +20,12 @@
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/graphic_layout"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:orientation="vertical"
         android:weightSum="2.0" >
@@ -139,7 +139,7 @@
 
     <LinearLayout
         android:id="@+id/top_layout"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="8.0" >
@@ -147,7 +147,7 @@
         <ImageView
             android:id="@+id/turn_left"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1.0"
             android:contentDescription="@string/turn_left"
             android:scaleType="fitCenter"
@@ -156,7 +156,7 @@
 
         <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_weight="6.0" >
 
@@ -177,7 +177,7 @@
         <ImageView
             android:id="@+id/turn_right"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1.0"
             android:contentDescription="@string/turn_right"
             android:scaleType="fitCenter"
@@ -187,38 +187,25 @@
 
     <LinearLayout
         android:id="@+id/bottom_layout"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
-        android:weightSum="8.0" >
-
-        <TextView
-            android:id="@+id/gear"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            android:gravity="left"
-            android:padding="3dip"
-            android:scaleType="fitCenter"
-            android:textColor="#9f00ff00"
-            android:textSize="40sp" />
+        android:weightSum="7.0" >
 
         <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="6.0" >
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:layout_weight="3.0" >
 
         	<TextView
         	    android:id="@+id/mileage_metric"
         	    android:layout_width="wrap_content"
         	    android:layout_height="wrap_content"
-        	    android:layout_gravity="center"
+        	    android:layout_gravity="left|bottom"
         	    android:background="#80000000"
-        	    android:gravity="center"
         	    android:padding="5dip"
-        	    android:scaleType="fitCenter"
         	    android:textColor="#9f00ff00"
         	    android:textSize="25sp" />
 
@@ -226,26 +213,42 @@
         	    android:id="@+id/mileage_imperial"
         	    android:layout_width="wrap_content"
         	    android:layout_height="wrap_content"
-        	    android:layout_gravity="center"
+        	    android:layout_gravity="left|bottom"
         	    android:background="#80000000"
-        	    android:gravity="center"
         	    android:padding="5dip"
-        	    android:scaleType="fitCenter"
         	    android:textColor="#9f00ff00"
         	    android:textSize="25sp"
         	    android:visibility="gone" />
+        </FrameLayout>
 
-        	</FrameLayout>
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1.0" >
+
+        <ImageView
+            android:id="@+id/low_fuel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="#80000000"
+            android:contentDescription="@string/low_fuel"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/low_fuel"
+            android:visibility="invisible" />
+        </FrameLayout>
+
         <TextView
-            android:id="@+id/neutral"
+            android:id="@+id/gearneutral"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            android:gravity="right"
+            android:layout_gravity="right|bottom"
+            android:layout_weight="3.0"
+            android:gravity="right|bottom"
             android:padding="5dip"
-            android:scaleType="fitCenter"
             android:textColor="#9f00ff00"
-	    android:textSize="40sp" />
+            android:textSize="25sp" />
     </LinearLayout>
-
 </merge>

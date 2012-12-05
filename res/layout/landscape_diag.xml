@@ -19,14 +19,14 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/diag_layout"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical" >
 
     <TableLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/diag1_layout"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:stretchColumns="1" >
@@ -35,16 +35,16 @@
 
             <TextView
                 android:id="@+id/vin_label"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:padding="3dip"
                 android:text="@string/vin_label"
                 android:textSize="@dimen/textsize" />
 
             <TextView
                 android:id="@+id/vin_field"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:padding="3dip"
                 android:textSize="@dimen/textsize" />
         </TableRow>
@@ -53,16 +53,16 @@
 
             <TextView
                 android:id="@+id/ecmpn_label"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:padding="3dip"
                 android:text="@string/ecmpn_label"
                 android:textSize="@dimen/textsize" />
 
             <TextView
                 android:id="@+id/ecmpn_field"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:padding="3dip"
                 android:textSize="@dimen/textsize" />
         </TableRow>
@@ -71,16 +71,16 @@
 
             <TextView
                 android:id="@+id/ecmcalid_label"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:padding="3dip"
                 android:text="@string/ecmcalid_label"
                 android:textSize="@dimen/textsize" />
 
             <TextView
                 android:id="@+id/ecmcalid_field"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:padding="3dip"
                 android:textSize="@dimen/textsize" />
         </TableRow>
@@ -89,16 +89,16 @@
 
             <TextView
                 android:id="@+id/ecmswlevel_label"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:padding="3dip"
                 android:text="@string/ecmswlevel_label"
                 android:textSize="@dimen/textsize" />
 
             <TextView
                 android:id="@+id/ecmswlevel_field"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:padding="3dip"
                 android:textSize="@dimen/textsize" />
         </TableRow>
@@ -107,14 +107,14 @@
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/dtc_layout"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/currentdtc_label"
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:padding="3dip"
             android:text="@string/currentdtc_label"
@@ -123,14 +123,14 @@
         <ListView
             android:id="@+id/currentdtc_field"
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1" >
         </ListView>
 
         <TextView
             android:id="@+id/historicdtc_label"
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:padding="3dip"
             android:text="@string/historicdtc_label"
@@ -139,7 +139,7 @@
         <ListView
             android:id="@+id/historicdtc_field"
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1" >
         </ListView>
     </LinearLayout>

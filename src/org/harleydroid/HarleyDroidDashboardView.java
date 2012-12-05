@@ -80,6 +80,7 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 	private TextView mViewNeutral;
 	private TextView mViewClutch;
 	private TextView mViewGear;
+	private TextView mViewGearNeutral;
 	private View mImageCheckEngine;
 	private TextView mViewCheckEngine;
 	private TextView mLabelOdometerMetric;
@@ -100,6 +101,7 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 	private TextView mViewFuelInstImperial;
 	private TextView mViewMileageMetric;
 	private TextView mViewMileageImperial;
+	private View mImageLowFuel;
 
 	public HarleyDroidDashboardView(Activity activity) {
 		mActivity = activity;
@@ -124,10 +126,10 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			mImageTurnSignalsLeft = (View) mActivity.findViewById(R.id.turn_left);
 			mImageCheckEngine = (View) mActivity.findViewById(R.id.check_engine);
 			mImageTurnSignalsRight = (View) mActivity.findViewById(R.id.turn_right);
-			mViewNeutral = (TextView) mActivity.findViewById(R.id.neutral);
-			mViewGear = (TextView) mActivity.findViewById(R.id.gear);
+			mViewGearNeutral = (TextView) mActivity.findViewById(R.id.gearneutral);
 			mViewMileageMetric = (TextView) mActivity.findViewById(R.id.mileage_metric);
 			mViewMileageImperial = (TextView) mActivity.findViewById(R.id.mileage_imperial);
+			mImageLowFuel = (View) mActivity.findViewById(R.id.low_fuel);
 
 			mViewRpm = null;
 			mLabelSpeedMetric = null;
@@ -142,6 +144,8 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			mViewTurnSignals = null;
 			mViewClutch = null;
 			mViewCheckEngine = null;
+			mViewGear = null;
+			mViewNeutral = null;
 			mLabelOdometerMetric = null;
 			mLabelOdometerImperial = null;
 			mViewOdometerMetric = null;
@@ -186,6 +190,8 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			mImageTurnSignalsRight = null;
 			mViewMileageMetric = null;
 			mViewMileageImperial = null;
+			mViewGearNeutral = null;
+			mImageLowFuel = null;
 
 			mViewRpm = (TextView) mActivity.findViewById(R.id.rpm_field);
 			mLabelSpeedMetric = (TextView) mActivity.findViewById(R.id.speed_metric_label);
@@ -540,6 +546,12 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			else
 				mViewFuelGauge.setText(Integer.toString(value));
 		}
+		if (mImageLowFuel != null) {
+			if (low)
+				mImageLowFuel.setVisibility(View.VISIBLE);
+			else
+				mImageLowFuel.setVisibility(View.INVISIBLE);
+		}
 	}
 
 	public void drawTurnSignals(int value) {
@@ -584,6 +596,12 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			else
 				mViewNeutral.setText("-");
 		}
+		if (mViewGearNeutral != null) {
+			if (value)
+				mViewGearNeutral.setText("N");
+			else
+				mViewGearNeutral.setText("-");
+		}
 	}
 
 	public void drawClutch(boolean value) {
@@ -601,6 +619,12 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 				mViewGear.setText("-");
 			else
 				mViewGear.setText(Integer.toString(value));
+		}
+		if (mViewGearNeutral != null) {
+			if (value == -1)
+				mViewGearNeutral.setText("-");
+			else
+				mViewGearNeutral.setText(Integer.toString(value));
 		}
 	}
 
