@@ -84,6 +84,8 @@
 <string name="check_engine">Check Engine</string>
 <string name="turn_left">Turn Left</string>
 <string name="turn_right">Turn Right</string>
+<string name="low_fuel">Tank empty</string>
+<string name="low_fuel_text">Empty</string>
 
 <string name="pref_interfacetype">Interface type</string>
 <string-array name="pref_interfacetype_names">

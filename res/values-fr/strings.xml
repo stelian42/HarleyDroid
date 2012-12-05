@@ -84,6 +84,8 @@
 <string name="check_engine">Erreur moteur</string>
 <string name="turn_left">Gauche</string>
 <string name="turn_right">Droite</string>
+<string name="low_fuel">Réservoir vide</string>
+<string name="low_fuel_text">Vide</string>
 
 <string name="pref_interfacetype">Type d\'interface</string>
 <string-array name="pref_interfacetype_names">
