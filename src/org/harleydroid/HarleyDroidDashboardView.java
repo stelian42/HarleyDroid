@@ -321,7 +321,7 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 				drawEngineTempMetric(msg.arg1);
 				break;
 			case UPDATE_FUELGAUGE:
-				drawFuelGauge(msg.arg1);
+				drawFuelGauge(msg.arg1, msg.arg2 != 0 ? true : false);
 				break;
 			case UPDATE_TURNSIGNALS:
 				drawTurnSignals(msg.arg1);
@@ -386,8 +386,8 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_ENGINETEMP_METRIC, engineTemp, -1).sendToTarget();
 	}
 
-	public void onFuelGaugeChanged(int full) {
-		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_FUELGAUGE, full, -1).sendToTarget();
+	public void onFuelGaugeChanged(int full, boolean low) {
+		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_FUELGAUGE, full, low ? 1 : 0).sendToTarget();
 	}
 
 	public void onTurnSignalsChanged(int turnSignals) {
@@ -450,7 +450,7 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			drawSpeedMetric(hd.getSpeedMetric());
 			drawEngineTempImperial(hd.getEngineTempImperial());
 			drawEngineTempMetric(hd.getEngineTempMetric());
-			drawFuelGauge(hd.getFuelGauge());
+			drawFuelGauge(hd.getFuelGauge(), hd.getFuelLow());
 			drawTurnSignals(hd.getTurnSignals());
 			drawNeutral(hd.getNeutral());
 			drawClutch(hd.getClutch());
@@ -470,7 +470,7 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			drawSpeedMetric(0);
 			drawEngineTempImperial(0);
 			drawEngineTempMetric(0);
-			drawFuelGauge(0);
+			drawFuelGauge(0, false);
 			drawTurnSignals(0);
 			drawNeutral(false);
 			drawClutch(false);
@@ -533,9 +533,13 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			mViewEngTempMetric.setText(Integer.toString(value));
 	}
 
-	public void drawFuelGauge(int value) {
-		if (mViewFuelGauge != null)
-			mViewFuelGauge.setText(Integer.toString(value));
+	public void drawFuelGauge(int value, boolean low) {
+		if (mViewFuelGauge != null) {
+			if (low)
+				mViewFuelGauge.setText(R.string.low_fuel_text);
+			else
+				mViewFuelGauge.setText(Integer.toString(value));
+		}
 	}
 
 	public void drawTurnSignals(int value) {

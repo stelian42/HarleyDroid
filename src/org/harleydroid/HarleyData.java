@@ -181,11 +181,17 @@ public class HarleyData {
 		return mFuelGauge;
 	}
 
-	public void setFuelGauge(int fuelGauge) {
-		if (mFuelGauge != fuelGauge) {
+	// returns the low fuel indicator
+	public boolean getFuelLow() {
+		return mFuelLow;
+	}
+
+	public void setFuelGauge(int fuelGauge, boolean fuelLow) {
+		if (mFuelGauge != fuelGauge || mFuelLow != fuelLow) {
 			mFuelGauge = fuelGauge;
+			mFuelLow = fuelLow;
 			for (HarleyDataDashboardListener l : mDashboardListeners)
-				l.onFuelGaugeChanged(mFuelGauge);
+				l.onFuelGaugeChanged(mFuelGauge, mFuelLow);
 		}
 	}
 

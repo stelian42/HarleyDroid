@@ -26,7 +26,7 @@ public interface HarleyDataDashboardListener {
 	public void onSpeedMetricChanged(int speed);
 	public void onEngineTempImperialChanged(int engineTemp);
 	public void onEngineTempMetricChanged(int engineTemp);
-	public void onFuelGaugeChanged(int full);
+	public void onFuelGaugeChanged(int full, boolean low);
 	public void onTurnSignalsChanged(int turnSignals);
 	public void onNeutralChanged(boolean neutral);
 	public void onClutchChanged(boolean clutch);

@@ -158,8 +158,9 @@ public class J1850 {
 			fuelaccum += fuellast;
 			fuellast = y;
 			hd.setFuel(fuelaccum);
-		} else if ((x == 0xa8836112) && ((in[4] & 0xd0) == 0xd0)) {
-			hd.setFuelGauge(in[4] & 0x0f);
+		} else if ((x & 0xffffff7f) == 0xa8836112) {
+			hd.setFuelGauge(in[4] & 0x0f,
+					((in[3] & 0x80) != 0) ? true : false);
 		} else if ((x & 0xffffff5d) == 0x483b4000) {
 			if (((int)in[3] & 0xff) == 0x20)
 				hd.setNeutral(false);

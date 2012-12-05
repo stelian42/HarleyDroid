@@ -152,8 +152,11 @@ public class HarleyDroidLogger implements HarleyDataDashboardListener, HarleyDat
 			write("ETP," + engineTemp);
 	}
 
-	public void onFuelGaugeChanged(int full) {
-		write("FGE," + full);
+	public void onFuelGaugeChanged(int full, boolean low) {
+		if (low)
+			write("FGE,EMPTY");
+		else
+			write("FGE," + full);
 	}
 
 	public void onTurnSignalsChanged(int turnSignals) {
