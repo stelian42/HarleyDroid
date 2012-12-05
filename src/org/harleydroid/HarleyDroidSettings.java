@@ -24,11 +24,18 @@ import java.util.Set;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
-public class HarleyDroidSettings extends PreferenceActivity {
+public class HarleyDroidSettings extends PreferenceActivity implements OnSharedPreferenceChangeListener {
+
+	ArrayList<CharSequence> bluetoothDevices;
+	ArrayList<CharSequence> bluetoothAddresses;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -36,8 +43,8 @@ public class HarleyDroidSettings extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.preferences);
 
 		BluetoothAdapter bluetoothAdapter = null;
-		ArrayList<CharSequence> bluetoothDevices = new ArrayList<CharSequence>();
-		ArrayList<CharSequence> bluetoothAddresses = new ArrayList<CharSequence>();
+		bluetoothDevices = new ArrayList<CharSequence>();
+		bluetoothAddresses = new ArrayList<CharSequence>();
 
 		if (!HarleyDroid.EMULATOR) {
 			bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -63,5 +70,46 @@ public class HarleyDroidSettings extends PreferenceActivity {
 		ListPreference btlist = (ListPreference) findPreference("bluetoothid");
 		btlist.setEntryValues(bluetoothAddresses.toArray(new CharSequence[0]));
 		btlist.setEntries(bluetoothDevices.toArray(new CharSequence[0]));
+	}
+
+	@Override
+	protected void onResume() {
+	    super.onResume();
+	    SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
+	    prefs.registerOnSharedPreferenceChangeListener(this);
+	    onSharedPreferenceChanged(prefs, "interfacetype");
+	    onSharedPreferenceChanged(prefs, "bluetoothid");
+	    onSharedPreferenceChanged(prefs, "reconnectdelay");
+	    onSharedPreferenceChanged(prefs, "unit");
+	    onSharedPreferenceChanged(prefs, "orientation");
+	}
+
+	@Override
+	protected void onPause() {
+	    super.onPause();
+	    getPreferenceScreen().getSharedPreferences()
+	            .unregisterOnSharedPreferenceChangeListener(this);
+	}
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (key.equals("interfacetype")) {
+			ListPreference list = (ListPreference) findPreference(key);
+			list.setSummary(list.getEntry());
+		}
+		else if (key.equals("bluetoothid")) {
+			ListPreference list = (ListPreference) findPreference(key);
+			list.setSummary(list.getEntry());
+		}
+		else if (key.equals("reconnectdelay")) {
+			EditTextPreference edit = (EditTextPreference) findPreference(key);
+			edit.setSummary(edit.getText() + " " + getText(R.string.pref_seconds));
+		}
+		else if (key.equals("unit")) {
+			ListPreference list = (ListPreference) findPreference(key);
+			list.setSummary(list.getEntry());
+		}
+		else if (key.equals("orientation")) {
+			ListPreference list = (ListPreference) findPreference(key);
+			list.setSummary(list.getEntry());
+		}
 	}
 }

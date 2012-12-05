@@ -100,9 +100,11 @@
 <string name="pref_autoconnect">Autoconnect on startup</string>
 <string name="pref_autoreconnect">Auto reconnect if disconnected</string>
 <string name="pref_reconnectdelay">Delay before reconnect (seconds)</string>
+<string name="pref_seconds">seconds</string>
 <string name="pref_logging">Log to external media</string>
 <string name="pref_gps">Add GPS data to log</string>
 <string name="pref_lograw">Add raw J1850 data to log</string>
+<string name="pref_logunknown">Add unknown J1850 data to log</string>
 <string name="pref_screenon">Keep the screen on</string>
 <string name="pref_unit">Unit system</string>
 <string-array name="pref_unit_names">
