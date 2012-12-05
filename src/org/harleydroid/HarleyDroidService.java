@@ -73,6 +73,7 @@ public class HarleyDroidService extends Service
 	private boolean mMetric = true;
 	private boolean mGPS = true;
 	private boolean mLogRaw = false;
+	private boolean mLogUnknown = false;
 	private boolean mAutoReconnect = false;
 	private Thread mReconThread = null;
 	private int mReconnectDelay = 0;
@@ -142,11 +143,12 @@ public class HarleyDroidService extends Service
 		mHandler = handler;
 	}
 
-	public void setLogging(boolean logging, boolean metric, boolean gps, boolean logRaw) {
+	public void setLogging(boolean logging, boolean metric, boolean gps, boolean logRaw, boolean logUnknown) {
 		mLogging = logging;
 		mMetric = metric;
 		mGPS = gps;
 		mLogRaw = logRaw;
+		mLogUnknown = logUnknown;
 	}
 
 	public void setAutoReconnect(boolean autoReconnect, int reconnectDelay) {
@@ -327,7 +329,7 @@ public class HarleyDroidService extends Service
 				J1850.resetCounters();
 				mCurrentState = STATE_CONNECT;
 				if (mLogging) {
-					mLogger = new HarleyDroidLogger(HarleyDroidService.this, mMetric, mGPS, mLogRaw);
+					mLogger = new HarleyDroidLogger(HarleyDroidService.this, mMetric, mGPS, mLogRaw, mLogUnknown);
 					mLogger.start();
 					mHD.addHarleyDataDashboardListener(mLogger);
 					mHD.addHarleyDataDiagnosticsListener(mLogger);

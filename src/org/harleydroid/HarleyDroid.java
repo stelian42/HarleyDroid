@@ -66,6 +66,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 	private boolean mLogging = false;
 	private boolean mGPS = false;
 	private boolean mLogRaw = false;
+	private boolean mLogUnknown = false;
 	protected HarleyDroidService mService = null;
 	protected boolean mUnitMetric = false;
 	protected int mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
@@ -154,6 +155,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		}
 		mGPS = mPrefs.getBoolean("gps", false);
 		mLogRaw = mPrefs.getBoolean("lograw", false);
+		mLogUnknown = mPrefs.getBoolean("logunknown", false);
 		if (mPrefs.getBoolean("screenon", false))
 			getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		if (mPrefs.getString("unit", "metric").equals("metric"))
@@ -211,7 +213,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		else
 			mService.setInterfaceType(mInterfaceType, null);
 
-		mService.setLogging(mLogging, mUnitMetric, mGPS, mLogRaw);
+		mService.setLogging(mLogging, mUnitMetric, mGPS, mLogRaw, mLogUnknown);
 		mService.setAutoReconnect(mAutoReconnect, Integer.parseInt(mReconnectDelay));
 	}
 

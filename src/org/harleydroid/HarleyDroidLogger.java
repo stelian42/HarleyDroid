@@ -48,10 +48,12 @@ public class HarleyDroidLogger implements HarleyDataDashboardListener, HarleyDat
 	private BufferedOutputStream mLog = null;
 	private boolean mUnitMetric = false;
 	private boolean mLogRaw = false;
+	private boolean mLogUnknown = false;
 
-	public HarleyDroidLogger(Context context, boolean metric, boolean gps, boolean logRaw) {
+	public HarleyDroidLogger(Context context, boolean metric, boolean gps, boolean logRaw, boolean logUnknown) {
 		mUnitMetric = metric;
 		mLogRaw = logRaw;
+		mLogUnknown = logUnknown;
 		if (gps)
 			mGPS = new HarleyDroidGPS(context);
 	}
@@ -257,7 +259,8 @@ public class HarleyDroidLogger implements HarleyDataDashboardListener, HarleyDat
 	}
 
 	public void onUnknownChanged(byte[] buffer) {
-		write("UNK,", buffer);
+		if (mLogUnknown)
+			write("UNK,", buffer);
 	}
 
 	public void onRawChanged(byte[] buffer) {

@@ -65,6 +65,12 @@
         android:defaultValue="false"
         android:key="lograw" />
     <CheckBoxPreference
+        android:title="@string/pref_logunknown"
+        android:dependency="logging"
+        android:persistent="true"
+        android:defaultValue="false"
+        android:key="logunknown" />
+    <CheckBoxPreference
         android:title="@string/pref_screenon"
         android:persistent="true"
         android:defaultValue="false"
