@@ -24,8 +24,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -142,6 +144,10 @@ public class HarleyDroidDashboard extends HarleyDroid {
 			return true;
 		case R.id.preferences_menu:
 			Intent settingsActivity = new Intent(getBaseContext(), HarleyDroidSettings.class);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				settingsActivity.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, HarleyDroidSettings.Fragment.class.getName());
+				settingsActivity.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
+			}
 			startActivity(settingsActivity);
 			return true;
 		case R.id.reset_menu:

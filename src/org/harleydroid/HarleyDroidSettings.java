@@ -20,27 +20,34 @@
 package org.harleydroid;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
 
 public class HarleyDroidSettings extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
-	ArrayList<CharSequence> bluetoothDevices;
-	ArrayList<CharSequence> bluetoothAddresses;
+	private static ArrayList<CharSequence> bluetoothDevices;
+	private static ArrayList<CharSequence> bluetoothAddresses;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		addPreferencesFromResource(R.xml.preferences);
+
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			addPreferencesFromResource(R.xml.preferences);
+		}
 
 		BluetoothAdapter bluetoothAdapter = null;
 		bluetoothDevices = new ArrayList<CharSequence>();
@@ -67,29 +74,44 @@ public class HarleyDroidSettings extends PreferenceActivity implements OnSharedP
 			bluetoothAddresses.add("4:4:4:4");
 		}
 
-		ListPreference btlist = (ListPreference) findPreference("bluetoothid");
-		btlist.setEntryValues(bluetoothAddresses.toArray(new CharSequence[0]));
-		btlist.setEntries(bluetoothDevices.toArray(new CharSequence[0]));
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			ListPreference btlist = (ListPreference) findPreference("bluetoothid");
+			btlist.setEntryValues(bluetoothAddresses.toArray(new CharSequence[0]));
+			btlist.setEntries(bluetoothDevices.toArray(new CharSequence[0]));
+		}
+	}
+
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	@Override
+	public void onBuildHeaders(List<Header> target) {
+	   loadHeadersFromResource(R.xml.preferences_headers, target);
 	}
 
 	@Override
-	protected void onResume() {
+	public void onResume() {
 	    super.onResume();
-	    SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
-	    prefs.registerOnSharedPreferenceChangeListener(this);
-	    onSharedPreferenceChanged(prefs, "interfacetype");
-	    onSharedPreferenceChanged(prefs, "bluetoothid");
-	    onSharedPreferenceChanged(prefs, "reconnectdelay");
-	    onSharedPreferenceChanged(prefs, "unit");
-	    onSharedPreferenceChanged(prefs, "orientation");
+	    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+	    	@SuppressWarnings("deprecation")
+			SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
+	    	prefs.registerOnSharedPreferenceChangeListener(this);
+	    	onSharedPreferenceChanged(prefs, "interfacetype");
+	    	onSharedPreferenceChanged(prefs, "bluetoothid");
+	    	onSharedPreferenceChanged(prefs, "reconnectdelay");
+	    	onSharedPreferenceChanged(prefs, "unit");
+	    	onSharedPreferenceChanged(prefs, "orientation");
+	    }
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	protected void onPause() {
+	public void onPause() {
 	    super.onPause();
-	    getPreferenceScreen().getSharedPreferences()
-	            .unregisterOnSharedPreferenceChangeListener(this);
+	    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
+	    	getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 	}
+
+	@SuppressWarnings("deprecation")
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals("interfacetype")) {
 			ListPreference list = (ListPreference) findPreference(key);
@@ -112,4 +134,60 @@ public class HarleyDroidSettings extends PreferenceActivity implements OnSharedP
 			list.setSummary(list.getEntry());
 		}
 	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	public static class Fragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+		 @Override
+		 public void onCreate(Bundle savedInstanceState) {
+			 super.onCreate(savedInstanceState);
+
+			 addPreferencesFromResource(R.xml.preferences);
+
+			 ListPreference btlist = (ListPreference) findPreference("bluetoothid");
+			 btlist.setEntryValues(bluetoothAddresses.toArray(new CharSequence[0]));
+			 btlist.setEntries(bluetoothDevices.toArray(new CharSequence[0]));
+		 }
+
+		 @Override
+		 public void onResume() {
+			 super.onResume();
+			 SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
+			 prefs.registerOnSharedPreferenceChangeListener(this);
+			 onSharedPreferenceChanged(prefs, "interfacetype");
+			 onSharedPreferenceChanged(prefs, "bluetoothid");
+			 onSharedPreferenceChanged(prefs, "reconnectdelay");
+			 onSharedPreferenceChanged(prefs, "unit");
+			 onSharedPreferenceChanged(prefs, "orientation");
+		}
+
+		@Override
+		public void onPause() {
+			super.onPause();
+			getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+		}
+
+		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+			if (key.equals("interfacetype")) {
+				ListPreference list = (ListPreference) findPreference(key);
+				list.setSummary(list.getEntry());
+			}
+			else if (key.equals("bluetoothid")) {
+				ListPreference list = (ListPreference) findPreference(key);
+				list.setSummary(list.getEntry());
+			}
+			else if (key.equals("reconnectdelay")) {
+				EditTextPreference edit = (EditTextPreference) findPreference(key);
+				edit.setSummary(edit.getText() + " " + getText(R.string.pref_seconds));
+			}
+			else if (key.equals("unit")) {
+				ListPreference list = (ListPreference) findPreference(key);
+				list.setSummary(list.getEntry());
+			}
+			else if (key.equals("orientation")) {
+				ListPreference list = (ListPreference) findPreference(key);
+				list.setSummary(list.getEntry());
+			}
+		}
+	}
+
 }
