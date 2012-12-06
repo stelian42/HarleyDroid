@@ -195,6 +195,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		}
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		if (D) Log.d(TAG, "onServiceConnected()");
 
@@ -215,8 +216,11 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 
 		mService.setLogging(mLogging, mUnitMetric, mGPS, mLogRaw, mLogUnknown);
 		mService.setAutoReconnect(mAutoReconnect, Integer.parseInt(mReconnectDelay));
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			invalidateOptionsMenu();
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void onServiceDisconnected(ComponentName name) {
 		if (D) Log.d(TAG, "onServiceDisconnected()");
 
@@ -225,6 +229,8 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		mHD = null;
 		// ugly, but we unbind() in onStop()...
 		bindService(new Intent(this, HarleyDroidService.class), this, 0);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			invalidateOptionsMenu();
 	}
 
 	protected final Handler mHandler = new Handler() {
