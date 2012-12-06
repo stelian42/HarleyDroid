@@ -19,6 +19,9 @@
 
 package org.harleydroid;
 
+import java.lang.ref.WeakReference;
+
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
@@ -71,6 +74,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 	protected boolean mUnitMetric = false;
 	protected int mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 	protected HarleyData mHD;
+	protected Handler mHandler;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -80,6 +84,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 
 		if (DTRACE) Debug.startMethodTracing("harleydroid");
 
+		mHandler = new HarleyDroidHandler(this);
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
 		mAutoConnect = true;
@@ -233,36 +238,33 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 			invalidateOptionsMenu();
 	}
 
-	protected final Handler mHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			if (D) Log.d(TAG, "handleMessage " + msg.what);
+	public void handleMessage(Message msg) {
+		if (D) Log.d(TAG, "handleMessage " + msg.what);
 
-			switch (msg.what) {
-			case STATUS_CONNECTING:
-				Toast.makeText(getApplicationContext(), R.string.toast_connecting, Toast.LENGTH_LONG).show();
-				break;
-			case STATUS_ERROR:
-				Toast.makeText(getApplicationContext(), R.string.toast_errorconnecting, Toast.LENGTH_LONG).show();
-				break;
-			case STATUS_ERRORAT:
-				Toast.makeText(getApplicationContext(), R.string.toast_errorat, Toast.LENGTH_LONG).show();
-				break;
-			case STATUS_CONNECTED:
-				Toast.makeText(getApplicationContext(), R.string.toast_connected, Toast.LENGTH_LONG).show();
-				break;
-			case STATUS_NODATA:
-				Toast.makeText(getApplicationContext(), R.string.toast_nodata, Toast.LENGTH_LONG).show();
-				break;
-			case STATUS_TOOMANYERRORS:
-				Toast.makeText(getApplicationContext(), R.string.toast_toomanyerrors, Toast.LENGTH_LONG).show();
-				break;
-			case STATUS_AUTORECON:
-				Toast.makeText(getApplicationContext(), String.format(getText(R.string.toast_autorecon).toString(), mReconnectDelay), Toast.LENGTH_LONG).show();
-				break;
-			}
+		switch (msg.what) {
+		case STATUS_CONNECTING:
+			Toast.makeText(getApplicationContext(), R.string.toast_connecting, Toast.LENGTH_LONG).show();
+			break;
+		case STATUS_ERROR:
+			Toast.makeText(getApplicationContext(), R.string.toast_errorconnecting, Toast.LENGTH_LONG).show();
+			break;
+		case STATUS_ERRORAT:
+			Toast.makeText(getApplicationContext(), R.string.toast_errorat, Toast.LENGTH_LONG).show();
+			break;
+		case STATUS_CONNECTED:
+			Toast.makeText(getApplicationContext(), R.string.toast_connected, Toast.LENGTH_LONG).show();
+			break;
+		case STATUS_NODATA:
+			Toast.makeText(getApplicationContext(), R.string.toast_nodata, Toast.LENGTH_LONG).show();
+			break;
+		case STATUS_TOOMANYERRORS:
+			Toast.makeText(getApplicationContext(), R.string.toast_toomanyerrors, Toast.LENGTH_LONG).show();
+			break;
+		case STATUS_AUTORECON:
+			Toast.makeText(getApplicationContext(), String.format(getText(R.string.toast_autorecon).toString(), mReconnectDelay), Toast.LENGTH_LONG).show();
+			break;
 		}
-	};
+	}
 
 	public void startHDS() {
 		if (mService == null) {
@@ -275,6 +277,21 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		if (mService != null) {
 			mService.disconnect();
 			mService = null;
+		}
+	}
+
+	static class HarleyDroidHandler extends Handler {
+		private final WeakReference<HarleyDroid> mHarleyDroid;
+
+	    HarleyDroidHandler(HarleyDroid harleyDroid) {
+	        mHarleyDroid = new WeakReference<HarleyDroid>(harleyDroid);
+	    }
+
+		@Override
+		public void handleMessage(Message msg) {
+			HarleyDroid hd = mHarleyDroid.get();
+			if (hd != null)
+				hd.handleMessage(msg);
 		}
 	}
 }

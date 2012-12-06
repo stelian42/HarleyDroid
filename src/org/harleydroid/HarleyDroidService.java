@@ -19,6 +19,8 @@
 
 package org.harleydroid;
 
+import java.lang.ref.WeakReference;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -87,6 +89,7 @@ public class HarleyDroidService extends Service
 	private int mSendTimeout[];
 	private int mSendDelay;
 	protected SharedPreferences mPrefs;
+	private Handler mServiceHandler;
 
 	@Override
 	public void onCreate() {
@@ -95,6 +98,7 @@ public class HarleyDroidService extends Service
 
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		mHD = new HarleyData(mPrefs);
+		mServiceHandler = new HarleyDroidServiceHandler(this);
 
 		mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		notification = new Notification(R.drawable.ic_stat_notify_harleydroid, "", System.currentTimeMillis());
@@ -313,95 +317,92 @@ public class HarleyDroidService extends Service
 		if (D) Log.d(TAG, "stateMachine(): bad state transition from " + mCurrentState + " to " + mWantedState);
 	}
 
-	private final Handler mServiceHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			if (D) Log.d(TAG, "handleMessage " + msg.what);
+	public void handleMessage(Message msg) {
+		if (D) Log.d(TAG, "handleMessage " + msg.what);
 
-			switch (msg.what) {
-			case MSG_NONE:
-				mReconThread = null;
-				mWantedState = msg.arg1;
-				break;
-			case MSG_CONNECTED:
-				mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTED, -1, -1).sendToTarget();
-				HarleyDroidService.this.notify(R.string.notification_connected);
-				J1850.resetCounters();
-				mCurrentState = STATE_CONNECT;
-				if (mLogging) {
-					mLogger = new HarleyDroidLogger(HarleyDroidService.this, mMetric, mGPS, mLogRaw, mLogUnknown);
-					mLogger.start();
-					mHD.addHarleyDataDashboardListener(mLogger);
-					mHD.addHarleyDataDiagnosticsListener(mLogger);
-					mHD.addHarleyDataRawListener(mLogger);
-				}
-				break;
-			case MSG_DISCONNECT:
-				mWantedState = STATE_DISCONNECT;
-				break;
-			case MSG_DISCONNECTED:
-				mHandler.obtainMessage(msg.arg1, -1, -1).sendToTarget();
-				mCurrentState = STATE_DISCONNECT;
-				mHD.savePersistentData();
-				if (mAutoReconnect) {
-					final int lastState = mWantedState;
-					HarleyDroidService.this.notify(R.string.notification_autorecon);
-					mHandler.obtainMessage(HarleyDroid.STATUS_AUTORECON, -1, -1).sendToTarget();
-
-					doDisconnect();
-					mReconThread = new Thread() {
-						public void run() {
-							setName("HarleyDroidService: reconThread");
-							try {
-								Thread.sleep(mReconnectDelay * 1000);
-								//mServiceHandler.removeCallbacksAndMessages(null);
-								mServiceHandler.obtainMessage(MSG_NONE, lastState, -1).sendToTarget();
-								// try again to go to mWantedState
-								} catch (InterruptedException e) {
-							}
-						}
-					};
-					mWantedState = STATE_WAIT_RECONNECT;
-					mReconThread.start();
-				}
-				else {
-					stopSelf();
-					return;
-				}
-				break;
-			case MSG_START_POLL:
-				mWantedState = STATE_POLL;
-				break;
-			case MSG_STARTED_POLL:
-				HarleyDroidService.this.notify(R.string.notification_polling);
-				mCurrentState = STATE_POLL;
-				break;
-			case MSG_START_SEND:
-				mWantedState = STATE_SEND;
-				mSendType = msg.getData().getStringArray("type");
-				mSendTA = msg.getData().getStringArray("ta");
-				mSendSA = msg.getData().getStringArray("sa");
-				mSendCommand = msg.getData().getStringArray("command");
-				mSendExpect = msg.getData().getStringArray("expect");
-				mSendTimeout = msg.getData().getIntArray("timeout");
-				mSendDelay = msg.getData().getInt("delay");
-				break;
-			case MSG_STARTED_SEND:
-				HarleyDroidService.this.notify(R.string.notification_diagnostics);
-				mCurrentState = STATE_SEND;
-				break;
-			case MSG_SET_SEND:
-				mInterface.setSendData(msg.getData().getStringArray("type"),
-									   msg.getData().getStringArray("ta"),
-									   msg.getData().getStringArray("sa"),
-									   msg.getData().getStringArray("command"),
-									   msg.getData().getStringArray("expect"),
-									   msg.getData().getIntArray("timeout"),
-									   msg.getData().getInt("delay"));
+		switch (msg.what) {
+		case MSG_NONE:
+			mReconThread = null;
+			mWantedState = msg.arg1;
+			break;
+		case MSG_CONNECTED:
+			mHandler.obtainMessage(HarleyDroid.STATUS_CONNECTED, -1, -1).sendToTarget();
+			HarleyDroidService.this.notify(R.string.notification_connected);
+			J1850.resetCounters();
+			mCurrentState = STATE_CONNECT;
+			if (mLogging) {
+				mLogger = new HarleyDroidLogger(HarleyDroidService.this, mMetric, mGPS, mLogRaw, mLogUnknown);
+				mLogger.start();
+				mHD.addHarleyDataDashboardListener(mLogger);
+				mHD.addHarleyDataDiagnosticsListener(mLogger);
+				mHD.addHarleyDataRawListener(mLogger);
 			}
-			stateMachine();
+			break;
+		case MSG_DISCONNECT:
+			mWantedState = STATE_DISCONNECT;
+			break;
+		case MSG_DISCONNECTED:
+			mHandler.obtainMessage(msg.arg1, -1, -1).sendToTarget();
+			mCurrentState = STATE_DISCONNECT;
+			mHD.savePersistentData();
+			if (mAutoReconnect) {
+				final int lastState = mWantedState;
+				HarleyDroidService.this.notify(R.string.notification_autorecon);
+				mHandler.obtainMessage(HarleyDroid.STATUS_AUTORECON, -1, -1).sendToTarget();
+
+				doDisconnect();
+				mReconThread = new Thread() {
+					public void run() {
+						setName("HarleyDroidService: reconThread");
+						try {
+							Thread.sleep(mReconnectDelay * 1000);
+							//mServiceHandler.removeCallbacksAndMessages(null);
+							mServiceHandler.obtainMessage(MSG_NONE, lastState, -1).sendToTarget();
+							// try again to go to mWantedState
+						} catch (InterruptedException e) {
+						}
+					}
+				};
+				mWantedState = STATE_WAIT_RECONNECT;
+				mReconThread.start();
+			}
+			else {
+				stopSelf();
+				return;
+			}
+			break;
+		case MSG_START_POLL:
+			mWantedState = STATE_POLL;
+			break;
+		case MSG_STARTED_POLL:
+			HarleyDroidService.this.notify(R.string.notification_polling);
+			mCurrentState = STATE_POLL;
+			break;
+		case MSG_START_SEND:
+			mWantedState = STATE_SEND;
+			mSendType = msg.getData().getStringArray("type");
+			mSendTA = msg.getData().getStringArray("ta");
+			mSendSA = msg.getData().getStringArray("sa");
+			mSendCommand = msg.getData().getStringArray("command");
+			mSendExpect = msg.getData().getStringArray("expect");
+			mSendTimeout = msg.getData().getIntArray("timeout");
+			mSendDelay = msg.getData().getInt("delay");
+			break;
+		case MSG_STARTED_SEND:
+			HarleyDroidService.this.notify(R.string.notification_diagnostics);
+			mCurrentState = STATE_SEND;
+			break;
+		case MSG_SET_SEND:
+			mInterface.setSendData(msg.getData().getStringArray("type"),
+					msg.getData().getStringArray("ta"),
+					msg.getData().getStringArray("sa"),
+					msg.getData().getStringArray("command"),
+					msg.getData().getStringArray("expect"),
+					msg.getData().getIntArray("timeout"),
+					msg.getData().getInt("delay"));
 		}
-	};
+		stateMachine();
+	}
 
 	public void connected() {
 		if (D) Log.d(TAG, "connected()");
@@ -481,5 +482,20 @@ public class HarleyDroidService extends Service
 		if (D) Log.d(TAG, "isSending()");
 
 		return (mCurrentState == STATE_SEND);
+	}
+
+	static class HarleyDroidServiceHandler extends Handler {
+		private final WeakReference<HarleyDroidService> mHarleyDroidService;
+
+	    HarleyDroidServiceHandler(HarleyDroidService harleyDroidService) {
+	        mHarleyDroidService = new WeakReference<HarleyDroidService>(harleyDroidService);
+	    }
+
+		@Override
+		public void handleMessage(Message msg) {
+			HarleyDroidService hds = mHarleyDroidService.get();
+			if (hds != null)
+				hds.handleMessage(msg);
+		}
 	}
 }
