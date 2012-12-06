@@ -8,5 +8,5 @@ release:
 	ant release
 
 clean:
-	rm -rf obj libs
+	rm -rf obj
 	ant clean

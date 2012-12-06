@@ -21,7 +21,6 @@ package org.harleydroid;
 
 import java.lang.ref.WeakReference;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -34,6 +33,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 public class HarleyDroidService extends Service
@@ -64,9 +64,9 @@ public class HarleyDroidService extends Service
 	private final IBinder binder = new HarleyDroidServiceBinder();
 	private HarleyDroidLogger mLogger = null;
 	private HarleyData mHD;
-	private NotificationManager mNM;
-	private Notification notification;
-	private PendingIntent notificationIntent;
+	private int mNotifyId;
+	private NotificationCompat.Builder mNotifyBuilder;
+	private NotificationManager mNotificationManager;
 	private Handler mHandler = null;
 	private String mInterfaceType = null;
 	private BluetoothDevice mDevice = null;
@@ -100,12 +100,15 @@ public class HarleyDroidService extends Service
 		mHD = new HarleyData(mPrefs);
 		mServiceHandler = new HarleyDroidServiceHandler(this);
 
-		mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-		notification = new Notification(R.drawable.ic_stat_notify_harleydroid, "", System.currentTimeMillis());
-		notification.flags = Notification.FLAG_ONGOING_EVENT;
-		notificationIntent = PendingIntent.getActivity(this, 0, new Intent(this, HarleyDroidDashboard.class), 0);
+		mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+		mNotifyId = 1;
+		mNotifyBuilder = new NotificationCompat.Builder(this)
+		        .setSmallIcon(R.drawable.ic_stat_notify_harleydroid)
+		        .setContentTitle(getText(R.string.notification_label))
+		        .setOngoing(true)
+		        .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, HarleyDroidDashboard.class), 0));
 		notify(R.string.notification_connecting);
-		startForeground(R.string.notification_label, notification);
+		startForeground(mNotifyId, mNotifyBuilder.build());
 	}
 
 	public void onDestroy() {
@@ -113,7 +116,7 @@ public class HarleyDroidService extends Service
 		if (D) Log.d(TAG, "onDestroy()");
 
 		doDisconnect();
-		mNM.cancel(R.string.notification_label);
+		mNotificationManager.cancel(mNotifyId);
 		mHD.destroy();
 	}
 
@@ -194,8 +197,8 @@ public class HarleyDroidService extends Service
 
 	private void notify(int id) {
 		CharSequence text = getText(id);
-		notification.setLatestEventInfo(this, getText(R.string.notification_label), text, notificationIntent);
-		mNM.notify(R.string.notification_label, notification);
+		mNotifyBuilder.setContentText(text);
+		mNotificationManager.notify(mNotifyId, mNotifyBuilder.build());
 	}
 
 	private void doDisconnect() {
