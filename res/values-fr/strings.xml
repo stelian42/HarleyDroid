@@ -22,8 +22,8 @@
     
 <string name="app_name">HarleyDroid</string>
 <string name="dashboard_name">HarleyDroid</string>
-<string name="diagnostics_name">Diagnostics HarleyDroid</string>
-<string name="settings_name">Préférences de HarleyDroid</string>
+<string name="diagnostics_name">Diagnostics</string>
+<string name="settings_name">Préférences</string>
 
 <string name="toast_nobluetooth">Désolé, votre appareil ne supporte pas le Bluetooth</string>
 <string name="toast_errorenablebluetooth">Impossible d\'activer le Bluetooth</string>

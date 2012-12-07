@@ -22,8 +22,8 @@
 
 <string name="app_name">HarleyDroid</string>
 <string name="dashboard_name">HarleyDroid</string>
-<string name="diagnostics_name">HarleyDroid Diagnostics</string>
-<string name="settings_name">HarleyDroid Settings</string>
+<string name="diagnostics_name">Diagnostics</string>
+<string name="settings_name">Settings</string>
 
 <string name="toast_nobluetooth">Sorry, your device doesn\'t support bluetooth</string>
 <string name="toast_errorenablebluetooth">Unable to enable Bluetooth</string>
