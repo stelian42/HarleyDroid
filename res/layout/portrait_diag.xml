@@ -42,11 +42,12 @@
                 android:text="@string/vin_label"
                 android:textSize="@dimen/textsize" />
 
-            <TextView
+             <Button
                 android:id="@+id/vin_field"
+                style="?android:attr/buttonStyleSmall"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="3dip"
+                android:gravity="center_vertical|left"
                 android:textSize="@dimen/textsize" />
         </TableRow>
 

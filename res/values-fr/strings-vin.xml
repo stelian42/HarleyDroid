@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
+
+     Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+<string name="vin_destination">Destination:</string>
+<string name="vin_destination_1">Etats-Unis</string>
+<string name="vin_destination_5">International</string>
+<string name="vin_class">Classe:</string>
+<string name="vin_class_1">Moto lourde</string>
+<string name="vin_class_4">Moto légère</string>
+<string name="vin_class_8">Side Car</string>
+<string name="vin_model">Modèle:</string>
+<string name="vin_engine">Moteur:</string>
+<string name="vin_date">Date intr.:</string>
+<string name="vin_date_1">Normale</string>
+<string name="vin_date_2">Milieu d\'année</string>
+<string name="vin_date_3">Normale (Californie)</string>
+<string name="vin_date_4">Changements esthétiques et/ou date spéciale</string>
+<string name="vin_date_5">Changements esthétiques et/ou date spéciale</string>
+<string name="vin_date_6">Milieu d\'année (Californie)</string>
+<string name="vin_date_A">Normale (CAN)</string>
+<string name="vin_date_B">Milieu d\'année (CAN)</string>
+<string name="vin_date_C">Normale (HDI)</string>
+<string name="vin_date_D">Milieu d\'année (HDI)</string>
+<string name="vin_date_E">Normale (JPN)</string>
+<string name="vin_date_F">Milieu d\'année (JPN)</string>
+<string name="vin_date_G">Normale (AUS)</string>
+<string name="vin_date_H">Milieu d\'année (AUS)</string>
+<string name="vin_date_J">Normale (BRZ)</string>
+<string name="vin_date_K">Milieu d\'année (BRZ)</string>
+<string name="vin_year">Année:</string>
+<string name="vin_plant">Usine:</string>
+<string name="vin_serial">Numéro:</string>
+<string name="vin_ok">OK</string>
+
+</resources>

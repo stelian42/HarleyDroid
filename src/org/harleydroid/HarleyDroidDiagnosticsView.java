@@ -29,14 +29,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener, OnItemClickListener
+public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener, OnItemClickListener, OnClickListener
 {
 	private static final boolean D = false;
 	private static final String TAG = HarleyDroidDiagnosticsView.class.getSimpleName();
@@ -52,7 +54,7 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 	private HarleyDroidDiagnosticsViewHandler mHandler;
 
 	// Views references cached for performance
-	private TextView mViewVIN;
+	private Button mViewVIN;
 	private TextView mViewECMPN;
 	private TextView mViewECMCalID;
 	private TextView mViewECMSWLevel;
@@ -75,13 +77,14 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 			view = R.layout.landscape_diag;
 		mActivity.setContentView(view);
 
-		mViewVIN = (TextView) mActivity.findViewById(R.id.vin_field);
+		mViewVIN = (Button) mActivity.findViewById(R.id.vin_field);
 		mViewECMPN = (TextView) mActivity.findViewById(R.id.ecmpn_field);
 		mViewECMCalID = (TextView) mActivity.findViewById(R.id.ecmcalid_field);
 		mViewECMSWLevel = (TextView) mActivity.findViewById(R.id.ecmswlevel_field);
 		mViewCurrentDTC = (ListView) mActivity.findViewById(R.id.currentdtc_field);
 		mViewHistoricDTC = (ListView) mActivity.findViewById(R.id.historicdtc_field);
 
+		mViewVIN.setOnClickListener(this);
 		mViewCurrentDTC.setOnItemClickListener(this);
 		mViewHistoricDTC.setOnItemClickListener(this);
 	}
@@ -239,6 +242,13 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void onClick(View v) {
+		CharSequence text = mViewVIN.getText();
+		if (text.length() == 17)
+			VINDecoder.show(mActivity, text);
 	}
 
 	static class HarleyDroidDiagnosticsViewHandler extends Handler {

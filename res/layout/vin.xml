@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
+
+     Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:stretchColumns="2" >
+
+    <View android:layout_height="5dip" />
+
+    <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:text="@string/vin_destination" />
+        <TextView
+            android:id="@+id/vin_destination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow>
+       <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:text="@string/vin_class" />
+        <TextView
+            android:id="@+id/vin_class"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow>
+       <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:text="@string/vin_model" />
+        <TextView
+            android:id="@+id/vin_model"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+	<TableRow>
+       <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:text="@string/vin_engine" />
+        <TextView
+            android:id="@+id/vin_engine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+	<TableRow>
+       <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:text="@string/vin_date" />
+        <TextView
+            android:id="@+id/vin_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+	<TableRow>
+       <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:text="@string/vin_year" />
+        <TextView
+            android:id="@+id/vin_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+	<TableRow>
+       <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:text="@string/vin_plant" />
+        <TextView
+            android:id="@+id/vin_plant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+	<TableRow>
+       <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:text="@string/vin_serial" />
+        <TextView
+            android:id="@+id/vin_serial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+	<View android:layout_height="5dip" />
+
+</TableLayout>

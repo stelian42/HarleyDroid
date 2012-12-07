@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- HarleyDroid: Harley Davidson J1850 Data Analyser for Android.
+
+     Copyright (C) 2010-2012 Stelian Pop <stelian@popies.net>
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<resources>
+
+<string name="vin_destination">Destination:</string>
+<string name="vin_destination_1">Domestic</string>
+<string name="vin_destination_5">International</string>
+<string name="vin_class">Class:</string>
+<string name="vin_class_1">Heavyweight</string>
+<string name="vin_class_4">Lightweight</string>
+<string name="vin_class_8">Side Car</string>
+<string name="vin_model">Model:</string>
+<string name="vin_model_decoded"></string>
+<string name="vin_model_BF">SOFTAIL FXSB</string>
+<string name="vin_model_BH">SOFTAIL FXST</string>
+<string name="vin_model_BJ">SOFTAIL FLSTC</string>
+<string name="vin_model_BL">SOFTAIL FXSTS</string>
+<string name="vin_model_BM">SOFTAIL FLSTF</string>
+<string name="vin_model_BN">SOFTAIL FLSTN</string>
+<string name="vin_model_BR">SOFTAIL FLSTS</string>
+<string name="vin_model_BS">SOFTAIL FXSTD</string>
+<string name="vin_model_BT">SOFTAIL FXSTB</string>
+<string name="vin_model_BV">SOFTAIL FXST</string>
+<string name="vin_model_BW">SOFTAIL FLSTC</string>
+<string name="vin_model_BX">SOFTAIL FLSTF</string>
+<string name="vin_model_BY">SOFTAIL FLSTSC</string>
+<string name="vin_model_BZ">SOFTAIL FXSTSI</string>
+<string name="vin_model_CN">SPORTSTER XL 883</string>
+<string name="vin_model_CP">SPORTSTER XL 883C</string>
+<string name="vin_model_CR">SPORTSTER XL 883L</string>
+<string name="vin_model_CS">SPORTSTER XL 883R</string>
+<string name="vin_model_CT">SPORTSTER XL 1200C</string>
+<string name="vin_model_CV">SPORTSTER XL 1200R</string>
+<string name="vin_model_CX">SPORTSTER XL 1200L</string>
+<string name="vin_model_CY">SPORTSTER XL 50</string>
+<string name="vin_model_CZ">SPORTSTER XL 1200N</string>
+<string name="vin_model_DD">TOURING FLHT</string>
+<string name="vin_model_DG">TOURING FLHTC Shrine</string>
+<string name="vin_model_DJ">TOURING FLHTC</string>
+<string name="vin_model_FB">TOURING FLHR</string>
+<string name="vin_model_FC">TOURING FLHTCU</string>
+<string name="vin_model_FD">TOURING FLHR</string>
+<string name="vin_model_FF">TOURING FLHTC</string>
+<string name="vin_model_FG">TOURING FLHTCU w/Side Car</string>
+<string name="vin_model_FH">TOURING FLHP Police</string>
+<string name="vin_model_FK">TOURING FLHTCI Shrine/Fire</string>
+<string name="vin_model_FL">TOURING FLHTCU Shrine/Fire</string>
+<string name="vin_model_FM">TOURING FLHTP Police</string>
+<string name="vin_model_FN">TOURING FLHPE Police</string>
+<string name="vin_model_FP">TOURING FLTR</string>
+<string name="vin_model_FR">TOURING FLHRC</string>
+<string name="vin_model_FS">TOURING FLTR</string>
+<string name="vin_model_FT">TOURING FLHPE Police</string>
+<string name="vin_model_FV">TOURING FLHT</string>
+<string name="vin_model_FW">TOURING FLHR Shrine/Fire</string>
+<string name="vin_model_FX">TOURING FLHRS</string>
+<string name="vin_model_FY">TOURING FLHRS</string>
+<string name="vin_model_GD">DYNA FXDL</string>
+<string name="vin_model_GE">DYNA FXDWG</string>
+<string name="vin_model_GH">DYNA FXD</string>
+<string name="vin_model_GJ">DYNA FXDX</string>
+<string name="vin_model_GK">DYNA FXDP Police</string>
+<string name="vin_model_GM">DYNA FXD</string>
+<string name="vin_model_GN">DYNA FXDL</string>
+<string name="vin_model_GP">DYNA FXDWG</string>
+<string name="vin_model_GR">DYNA FXDXI</string>
+<string name="vin_model_GT">DYNA FXDC</string>
+<string name="vin_model_GV">DYNA FXDC</string>
+<string name="vin_model_GW">DYNA FXD35</string>
+<string name="vin_model_GX">DYNA FXDB</string>
+<string name="vin_model_GY">DYNA FXDF</string>
+<string name="vin_model_GZ">DYNA FLD</string>
+<string name="vin_model_HA">VRSC VRSCA</string>
+<string name="vin_model_HB">VRSC VRSCB</string>
+<string name="vin_model_HC">VRSC VRSCR</string>
+<string name="vin_model_HD">VRSC VRSCD</string>
+<string name="vin_model_HF">VRSC VRSCAW</string>
+<string name="vin_model_HH">VRSC VRSCDX</string>
+<string name="vin_model_HJ">VRSC VRSCX</string>
+<string name="vin_model_HK">VRSC VRSCAWA</string>
+<string name="vin_model_HL">VRSC VRSCDA</string>
+<string name="vin_model_HM">VRSC VRSCDXA</string>
+<string name="vin_model_HP">VRSC VRSCF</string>
+<string name="vin_model_JA">SOFTAIL FXSTB</string>
+<string name="vin_model_JB">SOFTAIL FXSTD</string>
+<string name="vin_model_JD">SOFTAIL FLSTN</string>
+<string name="vin_model_JE">SOFTAIL FLST</string>
+<string name="vin_model_JF">SOFTAIL FLSTI</string>
+<string name="vin_model_JG">SOFTAIL FLSTF Shrine/Fire</string>
+<string name="vin_model_JH">SOFTAIL FLSTC Shrine/Fire</string>
+<string name="vin_model_JJ">SOFTAIL FXCW</string>
+<string name="vin_model_JK">SOFTAIL FXCWC</string>
+<string name="vin_model_JL">SOFTAIL FXSTC</string>
+<string name="vin_model_JM">SOFTAIL FLSTSB</string>
+<string name="vin_model_JN">SOFTAIL FLSTFB</string>
+<string name="vin_model_JP">SOFTAIL FXS</string>
+<string name="vin_model_JR">SOFTAIL FLS</string>
+<string name="vin_model_KA">TOURING FLHX</string>
+<string name="vin_model_KB">TOURING FLHX</string>
+<string name="vin_model_KC">TOURING FLHTPI-CHP Police</string>
+<string name="vin_model_KE">TOURING FLHTK</string>
+<string name="vin_model_KG">TOURING FLTRU</string>
+<string name="vin_model_KH">TOURING FLTRX</string>
+<string name="vin_model_KM">TOURING FLHTK W/SideCar</string>
+<string name="vin_model_LA">SPORTSTER XR 1200</string>
+<string name="vin_model_LC">SPORTSTER XL 1200X</string>
+<string name="vin_model_LD">SPORTSTER XR 1200X</string>
+<string name="vin_model_LE">SPORTSTER XL 883N</string>
+<string name="vin_model_LF">SPORTSTER XL 1200V</string>
+<string name="vin_model_LH">SPORTSTER XL 1200CP</string>
+<string name="vin_model_LJ">SPORTSTER XL 1200CA</string>
+<string name="vin_model_LK">SPORTSTER XL 1200CB</string>
+<string name="vin_model_MA">TOURING FLHTCUTG</string>
+<string name="vin_model_MB">TOURING FLHXXX</string>
+<string name="vin_model_PC">TOURING FLTRSEI2</string>
+<string name="vin_model_PD">TOURING FLHRSEI</string>
+<string name="vin_model_PF">SOFTAIL FXSTDSE</string>
+<string name="vin_model_PG">TOURING FLHRSE4</string>
+<string name="vin_model_PH">SOFTAIL FXSTDSE2</string>
+<string name="vin_model_PJ">TOURING FLHTCSE</string>
+<string name="vin_model_PK">TOURING FLHTCSE2</string>
+<string name="vin_model_PL">SOFTAIL FLSTFSE</string>
+<string name="vin_model_PM">VRSC VRSCSE</string>
+<string name="vin_model_PN">SOFTAIL FLSTFSE2</string>
+<string name="vin_model_PP">VRSC VRSCSE2</string>
+<string name="vin_model_PR">TOURING FLHTCUSE</string>
+<string name="vin_model_PS">DYNA FXDSE</string>
+<string name="vin_model_PT">SOFTAIL FXSTSSE</string>
+<string name="vin_model_PV">TOURING FLTRSE3</string>
+<string name="vin_model_PX">DYNA FXDFSE</string>
+<string name="vin_model_PY">SOFTAIL FLSTSE</string>
+<string name="vin_model_PZ">TOURING FLHXSE</string>
+<string name="vin_model_TA">TOURING FLTRUSE</string>
+<string name="vin_model_TC">TOURING FLTRXSE</string>
+<string name="vin_model_VA">DYNA FXDBP 103</string>
+<string name="vin_model_VB">DYNA FXDBA</string>
+<string name="vin_model_VC">DYNA FXDBA 103</string>
+<string name="vin_model_VM">DYNA FXDBP 103</string>
+<string name="vin_engine">Engine:</string>
+<string name="vin_engine_A">1130cc Revolution (100 CV)</string>
+<string name="vin_engine_B">1450cc Fuel Injected Counter Balanced</string>
+<string name="vin_engine_C">1550cc</string>
+<string name="vin_engine_D">1550cc EFI</string>
+<string name="vin_engine_E">1690cc EFI</string>
+<string name="vin_engine_F">1690cc Balanced-EFI</string>
+<string name="vin_engine_G">1246cc Revolution EFI</string>
+<string name="vin_engine_H">1250cc ESPFI</string>
+<string name="vin_engine_J">1246cc</string>
+<string name="vin_engine_K">1340cc Shovelhead</string>
+<string name="vin_engine_L">1340cc Evolution</string>
+<string name="vin_engine_M">883cc Evolution XL / 1690 (2008 and later)</string>
+<string name="vin_engine_N">1100cc Evolution XL</string>
+<string name="vin_engine_P">1200cc Evolution XL</string>
+<string name="vin_engine_R">1340cc Evolution Fuel Injected</string>
+<string name="vin_engine_S">500cc Single (Armstrong Military)</string>
+<string name="vin_engine_V">Twin Cam 88 Carburetor</string>
+<string name="vin_engine_W">Twin Cam 88 EFI</string>
+<string name="vin_engine_Y">Twin Cam 88 Counter Balanced - Carburetor</string>
+<string name="vin_engine_Z">1130cc Revolution (115hp)</string>
+<string name="vin_engine_1">1450cc EFI </string>
+<string name="vin_engine_2">883cc ESPFI</string>
+<string name="vin_engine_3">1200cc ESPFI</string>
+<string name="vin_engine_4">1584cc air cooled, EFI</string>
+<string name="vin_engine_5">1584cc ESPFI</string>
+<string name="vin_engine_6">1200cc</string>
+<string name="vin_engine_8">1800cc ESPFI</string>
+<string name="vin_engine_9">1800cc ESPFI</string>
+<string name="vin_date">Intr. date:</string>
+<string name="vin_date_1">Regular</string>
+<string name="vin_date_2">Mid Year</string>
+<string name="vin_date_3">Regular (California)</string>
+<string name="vin_date_4">Cosmetic changes and/or special introductory date</string>
+<string name="vin_date_5">Cosmetic changes and/or special introductory date</string>
+<string name="vin_date_6">Mid Year (California)</string>
+<string name="vin_date_A">Regular (CAN)</string>
+<string name="vin_date_B">Mid Year (CAN)</string>
+<string name="vin_date_C">Regular (HDI)</string>
+<string name="vin_date_D">Mid Year (HDI)</string>
+<string name="vin_date_E">Regular (JPN)</string>
+<string name="vin_date_F">Mid Year (JPN)</string>
+<string name="vin_date_G">Regular (AUS)</string>
+<string name="vin_date_H">Mid Year (AUS)</string>
+<string name="vin_date_J">Regular (BRZ)</string>
+<string name="vin_date_K">Mid Year (BRZ)</string>
+<string name="vin_year">Year:</string>
+<string name="vin_plant">Plant:</string>
+<string name="vin_plant_A">Tomahawk, WI</string>
+<string name="vin_plant_B">York, PA</string>
+<string name="vin_plant_C">Kansas City, MO</string>
+<string name="vin_plant_D">Manaus, Brazil</string>
+<string name="vin_plant_E">Buell East Troy</string>
+<string name="vin_plant_J">Milwaukee, WI</string>
+<string name="vin_plant_K">Kansas City, MO</string>
+<string name="vin_plant_T">Tomahawk, WI</string> 
+<string name="vin_plant_Y">York, PA</string>
+<string name="vin_serial">Serial:</string>
+<string name="vin_ok">OK</string>
+
+</resources>
