@@ -19,6 +19,8 @@
 
 package org.harleydroid;
 
+import java.lang.ref.WeakReference;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -59,6 +61,7 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 	public static final int VIEW_TEXT = 2;
 
 	private Activity mActivity;
+	private HarleyDroidDashboardViewHandler mHandler;
 
 	// Views references cached for performance
 	private TextView mViewRpm;
@@ -105,6 +108,7 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 
 	public HarleyDroidDashboardView(Activity activity) {
 		mActivity = activity;
+		mHandler = new HarleyDroidDashboardViewHandler(this);
 	}
 
 	public void changeView(int viewMode, boolean portrait, boolean unitMetric) {
@@ -305,72 +309,69 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 		}
 	}
 
-	private final Handler mHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			if (D) Log.d(TAG, "handleMessage " + msg.what);
+	public void handleMessage(Message msg) {
+		if (D) Log.d(TAG, "handleMessage " + msg.what);
 
-			switch (msg.what) {
-			case UPDATE_RPM:
-				drawRPM(msg.arg1);
-				break;
-			case UPDATE_SPEED_IMPERIAL:
-				drawSpeedImperial(msg.arg1);
-				break;
-			case UPDATE_SPEED_METRIC:
-				drawSpeedMetric(msg.arg1);
-				break;
-			case UPDATE_ENGINETEMP_IMPERIAL:
-				drawEngineTempImperial(msg.arg1);
-				break;
-			case UPDATE_ENGINETEMP_METRIC:
-				drawEngineTempMetric(msg.arg1);
-				break;
-			case UPDATE_FUELGAUGE:
-				drawFuelGauge(msg.arg1, msg.arg2 != 0 ? true : false);
-				break;
-			case UPDATE_TURNSIGNALS:
-				drawTurnSignals(msg.arg1);
-				break;
-			case UPDATE_NEUTRAL:
-				drawNeutral(msg.arg1 != 0 ? true : false);
-				break;
-			case UPDATE_CLUTCH:
-				drawClutch(msg.arg1 != 0 ? true : false);
-				break;
-			case UPDATE_GEAR:
-				drawGear(msg.arg1);
-				break;
-			case UPDATE_CHECKENGINE:
-				drawCheckEngine(msg.arg1 != 0 ? true : false);
-				break;
-			case UPDATE_ODOMETER_IMPERIAL:
-				drawOdometerImperial(msg.arg1);
-				break;
-			case UPDATE_ODOMETER_METRIC:
-				drawOdometerMetric(msg.arg1);
-				break;
-			case UPDATE_FUEL_IMPERIAL:
-				drawFuelImperial(msg.arg1);
-				break;
-			case UPDATE_FUEL_METRIC:
-				drawFuelMetric(msg.arg1);
-				break;
-			case UPDATE_FUEL_AVERAGE_IMPERIAL:
-				drawFuelAvgImperial(msg.arg1);
-				break;
-			case UPDATE_FUEL_AVERAGE_METRIC:
-				drawFuelAvgMetric(msg.arg1);
-				break;
-			case UPDATE_FUEL_INSTANT_IMPERIAL:
-				drawFuelInstImperial(msg.arg1);
-				break;
-			case UPDATE_FUEL_INSTANT_METRIC:
-				drawFuelInstMetric(msg.arg1);
-				break;
-			}
+		switch (msg.what) {
+		case UPDATE_RPM:
+			drawRPM(msg.arg1);
+			break;
+		case UPDATE_SPEED_IMPERIAL:
+			drawSpeedImperial(msg.arg1);
+			break;
+		case UPDATE_SPEED_METRIC:
+			drawSpeedMetric(msg.arg1);
+			break;
+		case UPDATE_ENGINETEMP_IMPERIAL:
+			drawEngineTempImperial(msg.arg1);
+			break;
+		case UPDATE_ENGINETEMP_METRIC:
+			drawEngineTempMetric(msg.arg1);
+			break;
+		case UPDATE_FUELGAUGE:
+			drawFuelGauge(msg.arg1, msg.arg2 != 0 ? true : false);
+			break;
+		case UPDATE_TURNSIGNALS:
+			drawTurnSignals(msg.arg1);
+			break;
+		case UPDATE_NEUTRAL:
+			drawNeutral(msg.arg1 != 0 ? true : false);
+			break;
+		case UPDATE_CLUTCH:
+			drawClutch(msg.arg1 != 0 ? true : false);
+			break;
+		case UPDATE_GEAR:
+			drawGear(msg.arg1);
+			break;
+		case UPDATE_CHECKENGINE:
+			drawCheckEngine(msg.arg1 != 0 ? true : false);
+			break;
+		case UPDATE_ODOMETER_IMPERIAL:
+			drawOdometerImperial(msg.arg1);
+			break;
+		case UPDATE_ODOMETER_METRIC:
+			drawOdometerMetric(msg.arg1);
+			break;
+		case UPDATE_FUEL_IMPERIAL:
+			drawFuelImperial(msg.arg1);
+			break;
+		case UPDATE_FUEL_METRIC:
+			drawFuelMetric(msg.arg1);
+			break;
+		case UPDATE_FUEL_AVERAGE_IMPERIAL:
+			drawFuelAvgImperial(msg.arg1);
+			break;
+		case UPDATE_FUEL_AVERAGE_METRIC:
+			drawFuelAvgMetric(msg.arg1);
+			break;
+		case UPDATE_FUEL_INSTANT_IMPERIAL:
+			drawFuelInstImperial(msg.arg1);
+			break;
+		case UPDATE_FUEL_INSTANT_METRIC:
+			drawFuelInstMetric(msg.arg1);
+			break;
 		}
-	};
+	}
 
 	public void onRPMChanged(int rpm) {
 		mHandler.obtainMessage(HarleyDroidDashboardView.UPDATE_RPM, rpm, -1).sendToTarget();
@@ -764,6 +765,21 @@ public class HarleyDroidDashboardView implements HarleyDataDashboardListener
 			else
 				s += String.format("%3.1f",  lastFuelAvgMetric);
 			mViewMileageMetric.setText(s);
+		}
+	}
+
+	static class HarleyDroidDashboardViewHandler extends Handler {
+		private final WeakReference<HarleyDroidDashboardView> mHarleyDroidDashboardView;
+
+	    HarleyDroidDashboardViewHandler(HarleyDroidDashboardView harleyDroidDashboardView) {
+	        mHarleyDroidDashboardView = new WeakReference<HarleyDroidDashboardView>(harleyDroidDashboardView);
+	    }
+
+		@Override
+		public void handleMessage(Message msg) {
+			HarleyDroidDashboardView hddv = mHarleyDroidDashboardView.get();
+			if (hddv != null)
+				hddv.handleMessage(msg);
 		}
 	}
 }

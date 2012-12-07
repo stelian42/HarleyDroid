@@ -19,6 +19,7 @@
 
 package org.harleydroid;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -48,6 +49,7 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 	public static final int UPDATE_CURRENTDTC = 6;
 
 	private Activity mActivity;
+	private HarleyDroidDiagnosticsViewHandler mHandler;
 
 	// Views references cached for performance
 	private TextView mViewVIN;
@@ -59,6 +61,7 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 
 	public HarleyDroidDiagnosticsView(Activity activity) {
 		mActivity = activity;
+		mHandler = new HarleyDroidDiagnosticsViewHandler(this);
 	}
 
 	public void changeView(boolean portrait) {
@@ -83,34 +86,30 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 		mViewHistoricDTC.setOnItemClickListener(this);
 	}
 
-	private final Handler mHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			if (D) Log.d(TAG, "handleMessage " + msg.what);
+	public void handleMessage(Message msg) {
+		if (D) Log.d(TAG, "handleMessage " + msg.what);
 
-			switch (msg.what) {
-			case UPDATE_VIN:
-				drawVIN(msg.getData().getString("vin"));
-				break;
-			case UPDATE_ECMPN:
-				drawECMPN(msg.getData().getString("ecmpn"));
-				break;
-			case UPDATE_ECMCALID:
-				drawECMCalID(msg.getData().getString("ecmcalid"));
-				break;
-			case UPDATE_ECMSWLEVEL:
-				drawECMSWLevel(msg.arg1);
-				break;
-			case UPDATE_HISTORICDTC:
-				drawHistoricDTC(msg.getData().getStringArray("historicdtc"));
-				break;
-			case UPDATE_CURRENTDTC:
-				drawCurrentDTC(msg.getData().getStringArray("currentdtc"));
-				break;
-			}
+		switch (msg.what) {
+		case UPDATE_VIN:
+			drawVIN(msg.getData().getString("vin"));
+			break;
+		case UPDATE_ECMPN:
+			drawECMPN(msg.getData().getString("ecmpn"));
+			break;
+		case UPDATE_ECMCALID:
+			drawECMCalID(msg.getData().getString("ecmcalid"));
+			break;
+		case UPDATE_ECMSWLEVEL:
+			drawECMSWLevel(msg.arg1);
+			break;
+		case UPDATE_HISTORICDTC:
+			drawHistoricDTC(msg.getData().getStringArray("historicdtc"));
+			break;
+		case UPDATE_CURRENTDTC:
+			drawCurrentDTC(msg.getData().getStringArray("currentdtc"));
+			break;
 		}
-	};
-
+	}
 
 	public void onVINChanged(String vin) {
 		Message m = mHandler.obtainMessage(HarleyDroidDiagnosticsView.UPDATE_VIN);
@@ -239,6 +238,21 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 				Toast.makeText(mActivity.getApplicationContext(), dtcStrings[i], Toast.LENGTH_SHORT).show();
 				break;
 			}
+		}
+	}
+
+	static class HarleyDroidDiagnosticsViewHandler extends Handler {
+		private final WeakReference<HarleyDroidDiagnosticsView> mHarleyDroidDiagnosticsView;
+
+	    HarleyDroidDiagnosticsViewHandler(HarleyDroidDiagnosticsView harleyDroidDiagnosticsView) {
+	        mHarleyDroidDiagnosticsView = new WeakReference<HarleyDroidDiagnosticsView>(harleyDroidDiagnosticsView);
+	    }
+
+		@Override
+		public void handleMessage(Message msg) {
+			HarleyDroidDiagnosticsView hddv = mHarleyDroidDiagnosticsView.get();
+			if (hddv != null)
+				hddv.handleMessage(msg);
 		}
 	}
 }
