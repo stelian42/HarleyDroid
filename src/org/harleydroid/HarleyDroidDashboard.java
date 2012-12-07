@@ -19,6 +19,7 @@
 
 package org.harleydroid;
 
+import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -118,6 +119,7 @@ public class HarleyDroidDashboard extends HarleyDroid {
 		return true;
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (D) Log.d(TAG, "onOptionsItemSelected");
@@ -137,6 +139,8 @@ public class HarleyDroidDashboard extends HarleyDroid {
 				mViewMode = HarleyDroidDashboardView.VIEW_GRAPHIC;
 			mHarleyDroidDashboardView.changeView(mViewMode, getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT, mUnitMetric);
 			mHarleyDroidDashboardView.drawAll(mHD);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				invalidateOptionsMenu();
 			return true;
 		case R.id.diag_menu:
 			Intent diagnosticsActivity = new Intent(getBaseContext(), HarleyDroidDiagnostics.class);
