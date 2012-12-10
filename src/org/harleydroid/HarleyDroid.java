@@ -70,6 +70,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 	private boolean mGPS = false;
 	private boolean mLogRaw = false;
 	private boolean mLogUnknown = false;
+	private boolean mScreenOn = false;
 	protected HarleyDroidService mService = null;
 	protected boolean mUnitMetric = false;
 	protected int mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
@@ -161,8 +162,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		mGPS = mPrefs.getBoolean("gps", false);
 		mLogRaw = mPrefs.getBoolean("lograw", false);
 		mLogUnknown = mPrefs.getBoolean("logunknown", false);
-		if (mPrefs.getBoolean("screenon", false))
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		mScreenOn = mPrefs.getBoolean("screenon", false);
 		if (mPrefs.getString("unit", "metric").equals("metric"))
 			mUnitMetric = true;
 		else
@@ -223,6 +223,8 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		mService.setAutoReconnect(mAutoReconnect, Integer.parseInt(mReconnectDelay));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			invalidateOptionsMenu();
+		if (mScreenOn)
+			getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -236,6 +238,8 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		bindService(new Intent(this, HarleyDroidService.class), this, 0);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			invalidateOptionsMenu();
+		if (mScreenOn)
+			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
 	public void handleMessage(Message msg) {
