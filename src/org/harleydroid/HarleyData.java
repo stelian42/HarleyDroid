@@ -63,10 +63,11 @@ public class HarleyData {
 	private SharedPreferences mPrefs;
 
 	public HarleyData(SharedPreferences prefs) {
-
 		mPrefs = prefs;
 		mSavedOdometer = prefs.getInt("odometer", 0);
 		mSavedFuel = prefs.getInt("fuel", 0);
+		if (mSavedOdometer != 0 && mSavedFuel != 0)
+			mFuelAverage = (1250 * mSavedFuel) / mSavedOdometer;
 
 		mDashboardListeners = new CopyOnWriteArrayList<HarleyDataDashboardListener>();
 		mDiagnosticsListeners = new CopyOnWriteArrayList<HarleyDataDiagnosticsListener>();
@@ -80,11 +81,11 @@ public class HarleyData {
 	}
 
 	public void savePersistentData() {
-		if (mResetOdometer > 0) {
+		if (mResetOdometer >= 0) {
 			mSavedOdometer = mSavedOdometer + mOdometer - mResetOdometer;
 			mResetOdometer = mOdometer;
 		}
-		if (mResetFuel > 0) {
+		if (mResetFuel >= 0) {
 			mSavedFuel = mSavedFuel + mFuel - mResetFuel;
 			mResetFuel = mFuel;
 		}
