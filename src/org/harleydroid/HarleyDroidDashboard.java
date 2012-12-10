@@ -188,6 +188,7 @@ public class HarleyDroidDashboard extends HarleyDroid {
 		if (D) Log.d(TAG, "onServiceDisconnected()");
 
 		mHD.removeHarleyDataDashboardListener(mHarleyDroidDashboardView);
+		mHarleyDroidDashboardView.drawAll(null);
 		super.onServiceDisconnected(name);
 	}
 }

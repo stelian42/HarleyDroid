@@ -156,6 +156,7 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		if (D) Log.d(TAG, "onServiceDisconnected()");
 
 		mHD.removeHarleyDataDiagnosticsListener(mHarleyDroidDiagnosticsView);
+		mHarleyDroidDiagnosticsView.drawAll(null);
 		super.onServiceDisconnected(name);
 	}
 
