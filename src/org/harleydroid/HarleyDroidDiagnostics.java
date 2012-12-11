@@ -170,12 +170,12 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 	public void clearDTC() {
 		if (D) Log.d(TAG, "clearDTC()");
 
-		String[] cTypes =		{ "6C" };
-		String[] cTas =			{ "10" };
-		String[] cSas =			{ "F1" };
-		String[] cCommands =		{ "14" };
-		String[] cExpects =		{ "6CF11054" };
-		int[] cCommandTimeout =	{ CLEAR_DTC_TIMEOUT };
+		String[] cTypes =		{ "6C", "6C", "6C" };
+		String[] cTas =			{ "10", "40", "60" };
+		String[] cSas =			{ "F1", "F1", "F1" };
+		String[] cCommands =	{ "14", "14", "14" };
+		String[] cExpects =		{ "6CF11054", "6CF14054", "6CF16054" };
+		int[] cCommandTimeout =	{ CLEAR_DTC_TIMEOUT, CLEAR_DTC_TIMEOUT, CLEAR_DTC_TIMEOUT };
 
 		if (mService != null)
 			mService.setSendData(cTypes, cTas, cSas, cCommands, cExpects, cCommandTimeout, COMMAND_DELAY);
@@ -203,6 +203,8 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		"0C",
 		// Get DTC
 		"6C",
+		"6C",
+		"6C",
 	};
 
 	private String[] tas = {
@@ -216,7 +218,9 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		"10",
 		"10",
 		// Get DTC
-		"FE",
+		"10",
+		"40",
+		"60",
 	};
 
 	private String[] sas = {
@@ -231,6 +235,8 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		"F1",
 		// Get DTC
 		"F1",
+		"F1",
+		"F1",
 	};
 
 	private String[] commands = {
@@ -244,7 +250,9 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		"3C10",
 		"3C11",
 		// Get DTC
-		"1912FF00",
+		"1952FF00",
+		"1952FF00",
+		"1952FF00",
 	};
 
 	private String[] expects = {
@@ -259,6 +267,8 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		"0CF1107C11",
 		// Get DTC
 		"6CF11059",
+		"6CF14059",
+		"6CF16059",
 	};
 
 	private int[] timeouts = {
@@ -272,6 +282,8 @@ public class HarleyDroidDiagnostics extends HarleyDroid
 		COMMAND_TIMEOUT,
 		COMMAND_TIMEOUT,
 		// Get DTC
+		GET_DTC_TIMEOUT,
+		GET_DTC_TIMEOUT,
 		GET_DTC_TIMEOUT,
 	};
 }

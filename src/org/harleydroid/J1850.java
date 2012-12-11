@@ -210,7 +210,7 @@ public class J1850 {
 			default:
 				hd.setUnknown(buffer);
 			}
-		} else if (x == 0x6cfef119) {
+		} else if ((x & 0xff0fffff) == 0x6c00f119) {
 			/* this is the get DTC command, answers are below... */
 			if (D) Log.d(TAG, "DTC start");
 		} else if ((x & 0xffff0fff) == 0x6cf10059) {
@@ -238,8 +238,10 @@ public class J1850 {
 				} else
 					hd.setUnknown(buffer);
 			}
-		} else if (x == 0x6c10f114) {
-			if (D) Log.d(TAG, "DTC clear");
+		} else if ((x & 0xff0fffff) == 0x6c00f114) {
+			if (D) Log.d(TAG, "DTC clear request");
+		} else if ((x & 0xffff0fff) == 0x6cf10054) {
+			if (D) Log.d(TAG, "DTC clear reply");
 		} else
 			hd.setUnknown(buffer);
 		return true;
