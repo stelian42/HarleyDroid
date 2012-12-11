@@ -235,7 +235,7 @@ public class HarleyDroidDiagnosticsView implements HarleyDataDiagnosticsListener
 		String[] dtcCodes = res.getStringArray(R.array.dtc_codes);
 		String[] dtcStrings = res.getStringArray(R.array.dtc_strings);
 
-		Log.i(TAG, "Clicked on [" + ((TextView)view).getText() + "]");
+		if (D) Log.i(TAG, "Clicked on [" + ((TextView)view).getText() + "]");
 		for (int i = 0; i < dtcCodes.length; ++i) {
 			if (dtc.equals(dtcCodes[i])) {
 				Toast.makeText(mActivity.getApplicationContext(), dtcStrings[i], Toast.LENGTH_SHORT).show();
