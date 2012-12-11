@@ -31,6 +31,8 @@ ger6 = 0
 ltrn = 0
 rtrn = 0
 wtrn = 0
+fgee = 0
+fgen = 0
 chk0 = 0
 chk1 = 0
 crc = 0
@@ -111,6 +113,11 @@ for line in f:
 			rtrn += 1
 		elif val == "W":
 			wtrn += 1
+	elif typ == "FGE":
+		if val == "EMPTY":
+			fgee += 1
+		else:
+			fgen += 1
 	elif typ == "VIN":
 		vin = val
 	elif typ == "EPN":
@@ -163,10 +170,9 @@ if first_ful != -1:
 	print 'Start fuel (l): %.3f' % (float(first_ful) / 1000.0)
 	print 'End fuel (l): %.3f' % (float(last_ful) / 1000.0)
 	print 'Overall fuel consumption (l): %.3f' % (float(last_ful) / 1000.0)
-if last_odo != 0:
+if first_odo != -1 and first_ful != -1:
 	print 'Overall average consumption (l/100km): %.3f' % (10.0 * float(last_ful) / float(last_odo))
 	print 'This track fuel consumption (l): %.3f' % (float(last_ful - first_ful) / 1000.0)
-if last_odo - first_odo != 0:
 	print 'This track average consumption (l/100km): %.3f' % (10.0 * float(last_ful - first_ful) / float(last_odo - first_odo))
 if max_rpm != -1:
 	print 'Max RPM:', max_rpm
@@ -179,6 +185,8 @@ if max_etp != -1:
 print 'Left turns:', ltrn
 print 'Right turns:', rtrn
 print 'Warning turns:', wtrn
+print 'Fuel gauge empty:', fgee
+print 'Fuel gauge other:', fgen
 print 'Clutch (off/on):', clu0, '/', clu1
 print 'Neutral (off/on):', ntr0, '/', ntr1
 print 'Gear (0/1/2/3/4/5/6):', ger0, '/', ger1, '/', ger2, '/', ger3, '/', ger4, '/', ger5, '/', ger6
