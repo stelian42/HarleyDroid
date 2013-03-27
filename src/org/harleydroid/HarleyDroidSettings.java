@@ -37,9 +37,6 @@ import android.preference.PreferenceFragment;
 
 public class HarleyDroidSettings extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
-	private static ArrayList<CharSequence> bluetoothDevices;
-	private static ArrayList<CharSequence> bluetoothAddresses;
-
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -48,10 +45,37 @@ public class HarleyDroidSettings extends PreferenceActivity implements OnSharedP
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
 			addPreferencesFromResource(R.xml.preferences);
 		}
+	}
 
+	@SuppressWarnings("deprecation")
+	@Override
+	public void onResume() {
+	    super.onResume();
+
+	    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+	    	fillBluetoothTable((ListPreference) findPreference("bluetoothid"));
+			SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
+	    	prefs.registerOnSharedPreferenceChangeListener(this);
+	    	onSharedPreferenceChanged(prefs, "interfacetype");
+	    	onSharedPreferenceChanged(prefs, "bluetoothid");
+	    	onSharedPreferenceChanged(prefs, "reconnectdelay");
+	    	onSharedPreferenceChanged(prefs, "unit");
+	    	onSharedPreferenceChanged(prefs, "orientation");
+	    }
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void onPause() {
+	    super.onPause();
+	    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
+	    	getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+	}
+
+	private static void fillBluetoothTable(ListPreference btlist) {
 		BluetoothAdapter bluetoothAdapter = null;
-		bluetoothDevices = new ArrayList<CharSequence>();
-		bluetoothAddresses = new ArrayList<CharSequence>();
+		ArrayList<CharSequence> bluetoothDevices = new ArrayList<CharSequence>();;
+		ArrayList<CharSequence> bluetoothAddresses = new ArrayList<CharSequence>();
 
 		if (!HarleyDroid.EMULATOR) {
 			bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -73,42 +97,14 @@ public class HarleyDroidSettings extends PreferenceActivity implements OnSharedP
 			bluetoothDevices.add("4:4:4:4 - Four");
 			bluetoothAddresses.add("4:4:4:4");
 		}
-
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-			ListPreference btlist = (ListPreference) findPreference("bluetoothid");
-			btlist.setEntryValues(bluetoothAddresses.toArray(new CharSequence[0]));
-			btlist.setEntries(bluetoothDevices.toArray(new CharSequence[0]));
-		}
+		btlist.setEntryValues(bluetoothAddresses.toArray(new CharSequence[0]));
+		btlist.setEntries(bluetoothDevices.toArray(new CharSequence[0]));
 	}
-
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void onBuildHeaders(List<Header> target) {
 	   loadHeadersFromResource(R.xml.preferences_headers, target);
-	}
-
-	@Override
-	public void onResume() {
-	    super.onResume();
-	    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-	    	@SuppressWarnings("deprecation")
-			SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
-	    	prefs.registerOnSharedPreferenceChangeListener(this);
-	    	onSharedPreferenceChanged(prefs, "interfacetype");
-	    	onSharedPreferenceChanged(prefs, "bluetoothid");
-	    	onSharedPreferenceChanged(prefs, "reconnectdelay");
-	    	onSharedPreferenceChanged(prefs, "unit");
-	    	onSharedPreferenceChanged(prefs, "orientation");
-	    }
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public void onPause() {
-	    super.onPause();
-	    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
-	    	getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -142,15 +138,12 @@ public class HarleyDroidSettings extends PreferenceActivity implements OnSharedP
 			 super.onCreate(savedInstanceState);
 
 			 addPreferencesFromResource(R.xml.preferences);
-
-			 ListPreference btlist = (ListPreference) findPreference("bluetoothid");
-			 btlist.setEntryValues(bluetoothAddresses.toArray(new CharSequence[0]));
-			 btlist.setEntries(bluetoothDevices.toArray(new CharSequence[0]));
 		 }
 
 		 @Override
 		 public void onResume() {
 			 super.onResume();
+			 fillBluetoothTable((ListPreference) findPreference("bluetoothid"));
 			 SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
 			 prefs.registerOnSharedPreferenceChangeListener(this);
 			 onSharedPreferenceChanged(prefs, "interfacetype");
