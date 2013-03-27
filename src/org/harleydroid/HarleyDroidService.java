@@ -117,6 +117,7 @@ public class HarleyDroidService extends Service
 
 		doDisconnect();
 		mNotificationManager.cancel(mNotifyId);
+		mNotificationManager = null;
 		mHD.destroy();
 	}
 
@@ -196,9 +197,11 @@ public class HarleyDroidService extends Service
 	}
 
 	private void notify(int id) {
-		CharSequence text = getText(id);
-		mNotifyBuilder.setContentText(text);
-		mNotificationManager.notify(mNotifyId, mNotifyBuilder.build());
+		if (mNotificationManager != null) {
+			CharSequence text = getText(id);
+			mNotifyBuilder.setContentText(text);
+			mNotificationManager.notify(mNotifyId, mNotifyBuilder.build());
+		}
 	}
 
 	private void doDisconnect() {
@@ -342,6 +345,7 @@ public class HarleyDroidService extends Service
 			}
 			break;
 		case MSG_DISCONNECT:
+			mHandler.obtainMessage(HarleyDroid.STATUS_NONE, -1, -1).sendToTarget();
 			mWantedState = STATE_DISCONNECT;
 			break;
 		case MSG_DISCONNECTED:

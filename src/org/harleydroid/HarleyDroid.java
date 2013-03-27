@@ -49,6 +49,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 	public static final boolean EMULATOR = false;
 
 	// Message types sent from HarleyDroidService
+	public static final int STATUS_NONE = 0;
 	public static final int STATUS_CONNECTING = 1;
 	public static final int STATUS_CONNECTED = 2;
 	public static final int STATUS_ERROR = 3;
@@ -76,6 +77,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 	protected int mOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 	protected HarleyData mHD;
 	protected Handler mHandler;
+	private Toast mToast;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -86,6 +88,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		if (DTRACE) Debug.startMethodTracing("harleydroid");
 
 		mHandler = new HarleyDroidHandler(this);
+		mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
 		mAutoConnect = true;
@@ -100,7 +103,8 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		if (!EMULATOR) {
 			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 			if (mBluetoothAdapter == null) {
-				Toast.makeText(this, R.string.toast_nobluetooth, Toast.LENGTH_LONG).show();
+				mToast.setText(R.string.toast_nobluetooth);
+				mToast.show();
 				finish();
 				return;
 			}
@@ -119,6 +123,7 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		if (DTRACE) Debug.stopMethodTracing();
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void onStart() {
 		if (D) Log.d(TAG, "onStart()");
@@ -154,8 +159,10 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		this.setRequestedOrientation(mOrientation);
 		mLogging = false;
 		if (mPrefs.getBoolean("logging", false)) {
-			if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()))
-				Toast.makeText(this, R.string.toast_errorlogging, Toast.LENGTH_LONG).show();
+			if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+				mToast.setText(R.string.toast_errorlogging);
+				mToast.show();
+			}
 			else
 				mLogging = true;
 		}
@@ -167,6 +174,8 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 			mUnitMetric = true;
 		else
 			mUnitMetric = false;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			invalidateOptionsMenu();
 
 		// bind to the service
 		bindService(new Intent(this, HarleyDroidService.class), this, 0);
@@ -194,7 +203,8 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 		switch (requestCode) {
 		case REQUEST_ENABLE_BT:
 			if (resultCode != Activity.RESULT_OK) {
-				Toast.makeText(this, R.string.toast_errorenablebluetooth, Toast.LENGTH_LONG).show();
+				mToast.setText(R.string.toast_errorenablebluetooth);
+				mToast.show();
 				finish();
 			}
 		}
@@ -247,25 +257,35 @@ public abstract class HarleyDroid extends Activity implements ServiceConnection,
 
 		switch (msg.what) {
 		case STATUS_CONNECTING:
-			Toast.makeText(getApplicationContext(), R.string.toast_connecting, Toast.LENGTH_LONG).show();
+			mToast.setText(R.string.toast_connecting);
+			mToast.show();
 			break;
 		case STATUS_ERROR:
-			Toast.makeText(getApplicationContext(), R.string.toast_errorconnecting, Toast.LENGTH_LONG).show();
+			mToast.setText(R.string.toast_errorconnecting);
+			mToast.show();
 			break;
 		case STATUS_ERRORAT:
-			Toast.makeText(getApplicationContext(), R.string.toast_errorat, Toast.LENGTH_LONG).show();
+			mToast.setText(R.string.toast_errorat);
+			mToast.show();
 			break;
 		case STATUS_CONNECTED:
-			Toast.makeText(getApplicationContext(), R.string.toast_connected, Toast.LENGTH_LONG).show();
+			mToast.setText(R.string.toast_connected);
+			mToast.show();
 			break;
 		case STATUS_NODATA:
-			Toast.makeText(getApplicationContext(), R.string.toast_nodata, Toast.LENGTH_LONG).show();
+			mToast.setText(R.string.toast_nodata);
+			mToast.show();
 			break;
 		case STATUS_TOOMANYERRORS:
-			Toast.makeText(getApplicationContext(), R.string.toast_toomanyerrors, Toast.LENGTH_LONG).show();
+			mToast.setText(R.string.toast_toomanyerrors);
+			mToast.show();
 			break;
 		case STATUS_AUTORECON:
-			Toast.makeText(getApplicationContext(), String.format(getText(R.string.toast_autorecon).toString(), mReconnectDelay), Toast.LENGTH_LONG).show();
+			mToast.setText(String.format(getText(R.string.toast_autorecon).toString(), mReconnectDelay));
+			mToast.show();
+			break;
+		case STATUS_NONE:
+			mToast.cancel();
 			break;
 		}
 	}
