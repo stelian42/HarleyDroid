@@ -83,11 +83,11 @@ public class HarleyData {
 	public void savePersistentData() {
 		if (mResetOdometer >= 0) {
 			mSavedOdometer = mSavedOdometer + mOdometer - mResetOdometer;
-			mResetOdometer = mOdometer;
+			mResetOdometer = -1;
 		}
 		if (mResetFuel >= 0) {
 			mSavedFuel = mSavedFuel + mFuel - mResetFuel;
-			mResetFuel = mFuel;
+			mResetFuel = -1;
 		}
 		SharedPreferences.Editor editor = mPrefs.edit();
 		editor.putInt("odometer", mSavedOdometer);
