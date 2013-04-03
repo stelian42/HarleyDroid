@@ -111,14 +111,20 @@ public class HarleyDroidService extends Service
 		startForeground(mNotifyId, mNotifyBuilder.build());
 	}
 
+	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		if (D) Log.d(TAG, "onDestroy()");
+	}
+
+	public void doDestroy() {
+		if (D) Log.d(TAG, "doDestroy()");
 
 		doDisconnect();
 		mNotificationManager.cancel(mNotifyId);
 		mNotificationManager = null;
 		mHD.destroy();
+		stopSelf();
 	}
 
 	@Override
@@ -250,7 +256,7 @@ public class HarleyDroidService extends Service
 			case STATE_SEND:
 			case STATE_POLL:
 			case STATE_WAIT_RECONNECT:
-				stopSelf();
+				doDestroy();
 				return;
 			case STATE_TO_DISCONNECT:
 			case STATE_TO_CONNECT:
@@ -374,7 +380,7 @@ public class HarleyDroidService extends Service
 				mReconThread.start();
 			}
 			else {
-				stopSelf();
+				doDestroy();
 				return;
 			}
 			break;
