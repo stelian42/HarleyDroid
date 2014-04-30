@@ -104,6 +104,7 @@ public final class Gauge extends View {
 	private Paint backgroundPaint;
 
 	private Paint odoPaint;
+	private Path odoPath;
 	private Paint odoBackgroundPaint;
 
 	// end drawing tools
@@ -275,6 +276,7 @@ public final class Gauge extends View {
 			if (unitTitle != null) this.unitTitle = unitTitle;
 			if (lowerTitle != null) this.lowerTitle = lowerTitle;
 			if (upperTitle != null) this.upperTitle = upperTitle;
+			a.recycle();
 		}
 		degreesPerNotch       = 360.0f/totalNotches;
 		degreeMinValue        = valueToAngle(scaleMinValue)        + centerDegrees;
@@ -482,6 +484,10 @@ public final class Gauge extends View {
 		odoPaint.setTypeface(lcd);
 		odoPaint.setTextAlign(Paint.Align.RIGHT);
 
+		odoPath = new Path();
+		odoPath.moveTo(0, 0.697f);
+		odoPath.lineTo(0.635f, 0.697f);
+
 		odoBackgroundPaint = new Paint();
 		odoBackgroundPaint.setColor(odoBackgroundColor);
 	}
@@ -561,7 +567,10 @@ public final class Gauge extends View {
 
 					String valueString = Integer.toString(value);
 					// Draw the text 0.15 away from y3 which is the long nick.
-					canvas.drawText(valueString, 0.5f, y3 - 0.015f, scalePaint);
+					Path path = new Path();
+					path.moveTo(0.4f, y3 - 0.015f);
+					path.lineTo(0.6f, y3 - 0.015f);
+					canvas.drawTextOnPath(valueString, path, 0, 0, scalePaint);
 				}
 			}
 			else{
@@ -637,7 +646,11 @@ public final class Gauge extends View {
 
 	private void drawOdo(Canvas canvas) {
 		canvas.drawRect(odoRect, odoBackgroundPaint);
-		canvas.drawText(String.format("%4.2f", targetOdoValue), 0.635f, 0.697f, odoPaint);
+		/*
+		 * use drawTextOnPath() instead of drawText() because of:
+		 * https://code.google.com/p/android/issues/detail?id=39755
+		 */
+		canvas.drawTextOnPath(String.format("%4.2f", targetOdoValue), odoPath, 0, 0, odoPaint);
 	}
 
 	/* Translate a notch to a value for the scale.
