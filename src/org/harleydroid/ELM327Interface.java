@@ -163,7 +163,7 @@ public class ELM327Interface implements J1850Interface
 			}
 
 			try {
-				mSock.chat("AT", "", AT_TIMEOUT);
+				mSock.writeLine("AT");
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e2) {
